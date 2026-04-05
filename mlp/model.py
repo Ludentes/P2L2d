@@ -1,18 +1,19 @@
-"""CartoonAlive MLP — landmarks → Live2D parameters.
+"""CartoonAlive MLP — MediaPipe features → template Live2D parameters.
 
-Architecture (matches hiyori_v2 checkpoint):
-  InputNorm(956)
-  Linear(956→512) + LayerNorm(512) + GELU
+Architecture:
+  InputNorm(input_dim)
+  Linear(input_dim→512) + LayerNorm(512) + GELU
   Linear(512→256) + LayerNorm(256) + GELU  +  skip Linear(512→256)
   Linear(256→128) + LayerNorm(128) + GELU
-  Linear(128→N)
-  OutputDenorm(N)
+  Linear(128→n_params)
+  OutputDenorm(n_params)
 
-Input: 478 MediaPipe FaceMesh landmarks flattened to (x, y) → 956-d vector.
-Output: N Live2D parameter values in rig_config.param_ids order.
+input_dim defaults to 956 (legacy landmarks-only). For the verb-based pipeline
+use input_dim=1014 = 478×2 landmarks + 52 blendshapes + 6 pose.
 """
 from __future__ import annotations
 
+import numpy as np
 import torch
 import torch.nn as nn
 from torch import Tensor
@@ -36,11 +37,14 @@ class _Norm(nn.Module):
 class CartoonAliveMLP(nn.Module):
     """4-layer MLP with one residual skip connection."""
 
-    def __init__(self, n_params: int) -> None:
+    def __init__(self, n_params: int, input_dim: int = 956) -> None:
         super().__init__()
-        self.input_norm = _Norm(956)
+        self.input_dim = input_dim
+        self.n_params = n_params
 
-        self.fc1 = nn.Linear(956, 512)
+        self.input_norm = _Norm(input_dim)
+
+        self.fc1 = nn.Linear(input_dim, 512)
         self.ln1 = nn.LayerNorm(512)
 
         self.fc2 = nn.Linear(512, 256)
@@ -64,3 +68,17 @@ class CartoonAliveMLP(nn.Module):
         out = self.fc4(h3)
 
         return self.output_denorm.inverse(out)
+
+    def set_norm_stats(
+        self,
+        in_mean: np.ndarray,
+        in_std: np.ndarray,
+        out_mean: np.ndarray,
+        out_std: np.ndarray,
+    ) -> None:
+        """Bake normalization statistics into InputNorm / OutputDenorm buffers."""
+        with torch.no_grad():
+            self.input_norm.mean.copy_(torch.from_numpy(in_mean.astype(np.float32)))
+            self.input_norm.std.copy_(torch.from_numpy(in_std.astype(np.float32)))
+            self.output_denorm.mean.copy_(torch.from_numpy(out_mean.astype(np.float32)))
+            self.output_denorm.std.copy_(torch.from_numpy(out_std.astype(np.float32)))
