@@ -29,7 +29,7 @@ mlp/             — CartoonAlive MLP training + inference
 rig/             — HaiMeng template management, texture assembly
 docs/
   research/      — research notes
-  pipeline-overview.md   — architecture overview
+  research/2026-04-05-full-pipeline-plan.md   — current architecture
 ```
 
 ## BCI Parameter Contract
