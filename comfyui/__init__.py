@@ -1,3 +1,4 @@
+from comfyui.client import ComfyUIClient
 from comfyui.exceptions import (
     ComfyUIConnectionError,
     ComfyUIError,
@@ -6,6 +7,7 @@ from comfyui.exceptions import (
 )
 
 __all__ = [
+    "ComfyUIClient",
     "ComfyUIConnectionError",
     "ComfyUIError",
     "ComfyUIJobError",
