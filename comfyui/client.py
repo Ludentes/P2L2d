@@ -24,3 +24,11 @@ class ComfyUIClient:
         except httpx.ConnectError as exc:
             raise ComfyUIConnectionError(str(exc)) from exc
         return response.json()
+
+    async def list_models(self, folder: str) -> list[str]:
+        try:
+            response = await self._http.get(f"/models/{folder}")
+            response.raise_for_status()
+        except httpx.ConnectError as exc:
+            raise ComfyUIConnectionError(str(exc)) from exc
+        return response.json()

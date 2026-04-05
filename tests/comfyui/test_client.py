@@ -50,3 +50,25 @@ async def test_health_raises_on_connection_error():
     async with ComfyUIClient() as client:
         with pytest.raises(ComfyUIConnectionError):
             await client.health()
+
+
+@respx.mock
+async def test_list_models_returns_filenames():
+    respx.get("http://127.0.0.1:8188/models/checkpoints").mock(
+        return_value=_httpx.Response(
+            200, json=["flux1-dev.safetensors", "sdxl.safetensors"]
+        )
+    )
+    async with ComfyUIClient() as client:
+        result = await client.list_models("checkpoints")
+    assert result == ["flux1-dev.safetensors", "sdxl.safetensors"]
+
+
+@respx.mock
+async def test_list_models_raises_on_connection_error():
+    respx.get("http://127.0.0.1:8188/models/loras").mock(
+        side_effect=_httpx.ConnectError("connection refused")
+    )
+    async with ComfyUIClient() as client:
+        with pytest.raises(ComfyUIConnectionError):
+            await client.list_models("loras")
