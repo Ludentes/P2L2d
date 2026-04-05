@@ -164,9 +164,17 @@ Two held-out test sets:
 
 ### Phase 2 — Verb library authoring for humanoid-anime
 
-- Install ComfyUI + PHM AdvancedLivePortrait (authoring tool only)
-- Author 30-verb base library + ~15 compound verbs
-- Define verb → template param target mappings
+**ComfyUI-free authoring** (revised 2026-04-05 after Phase 1 success):
+Phase 1 proved PHM's slider coefficients work directly via `VerbRenderer`,
+so we don't need ComfyUI's GUI — we author verbs as TOML entries and
+visually review them via a grid-preview script.
+
+- Define `verbs.toml` schema: `[verb.<name>]` with slider values + target
+  template-param mappings
+- Write `mlp/data/live_portrait/verb_preview.py`: loads TOML, renders each
+  verb on a reference image, writes a labeled grid PNG
+- Iterate: tweak sliders → render grid → review visually
+- Author ~30 base verbs + compound emotions
 - Commit `templates/humanoid-anime/verbs.toml`
 
 ### Phase 3 — Dataset generation pipeline

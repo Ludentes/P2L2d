@@ -1,0 +1,214 @@
+# humanoid-anime template verb library
+#
+# Each verb entry has:
+#   description — human-readable summary
+#   [verbs.<name>.sliders] — LivePortrait VerbSliders values (used to render training images)
+#   [verbs.<name>.params]  — target template parameters (used as MLP labels)
+#
+# Template parameter conventions (humanoid-anime standard):
+#   EyeLOpen, EyeROpen       ∈ [0, 1]   — 0 closed, 1 open
+#   EyeBallX                 ∈ [-1, 1]  — -1 left, +1 right
+#   EyeBallY                 ∈ [-1, 1]  — -1 down, +1 up
+#   BrowLY, BrowRY           ∈ [-1, 1]  — -1 down/furrow, +1 up/raise
+#   BrowLAngle, BrowRAngle   ∈ [-1, 1]  — angry/sad tilt
+#   MouthOpenY               ∈ [0, 1]
+#   MouthForm                ∈ [-1, 1]  — -1 frown, +1 smile
+#   Cheek                    ∈ [0, 1]
+#
+# LivePortrait slider ranges (from PHM):
+#   rotate_pitch/yaw/roll ∈ [-20, 20]
+#   blink ∈ [-20, 5]  (negative = close)
+#   eyebrow ∈ [-10, 15]
+#   wink ∈ [0, 25]
+#   pupil_x ∈ [-15, 15]
+#   pupil_y ∈ [-15, 15]
+#   aaa ∈ [0, 120]   eee ∈ [-20, 15]   woo ∈ [-20, 15]
+#   smile ∈ [-0.3, 1.3]
+
+# ===========================================================================
+# Baseline
+# ===========================================================================
+
+[verbs.neutral]
+description = "Default relaxed expression"
+sliders = {}
+params = {}
+
+# ===========================================================================
+# Eyes
+# ===========================================================================
+
+[verbs.close_eyes]
+description = "Both eyes fully closed"
+sliders = { blink = -15.0 }
+params = { EyeLOpen = 0.0, EyeROpen = 0.0 }
+
+[verbs.close_eyes_gentle]
+description = "Eyes relaxed halfway"
+sliders = { blink = -8.0 }
+params = { EyeLOpen = 0.4, EyeROpen = 0.4 }
+
+[verbs.eyes_wide]
+description = "Eyes opened wide (surprise, alertness)"
+sliders = { blink = 4.0 }
+params = { EyeLOpen = 1.0, EyeROpen = 1.0 }
+
+[verbs.wink_right]
+description = "Right eye closed, left open"
+sliders = { wink = 20.0 }
+params = { EyeLOpen = 1.0, EyeROpen = 0.0 }
+
+[verbs.wink_left]
+description = "Left eye closed, right open"
+sliders = { wink = -20.0 }
+params = { EyeLOpen = 0.0, EyeROpen = 1.0 }
+
+# ===========================================================================
+# Gaze
+# ===========================================================================
+
+[verbs.look_left]
+description = "Pupils shifted left"
+sliders = { pupil_x = -12.0 }
+params = { EyeBallX = -0.8 }
+
+[verbs.look_right]
+description = "Pupils shifted right"
+sliders = { pupil_x = 12.0 }
+params = { EyeBallX = 0.8 }
+
+[verbs.look_up]
+description = "Pupils shifted up"
+sliders = { pupil_y = 10.0 }
+params = { EyeBallY = 0.8 }
+
+[verbs.look_down]
+description = "Pupils shifted down"
+sliders = { pupil_y = -10.0 }
+params = { EyeBallY = -0.8 }
+
+[verbs.look_upleft]
+description = "Diagonal gaze, up+left"
+sliders = { pupil_x = -10.0, pupil_y = 8.0 }
+params = { EyeBallX = -0.7, EyeBallY = 0.7 }
+
+[verbs.look_upright]
+description = "Diagonal gaze, up+right"
+sliders = { pupil_x = 10.0, pupil_y = 8.0 }
+params = { EyeBallX = 0.7, EyeBallY = 0.7 }
+
+# ===========================================================================
+# Brows
+# ===========================================================================
+
+[verbs.brow_raise]
+description = "Both brows raised (surprise, question)"
+sliders = { eyebrow = 12.0 }
+params = { BrowLY = 0.8, BrowRY = 0.8 }
+
+[verbs.brow_raise_slight]
+description = "Brows lifted slightly"
+sliders = { eyebrow = 6.0 }
+params = { BrowLY = 0.4, BrowRY = 0.4 }
+
+[verbs.brow_furrow]
+description = "Brows furrowed (concern, anger)"
+sliders = { eyebrow = -8.0 }
+params = { BrowLY = -0.7, BrowRY = -0.7, BrowLAngle = 0.5, BrowRAngle = 0.5 }
+
+# ===========================================================================
+# Mouth — open
+# ===========================================================================
+
+[verbs.mouth_open_slight]
+description = "Mouth slightly open"
+sliders = { aaa = 30.0 }
+params = { MouthOpenY = 0.3 }
+
+[verbs.mouth_open]
+description = "Mouth open (speaking 'ah')"
+sliders = { aaa = 60.0 }
+params = { MouthOpenY = 0.6 }
+
+[verbs.mouth_open_wide]
+description = "Mouth open wide (shouting, yawning)"
+sliders = { aaa = 100.0 }
+params = { MouthOpenY = 0.9 }
+
+[verbs.mouth_eee]
+description = "Mouth stretched wide (speaking 'ee')"
+sliders = { eee = 12.0 }
+params = { MouthForm = 0.3, MouthOpenY = 0.2 }
+
+[verbs.mouth_woo]
+description = "Mouth pursed (speaking 'oo')"
+sliders = { woo = 12.0 }
+params = { MouthForm = -0.2, MouthOpenY = 0.3 }
+
+# ===========================================================================
+# Smile
+# ===========================================================================
+
+[verbs.smile_slight]
+description = "Gentle closed-mouth smile"
+sliders = { smile = 0.5 }
+params = { MouthForm = 0.3, Cheek = 0.2 }
+
+[verbs.smile]
+description = "Clear smile"
+sliders = { smile = 0.9 }
+params = { MouthForm = 0.7, Cheek = 0.4 }
+
+[verbs.smile_wide]
+description = "Big open-mouth grin"
+sliders = { smile = 1.2, aaa = 40.0 }
+params = { MouthForm = 1.0, MouthOpenY = 0.4, Cheek = 0.6 }
+
+[verbs.smirk]
+description = "Asymmetric half-smile"
+sliders = { smile = 0.6, eee = 6.0 }
+params = { MouthForm = 0.4, Cheek = 0.2 }
+
+[verbs.frown]
+description = "Downturned mouth"
+sliders = { smile = -0.3 }
+params = { MouthForm = -0.5 }
+
+# ===========================================================================
+# Compound emotions
+# ===========================================================================
+
+[verbs.surprised]
+description = "Eyes wide, mouth open, brows up"
+sliders = { blink = 3.0, aaa = 60.0, eyebrow = 12.0 }
+params = { EyeLOpen = 1.0, EyeROpen = 1.0, MouthOpenY = 0.6, BrowLY = 0.8, BrowRY = 0.8 }
+
+[verbs.shocked]
+description = "Extreme surprise"
+sliders = { blink = 5.0, aaa = 90.0, eyebrow = 15.0 }
+params = { EyeLOpen = 1.0, EyeROpen = 1.0, MouthOpenY = 0.9, BrowLY = 1.0, BrowRY = 1.0 }
+
+[verbs.happy]
+description = "Smiling, eyes relaxed slightly"
+sliders = { smile = 1.0, aaa = 25.0, blink = -3.0 }
+params = { MouthForm = 0.8, MouthOpenY = 0.25, EyeLOpen = 0.7, EyeROpen = 0.7, Cheek = 0.5 }
+
+[verbs.sad]
+description = "Frown + lowered brows"
+sliders = { smile = -0.25, eyebrow = -6.0, blink = -4.0 }
+params = { MouthForm = -0.6, BrowLY = -0.5, BrowRY = -0.5, EyeLOpen = 0.6, EyeROpen = 0.6 }
+
+[verbs.angry]
+description = "Furrowed brows, frown"
+sliders = { eyebrow = -9.0, smile = -0.2, eee = 5.0 }
+params = { BrowLY = -0.9, BrowRY = -0.9, BrowLAngle = 0.8, BrowRAngle = 0.8, MouthForm = -0.4 }
+
+[verbs.sleepy]
+description = "Eyes nearly closed, mouth slightly open"
+sliders = { blink = -10.0, aaa = 15.0 }
+params = { EyeLOpen = 0.2, EyeROpen = 0.2, MouthOpenY = 0.15 }
+
+[verbs.thinking]
+description = "Eyes up-left, slight frown"
+sliders = { pupil_x = -10.0, pupil_y = 8.0, smile = -0.1 }
+params = { EyeBallX = -0.7, EyeBallY = 0.7, MouthForm = -0.1 }
