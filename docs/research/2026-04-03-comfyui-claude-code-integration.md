@@ -1,13 +1,19 @@
 # Research: Driving ComfyUI Programmatically from Claude Code
 
-**Date:** 2026-04-03
-**Sources:** 14 sources
+**Date:** 2026-04-03  
+**Sources:** 14 sources  
+**⚠️ Updated:** See `docs/research/2026-04-04-comfyui-programmatic-driving-libs.md` for a full library health audit. Key corrections:
+- `comfy-catapult` is **dead** (last commit Jul 2024) — do not use
+- `comfy-api-simplified` (`deimos-deimos`) is alive and the best simple HTTP client
+- `joenorton/comfyui-mcp-server` (274 stars, Python, tested) is the best MCP server option
+- `Chaoses-Ib/ComfyScript` (661 stars) is best for agentic/LLM-driven workflow generation
+- Recommendation updated to: build thin custom client first, adopt ComfyScript in Phase 2
 
 ---
 
 ## Executive Summary
 
-Claude Code can drive ComfyUI through three distinct layers, each appropriate for different use cases. The lowest layer is ComfyUI's native HTTP/WebSocket API, which is stable, well-documented, and requires no additional dependencies — a Claude Code agent can submit a workflow JSON to `POST /prompt`, receive a `prompt_id`, poll `GET /history/{prompt_id}` until the job completes, and fetch images via `GET /view`. Above that, several Python client libraries (ComfyAPI, comfy-catapult, ComfyScript, comfy-api-simplified) abstract away the polling loop and provide typed workflow manipulation. The highest-level option is MCP: at least three community MCP servers exist for ComfyUI (the most capable being `artokun/comfyui-mcp`, installable as a Claude Code plugin), and an official Comfy Cloud MCP server is in limited early access. The practical recommendation is to use the bare HTTP API for a one-file agent script, ComfyAPI or comfy-catapult for a proper Python pipeline, and the `comfyui-mcp` plugin for full Claude Code interactive sessions where image generation should be callable as a tool.
+Claude Code can drive ComfyUI through three distinct layers, each appropriate for different use cases. The lowest layer is ComfyUI's native HTTP/WebSocket API, which is stable, well-documented, and requires no additional dependencies — a Claude Code agent can submit a workflow JSON to `POST /prompt`, receive a `prompt_id`, poll `GET /history/{prompt_id}` until the job completes, and fetch images via `GET /view`. Above that, several Python client libraries abstract away the polling loop and provide typed workflow manipulation — the alive options are `comfy_api_simplified` and `ComfyScript` (comfy-catapult is dead as of April 2026). The highest-level option is MCP: `joenorton/comfyui-mcp-server` (Python, 274 stars, tested) is the strongest option; `artokun/comfyui-mcp` offers more features but has a small community. The practical recommendation is to build a thin custom HTTP client first for the learning value, then adopt ComfyScript for agentic workflow generation, and use joenorton's MCP server for interactive Claude Code sessions.
 
 ---
 
