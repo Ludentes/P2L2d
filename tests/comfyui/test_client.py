@@ -1,6 +1,8 @@
 import pytest
 import httpx as _httpx
 import respx
+import tempfile
+from pathlib import Path
 
 from comfyui import (
     ComfyUIClient,
@@ -72,3 +74,34 @@ async def test_list_models_raises_on_connection_error():
     async with ComfyUIClient() as client:
         with pytest.raises(ComfyUIConnectionError):
             await client.list_models("loras")
+
+
+@respx.mock
+async def test_upload_image_returns_server_filename():
+    respx.post("http://127.0.0.1:8188/upload/image").mock(
+        return_value=_httpx.Response(
+            200,
+            json={"name": "portrait_0001.png", "subfolder": "", "type": "input"},
+        )
+    )
+    with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as f:
+        f.write(b"\x89PNG\r\n\x1a\n")
+        tmp_path = Path(f.name)
+    async with ComfyUIClient() as client:
+        result = await client.upload_image(tmp_path)
+    tmp_path.unlink()
+    assert result == "portrait_0001.png"
+
+
+@respx.mock
+async def test_upload_image_raises_on_connection_error():
+    respx.post("http://127.0.0.1:8188/upload/image").mock(
+        side_effect=_httpx.ConnectError("connection refused")
+    )
+    with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as f:
+        f.write(b"\x89PNG\r\n\x1a\n")
+        tmp_path = Path(f.name)
+    async with ComfyUIClient() as client:
+        with pytest.raises(ComfyUIConnectionError):
+            await client.upload_image(tmp_path)
+    tmp_path.unlink()

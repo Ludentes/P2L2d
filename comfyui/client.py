@@ -1,4 +1,5 @@
 import httpx
+from pathlib import Path
 
 from comfyui.exceptions import ComfyUIConnectionError, ComfyUIJobError, ComfyUITimeoutError
 
@@ -32,3 +33,16 @@ class ComfyUIClient:
         except httpx.ConnectError as exc:
             raise ComfyUIConnectionError(str(exc)) from exc
         return response.json()
+
+    async def upload_image(self, path: Path) -> str:
+        with open(path, "rb") as fh:
+            try:
+                response = await self._http.post(
+                    "/upload/image",
+                    files={"image": (path.name, fh, "image/png")},
+                    data={"type": "input", "overwrite": "true"},
+                )
+                response.raise_for_status()
+            except httpx.ConnectError as exc:
+                raise ComfyUIConnectionError(str(exc)) from exc
+        return response.json()["name"]
