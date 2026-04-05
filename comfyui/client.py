@@ -1,8 +1,10 @@
-import httpx
-import uuid
 import asyncio
+import mimetypes
 import time
+import uuid
 from pathlib import Path
+
+import httpx
 
 from comfyui.exceptions import ComfyUIConnectionError, ComfyUIJobError, ComfyUITimeoutError
 
@@ -38,11 +40,12 @@ class ComfyUIClient:
         return response.json()
 
     async def upload_image(self, path: Path) -> str:
+        mime_type = mimetypes.guess_type(path.name)[0] or "application/octet-stream"
         with open(path, "rb") as fh:
             try:
                 response = await self._http.post(
                     "/upload/image",
-                    files={"image": (path.name, fh, "image/png")},
+                    files={"image": (path.name, fh, mime_type)},
                     data={"type": "input", "overwrite": "true"},
                 )
                 response.raise_for_status()
@@ -73,8 +76,15 @@ class ComfyUIClient:
     ) -> dict:
         deadline = time.monotonic() + timeout
         while True:
-            response = await self._http.get(f"/history/{prompt_id}")
-            response.raise_for_status()
+            if time.monotonic() >= deadline:
+                raise ComfyUITimeoutError(
+                    f"Job {prompt_id!r} timed out after {timeout}s"
+                )
+            try:
+                response = await self._http.get(f"/history/{prompt_id}")
+                response.raise_for_status()
+            except httpx.ConnectError as exc:
+                raise ComfyUIConnectionError(str(exc)) from exc
             data = response.json()
             if prompt_id in data:
                 job = data[prompt_id]
@@ -86,10 +96,6 @@ class ComfyUIClient:
                 if status.get("completed"):
                     return job["outputs"]
             await asyncio.sleep(poll_interval)
-            if time.monotonic() >= deadline:
-                raise ComfyUITimeoutError(
-                    f"Job {prompt_id!r} timed out after {timeout}s"
-                )
 
     async def download(
         self,
