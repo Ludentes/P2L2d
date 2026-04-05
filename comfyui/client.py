@@ -89,3 +89,21 @@ class ComfyUIClient:
                 raise ComfyUITimeoutError(
                     f"Job {prompt_id!r} timed out after {timeout}s"
                 )
+
+    async def download(
+        self,
+        filename: str,
+        dest: Path,
+        subfolder: str = "",
+        file_type: str = "output",
+    ) -> None:
+        params = {"filename": filename, "subfolder": subfolder, "type": file_type}
+        try:
+            async with self._http.stream("GET", "/view", params=params) as response:
+                response.raise_for_status()
+                dest.parent.mkdir(parents=True, exist_ok=True)
+                with open(dest, "wb") as fh:
+                    async for chunk in response.aiter_bytes():
+                        fh.write(chunk)
+        except httpx.ConnectError as exc:
+            raise ComfyUIConnectionError(str(exc)) from exc

@@ -236,3 +236,36 @@ async def test_wait_raises_on_timeout():
     async with ComfyUIClient() as client:
         with pytest.raises(ComfyUITimeoutError):
             await client.wait("abc-999", timeout=0.05, poll_interval=0.01)
+
+
+@respx.mock
+async def test_download_writes_bytes_to_file(tmp_path):
+    image_bytes = b"\x89PNG\r\n\x1a\n" + b"\x00" * 64
+    respx.get("http://127.0.0.1:8188/view").mock(
+        return_value=_httpx.Response(200, content=image_bytes)
+    )
+    dest = tmp_path / "out.png"
+    async with ComfyUIClient() as client:
+        await client.download("out_00001.png", dest)
+    assert dest.read_bytes() == image_bytes
+
+
+@respx.mock
+async def test_download_creates_parent_directories(tmp_path):
+    respx.get("http://127.0.0.1:8188/view").mock(
+        return_value=_httpx.Response(200, content=b"\x89PNG\r\n\x1a\n")
+    )
+    dest = tmp_path / "deep" / "nested" / "out.png"
+    async with ComfyUIClient() as client:
+        await client.download("out_00001.png", dest)
+    assert dest.exists()
+
+
+@respx.mock
+async def test_download_raises_on_connection_error(tmp_path):
+    respx.get("http://127.0.0.1:8188/view").mock(
+        side_effect=_httpx.ConnectError("connection refused")
+    )
+    async with ComfyUIClient() as client:
+        with pytest.raises(ComfyUIConnectionError):
+            await client.download("out.png", tmp_path / "out.png")
