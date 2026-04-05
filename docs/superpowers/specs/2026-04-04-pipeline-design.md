@@ -10,9 +10,9 @@
 
 Single portrait image → animatable Live2D `.moc3` model with:
 - Style-matched textures (inherits input portrait style via Flux Kontext)
-- BCI parameter slots pre-injected
 - Face tracking via CartoonAlive MLP at 60fps
 - Output loadable in VTube Studio without manual rigging
+- BCI signals (`MuseClench`, `MuseFocus`, `MuseRelaxation`, `MuseBlink`) driven by the Muse VTuber Bridge running alongside; the rig needs deformers wired to these parameters (rigging work, not pipeline code)
 
 ---
 
@@ -99,16 +99,16 @@ portrait-to-live2d/
     data/
       generate_samples.py     ← live2d-py renders → (landmarks, params) pairs
 
-  rig/                        ← Subsystem 4: Template management + BCI injection
+  rig/                        ← Subsystem 4: Rig assembly
     config.py                 ← RigConfig dataclass + RIG_HIYORI + RIG_HAIMENG presets
     template.py               ← Copy rig bundle, update texture refs in .model3.json
-    bci_inject.py             ← Register BCI custom params via VTube Studio WebSocket API
+    # bci_inject.py REMOVED — Muse VTuber Bridge handles BCI registration
 
   runtime/                    ← Subsystem 5: Live face tracking + param bridge
     mediapipe_stream.py       ← Webcam → 478 landmarks (async)
     param_bridge.py           ← landmarks → mlp/infer → VTube Studio WebSocket
-    bci_bridge.py             ← Muse VTuber Bridge → BCI param smooth-send
     fallback.py               ← Direct blendshape mapping (if MLP unavailable)
+    # bci_bridge.py REMOVED — run muse-vtuber alongside, not inside this project
 
   textoon/                    ← Git submodule: github.com/Human3DAIGC/Textoon
   pyproject.toml              ← uv project, deps: httpx, mediapipe, torch, live2d-py, etc.
@@ -260,39 +260,17 @@ These are computed once and frozen. The model exports with these as constants (e
 
 ---
 
-## Subsystem 4: BCI Injection
+## Subsystem 4: Rig Assembly
 
-### Design: VTS Custom Parameters API (not model file modification)
-
-The earlier design proposed appending to the `Parameters` array in `.model3.json`. This approach has two problems:
-1. Hiyori's `.model3.json` has no `Parameters` array — parameters are in the separate `.cdi3.json`.
-2. Custom parameters visible in VTube Studio don't need to be in `.model3.json` at all — VTS's custom parameter API creates them at runtime.
-
-The correct design is: **BCI parameters are registered via the VTube Studio WebSocket API on startup**. No model files are modified. This works with any rig, including models the user didn't create (Hiyori, commissioned rigs, future HaiMeng).
-
-The `.moc3` is never touched. Deformers for BCI params are wired in Cubism Editor by the user (future work) — the pipeline only ensures the parameter slots exist and receive values.
-
-### bci_inject.py
-
-Connects to VTube Studio WebSocket. For each BCI parameter:
-
-1. Calls `InjectParameterDataV2` with `createNewParameters: true` — creates the custom parameter if it doesn't exist, or reuses it if already present (idempotent).
-2. Sends an initial value of 0.0.
-
-Parameters registered:
-
-| ID | Description |
-|---|---|
-| `ParamJawClench` | EMG jaw clench (0–1) |
-| `ParamFocusLevel` | EEG theta/beta concentration (0–1) |
-| `ParamRelaxation` | EEG alpha relaxation (0–1) |
-| `ParamHeartbeat` | PPG pulse (0–1) |
-
-On exit: parameters are left in VTube Studio (persist across sessions). Running the tool again is a no-op (VTS deduplicates by ID).
+> **Revised:** BCI injection code is eliminated from this subsystem. The Muse VTuber Bridge (`/home/newub/w/zyphraexps/muse-vtuber`) already handles all BCI→VTS work. When run with `--vts` it creates and streams these VTS custom parameters: `MuseBlink`, `MuseClench`, `MuseFocus`, `MuseRelaxation`. No portrait-to-live2d code is needed for this.
+>
+> The remaining gap is **rigging**: the generated rig has no deformers wired to those parameters. This is Cubism Editor work, deferred until the user has a rig to wire.
 
 ### template.py
 
-Copies the rig bundle (`.moc3`, `.model3.json`, textures) from `rig_config` paths to the output directory. Rewrites the `Textures` array in the output `.model3.json` to reference the new texture file paths. Does not register BCI params — that is `bci_inject.py`'s job.
+Copies the rig bundle (`.moc3`, `.model3.json`, textures) from `rig_config` paths to the output directory. Rewrites the `Textures` array in the output `.model3.json` to reference the new texture file paths.
+
+This is the entire scope of Subsystem 4 as code. `bci_inject.py` is removed — not needed.
 
 ---
 
@@ -306,9 +284,20 @@ Async loop: webcam frame → MediaPipe FaceMesh → 478 landmarks as `np.ndarray
 
 Consumes landmark queue. Calls `mlp/infer.py` → N params (N = rig param count). Maps param array to named VTS parameters using `rig_config.param_ids` as the index→ID lookup. Sends to VTube Studio via WebSocket (`pyvts` library). On `LOW_CONFIDENCE`: holds last values. On MLP timeout: falls back to `runtime/fallback.py`.
 
-### bci_bridge.py
+### BCI integration (not a code component)
 
-Receives BCI parameter values from the Muse VTuber Bridge (existing system, ZyphraExps). Smooth-sends to VTube Studio WebSocket. On disconnect: holds last values 2s, then interpolates to 0.0 over 1s. Reconnect loop runs in background.
+BCI→VTS is handled entirely by the Muse VTuber Bridge. Run it alongside the portrait-to-live2d runtime:
+
+```bash
+# Terminal 1: Muse VTuber Bridge (BCI + head tracking)
+cd /home/newub/w/zyphraexps/muse-vtuber
+uv run muse-vtuber --mac <MAC> --vts
+
+# Terminal 2: portrait-to-live2d face tracking
+uv run -m runtime.param_bridge
+```
+
+Both write to VTube Studio simultaneously — no coordination needed. The bridge owns `MuseClench`/`MuseFocus`/`MuseRelaxation`/`MuseBlink`; the param_bridge owns the MLP face params.
 
 ---
 
@@ -318,19 +307,21 @@ Dependencies with Hiyori as dev rig:
 
 ```
 Subsystem 1 (ComfyUI client)   → no deps
-Subsystem 4 (BCI injection)    → depends on Hiyori (available) + VTS running
+Subsystem 4 (Rig assembly)     → depends on Hiyori (available); trivial once RigConfig exists
 Subsystem 3 (MLP)              → depends on Hiyori (available) + live2d-py
 Subsystem 5 (Runtime bridge)   → depends on 3 (MLP infer.py)
 Subsystem 2 (Portrait pipeline) → depends on 1 (ComfyUI) + textoon submodule
                                    (UV transfer stage deferred until HaiMeng EULA)
+
+Muse VTuber Bridge             → separate project, run alongside; no code overlap
 ```
 
 Each subsystem gets its own implementation plan. Implementation order with Hiyori:
 
 1. **Subsystem 1** — ComfyUI client (plan written: `plans/2026-04-04-subsystem1-comfyui-client.md`)
-2. **Subsystem 4** — BCI injection via VTS custom params API (fast, unblocked, validates end-to-end VTS connection)
-3. **Subsystem 3** — MLP training on Hiyori (unblocked; retrain on HaiMeng later)
-4. **Subsystem 5** — Runtime bridge (needs MLP + VTS integration)
+2. **Subsystem 3** — MLP training on Hiyori (unblocked; core value)
+3. **Subsystem 5** — Runtime bridge: MediaPipe → MLP → VTube Studio (needs MLP)
+4. **Subsystem 4** — Rig assembly: `template.py` (tiny; unblocked but low priority alone)
 5. **Subsystem 2** — Portrait pipeline (ComfyUI-dependent; UV transfer deferred until HaiMeng)
 
 ---
