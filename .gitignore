@@ -8,4 +8,5 @@ dist/
 
 # LivePortrait smoke test outputs + MediaPipe model cache
 mlp/data/live_portrait/smoke_outputs/
+mlp/data/live_portrait/datasets/
 mlp/data/face_landmarker_v2_with_blendshapes.task

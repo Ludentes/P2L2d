@@ -1,0 +1,109 @@
+# humanoid-anime template parameter schema
+#
+# Canonical ordered parameter list. The MLP predicts these in this order.
+# Each param has:
+#   range  — [min, max] valid range (what the rig accepts)
+#   default — value when verb does not override
+#   curve  — post-MLP response curve applied at inference time
+#
+# Ordering is STABLE — do not reorder without retraining models.
+
+# ---- Head pose (angles in degrees; labels come from MediaPipe, not verbs) ----
+[[params]]
+name = "AngleX"
+range = [-30.0, 30.0]
+default = 0.0
+curve = "linear"
+
+[[params]]
+name = "AngleY"
+range = [-20.0, 20.0]
+default = 0.0
+curve = "linear"
+
+[[params]]
+name = "AngleZ"
+range = [-20.0, 20.0]
+default = 0.0
+curve = "linear"
+
+# ---- Eyes ----
+[[params]]
+name = "EyeLOpen"
+range = [0.0, 1.0]
+default = 1.0
+curve = "gamma:0.7"
+
+[[params]]
+name = "EyeROpen"
+range = [0.0, 1.0]
+default = 1.0
+curve = "gamma:0.7"
+
+[[params]]
+name = "EyeBallX"
+range = [-1.0, 1.0]
+default = 0.0
+curve = "linear"
+
+[[params]]
+name = "EyeBallY"
+range = [-1.0, 1.0]
+default = 0.0
+curve = "linear"
+
+[[params]]
+name = "EyeLSmile"
+range = [0.0, 1.0]
+default = 0.0
+curve = "gamma:0.8"
+
+[[params]]
+name = "EyeRSmile"
+range = [0.0, 1.0]
+default = 0.0
+curve = "gamma:0.8"
+
+# ---- Brows ----
+[[params]]
+name = "BrowLY"
+range = [-1.0, 1.0]
+default = 0.0
+curve = "linear"
+
+[[params]]
+name = "BrowRY"
+range = [-1.0, 1.0]
+default = 0.0
+curve = "linear"
+
+[[params]]
+name = "BrowLAngle"
+range = [-1.0, 1.0]
+default = 0.0
+curve = "linear"
+
+[[params]]
+name = "BrowRAngle"
+range = [-1.0, 1.0]
+default = 0.0
+curve = "linear"
+
+# ---- Mouth ----
+[[params]]
+name = "MouthOpenY"
+range = [0.0, 1.0]
+default = 0.0
+curve = "gamma:0.6"
+
+[[params]]
+name = "MouthForm"
+range = [-1.0, 1.0]
+default = 0.0
+curve = "linear"
+
+[[params]]
+name = "Cheek"
+range = [0.0, 1.0]
+default = 0.0
+curve = "linear"
