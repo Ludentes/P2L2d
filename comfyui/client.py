@@ -1,4 +1,7 @@
 import httpx
+import uuid
+import asyncio
+import time
 from pathlib import Path
 
 from comfyui.exceptions import ComfyUIConnectionError, ComfyUIJobError, ComfyUITimeoutError
@@ -46,3 +49,17 @@ class ComfyUIClient:
             except httpx.ConnectError as exc:
                 raise ComfyUIConnectionError(str(exc)) from exc
         return response.json()["name"]
+
+    async def submit(self, workflow: dict) -> str:
+        body = {"prompt": workflow, "client_id": str(uuid.uuid4())}
+        try:
+            response = await self._http.post("/prompt", json=body)
+        except httpx.ConnectError as exc:
+            raise ComfyUIConnectionError(str(exc)) from exc
+        data = response.json()
+        if "error" in data or "node_errors" in data:
+            raise ComfyUIJobError(
+                f"Workflow validation failed: "
+                f"{data.get('error') or data.get('node_errors')}"
+            )
+        return data["prompt_id"]

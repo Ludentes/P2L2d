@@ -2,6 +2,7 @@ import pytest
 import httpx as _httpx
 import respx
 import tempfile
+import asyncio as _asyncio
 from pathlib import Path
 
 from comfyui import (
@@ -11,6 +12,23 @@ from comfyui import (
     ComfyUIJobError,
     ComfyUITimeoutError,
 )
+
+
+SAMPLE_WORKFLOW = {
+    "3": {
+        "class_type": "KSampler",
+        "inputs": {"seed": 42, "steps": 20},
+    }
+}
+
+
+SAMPLE_OUTPUTS = {
+    "9": {
+        "images": [
+            {"filename": "out_00001.png", "subfolder": "", "type": "output"}
+        ]
+    }
+}
 
 
 def test_exception_hierarchy():
@@ -105,3 +123,41 @@ async def test_upload_image_raises_on_connection_error():
         with pytest.raises(ComfyUIConnectionError):
             await client.upload_image(tmp_path)
     tmp_path.unlink()
+
+
+@respx.mock
+async def test_submit_returns_prompt_id():
+    respx.post("http://127.0.0.1:8188/prompt").mock(
+        return_value=_httpx.Response(
+            200, json={"prompt_id": "abc-123", "number": 1}
+        )
+    )
+    async with ComfyUIClient() as client:
+        result = await client.submit(SAMPLE_WORKFLOW)
+    assert result == "abc-123"
+
+
+@respx.mock
+async def test_submit_raises_on_node_errors():
+    respx.post("http://127.0.0.1:8188/prompt").mock(
+        return_value=_httpx.Response(
+            200,
+            json={
+                "error": {"type": "prompt_no_outputs", "message": "no output nodes"},
+                "node_errors": {"3": ["missing required input"]},
+            },
+        )
+    )
+    async with ComfyUIClient() as client:
+        with pytest.raises(ComfyUIJobError):
+            await client.submit(SAMPLE_WORKFLOW)
+
+
+@respx.mock
+async def test_submit_raises_on_connection_error():
+    respx.post("http://127.0.0.1:8188/prompt").mock(
+        side_effect=_httpx.ConnectError("connection refused")
+    )
+    async with ComfyUIClient() as client:
+        with pytest.raises(ComfyUIConnectionError):
+            await client.submit(SAMPLE_WORKFLOW)
