@@ -5,3 +5,7 @@ __pycache__/
 .uv/
 *.egg-info/
 dist/
+
+# LivePortrait smoke test outputs + MediaPipe model cache
+mlp/data/live_portrait/smoke_outputs/
+mlp/data/face_landmarker_v2_with_blendshapes.task
