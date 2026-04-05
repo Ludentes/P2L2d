@@ -54,6 +54,7 @@ class ComfyUIClient:
         body = {"prompt": workflow, "client_id": str(uuid.uuid4())}
         try:
             response = await self._http.post("/prompt", json=body)
+            response.raise_for_status()
         except httpx.ConnectError as exc:
             raise ComfyUIConnectionError(str(exc)) from exc
         data = response.json()
