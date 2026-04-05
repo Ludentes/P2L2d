@@ -1,5 +1,7 @@
 import httpx
 
+from comfyui.exceptions import ComfyUIConnectionError, ComfyUIJobError, ComfyUITimeoutError
+
 
 class ComfyUIClient:
     def __init__(self, base_url: str = "http://127.0.0.1:8188") -> None:
@@ -14,3 +16,11 @@ class ComfyUIClient:
 
     async def __aexit__(self, *_: object) -> None:
         await self.close()
+
+    async def health(self) -> dict:
+        try:
+            response = await self._http.get("/system_stats")
+            response.raise_for_status()
+        except httpx.ConnectError as exc:
+            raise ComfyUIConnectionError(str(exc)) from exc
+        return response.json()
