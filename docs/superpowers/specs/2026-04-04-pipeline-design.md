@@ -41,6 +41,37 @@ Textoon is cloned as a git submodule (`textoon/`). The new pipeline imports from
 
 ---
 
+## Rig Configuration
+
+The pipeline is rig-agnostic via a `RigConfig` dataclass in `rig/config.py`. All rig-specific constants — parameter list, texture count, UV coordinate file — live here. Subsystems 2–5 take a `RigConfig` and do not hard-code model names or counts.
+
+```python
+@dataclass
+class RigConfig:
+    name: str                      # "hiyori" | "haimeng"
+    moc3_path: Path                # absolute path to .moc3
+    model3_json_path: Path         # absolute path to .model3.json
+    textures: list[Path]           # all texture sheet paths (2 for hiyori, 9 for haimeng)
+    param_ids: list[str]           # ordered list of param IDs from cdi3.json/model3.json
+    uv_config: Path | None         # model_configuration.json equiv; None = skip UV transfer
+```
+
+Two pre-built configs are provided:
+
+**`RIG_HIYORI`** — development rig. Available immediately at:
+`~/.var/app/com.valvesoftware.Steam/.local/share/Steam/steamapps/common/VTube Studio/VTube Studio_Data/StreamingAssets/Live2DModels/hiyori_vts/`
+- 74 parameters (same core face params as HaiMeng; no ARKit blendshapes)
+- 2 × 2048px texture sheets
+- `uv_config = None` (UV transfer stage skipped in dev; Hiyori textures used as-is for assembly testing)
+- Licensed for personal/research use (Live2D sample model)
+
+**`RIG_HAIMENG`** — production rig. Gated behind Textoon EULA (submit via university account).
+- 107 parameters, 9 × 4096px sheets, full UV config via `textoon/assets/model_configuration.json`
+
+The MLP trained on Hiyori is geometry-specific and will need retraining on HaiMeng. The training *infrastructure* (data generation, training loop, model architecture) transfers without change — only the output dimensionality differs (`len(rig_config.param_ids)`).
+
+---
+
 ## Project Layout
 
 ```
@@ -55,22 +86,23 @@ portrait-to-live2d/
     run.py                    ← CLI: python -m pipeline.run portrait.jpg [--style anime]
     stages/
       detect.py               ← Face detection + alignment (MediaPipe)
-      segment.py              ← 20-component masks (SAM2 + HumanParser)
+      segment.py              ← component masks (SAM2 + HumanParser; count from rig config)
       generate.py             ← Flux Kontext generation per component (→ comfyui/)
-      transfer.py             ← UV paste (wraps textoon/utils/transfer_part_texture.py)
-      assemble.py             ← .model3.json from HaiMeng template
+      transfer.py             ← UV paste (wraps textoon/utils/transfer_part_texture.py; skipped if rig_config.uv_config is None)
+      assemble.py             ← output bundle from rig template (rig-agnostic via RigConfig)
     config.py                 ← Paths, model IDs, generation params
 
   mlp/                        ← Subsystem 3: CartoonAlive MLP
-    model.py                  ← 4-layer MLP (478×2 landmarks → 107 params)
+    model.py                  ← 4-layer MLP (478×2 landmarks → N params; N from RigConfig)
     train.py                  ← Synthetic data gen + training loop
     infer.py                  ← Runtime inference (<16ms)
     data/
-      generate_samples.py     ← PyGame + live2d-py renders → (landmarks, params) pairs
+      generate_samples.py     ← live2d-py renders → (landmarks, params) pairs
 
   rig/                        ← Subsystem 4: Template management + BCI injection
-    template.py               ← Copy HaiMeng .moc3 + .model3.json, update texture refs
-    bci_inject.py             ← Add ParamJawClench/FocusLevel/Relaxation/Heartbeat slots
+    config.py                 ← RigConfig dataclass + RIG_HIYORI + RIG_HAIMENG presets
+    template.py               ← Copy rig bundle, update texture refs in .model3.json
+    bci_inject.py             ← Register BCI custom params via VTube Studio WebSocket API
 
   runtime/                    ← Subsystem 5: Live face tracking + param bridge
     mediapipe_stream.py       ← Webcam → 478 landmarks (async)
@@ -104,29 +136,31 @@ Minimum input resolution: 512px. Recommended: 1024px+.
 
 ### Stage: segment.py
 
-Input: aligned face crop. Output: dict of 20 component masks (one per entry in `model_configuration.json`).
+Input: aligned face crop + `RigConfig`. Output: dict of component masks keyed by component name.
 
-Uses SAM2 for initial region proposals, HumanParser for semantic labels (face, hair, clothing, legs, shoes). Maps semantic regions to the 20 Textoon component names. If a component mask is empty (e.g. boots not visible), marks as `missing` — the transfer stage skips it and the template's default texture shows.
+Component names come from `rig_config.uv_config` (when present) or from a fixed semantic set when `uv_config is None` (Hiyori dev mode: face, hair, body, clothing). Uses SAM2 for initial region proposals, HumanParser for semantic labels. If a component mask is empty, marks as `missing` — the transfer stage skips it and the template's default texture shows.
 
 ### Stage: generate.py
 
-Input: aligned face crop + 20 component masks + optional style override. Output: generated texture image per component.
+Input: aligned face crop + component masks + optional style override. Output: generated texture image per component.
 
 Uses Flux Kontext [dev] via `comfyui/client.py`. Workflow: upload portrait as reference image → generate each component with a text prompt describing the component and referencing the portrait's style → download result. Style override (`--style anime`) activates the Diving-Illustrious flat-anime LoRA pass instead.
 
-All components are generated in a single ComfyUI queue batch where possible to maximise GPU utilisation. Target: <25 min total for all 20 components on RTX 5090.
+All components generated in a single ComfyUI queue batch where possible. Target: <25 min total on RTX 5090.
 
 ### Stage: transfer.py
 
-Input: generated component images + component masks. Output: 9 assembled texture sheets (4096×4096 PNG each).
+Input: generated component images + component masks + `RigConfig`. Output: assembled texture sheets.
 
-Thin wrapper around `textoon/utils/transfer_part_texture.py` with `model_configuration.json` coordinates. Handles thigh rotation and sleeve interpolation exactly as Textoon does.
+**When `rig_config.uv_config` is not None**: thin wrapper around `textoon/utils/transfer_part_texture.py` with the UV coordinates from the config file. Handles thigh rotation and sleeve interpolation exactly as Textoon does.
+
+**When `rig_config.uv_config is None`** (Hiyori dev mode): skips UV transfer entirely. Generated component images are resized to the rig's texture dimensions and placed as-is. This produces a visually rough output sufficient for pipeline integration testing.
 
 ### Stage: assemble.py
 
-Input: 9 texture sheets + HaiMeng template path. Output: output directory with `.moc3` (copied), `textures/` (placed), `.model3.json` (texture refs updated). HaiMeng uses 9 sheets indexed texture_00–texture_08; `texture_06` is an accessories/prop sheet that is present but may not be visibly altered for all character configurations.
+Input: texture sheets + `RigConfig`. Output: output directory with `.moc3` (copied), `textures/` (placed), `.model3.json` (texture refs updated).
 
-Copies the HaiMeng template bundle, rewrites the `Textures` array in `.model3.json` to point at the new texture files. Then calls `rig/bci_inject.py` to add BCI parameter slots.
+Copies the rig bundle from `rig_config.moc3_path` / `rig_config.model3_json_path`, rewrites the `Textures` array in `.model3.json` to point at the new texture files. Does not call `bci_inject.py` — BCI params are registered at runtime via the VTS API, not baked into the model file.
 
 **Error handling:** any stage failure writes a `pipeline_error.json` to the output dir with the stage name, error message, and any partial files — then cleans up partial texture files. No silent failures.
 
@@ -155,13 +189,15 @@ OutputDenorm(107)                     ← per-param mean/std, baked in
 
 Total parameters: ~600k. CPU inference target: <8ms on a mid-range laptop (headroom over the 16ms budget).
 
-**Parameter groups**: the 107 Live2D parameters split into four groups by symmetry and range characteristics:
-- Face angle/position (6 params, range ±30): `ParamAngleX/Y/Z`, `ParamBodyAngleX/Y/Z`
-- Bilateral eye/brow (32 params, left+right symmetric): eyes, brows, wink, glasses
-- Mouth (20 params): open, form, smile, etc.
-- Body/misc (49 params): chest, hair physics outputs, accessory toggles
+**Output dimensionality** is `len(rig_config.param_ids)` — **74 for Hiyori, 107 for HaiMeng**. The model architecture is identical; only the final `Linear` layer's output size changes. The trained weights are rig-specific and not transferable.
 
-The single output head handles all 107 jointly. A multi-head design (one head per group) is listed as a future experiment — skip for now, adds complexity without proven benefit.
+**Parameter groups** (Hiyori / HaiMeng share the same logical groups, Hiyori just has fewer in each):
+- Face angle/position: `ParamAngleX/Y/Z`, `ParamBodyAngleX/Y/Z`
+- Bilateral eye/brow: eyes, brows (symmetric left/right)
+- Mouth: open, form, smile, etc.
+- Body/hair/misc: physics outputs, accessory toggles
+
+The single output head handles all params jointly. A multi-head design is a future experiment.
 
 ### Training Data
 
@@ -180,7 +216,7 @@ Total: 100,000 samples before filtering.
 
 ```
 for each sampled param set:
-  1. Apply params to HaiMeng rig via live2d-py
+  1. Apply params to rig via live2d-py (rig_config.moc3_path)
   2. Render to RGBA at 512×512 (matches MediaPipe's optimal range)
   3. Composite over random background (uniform colour, sampled from 20 pastel values)
      — MediaPipe is sensitive to low-contrast face-on-white images
@@ -191,7 +227,7 @@ for each sampled param set:
   5. Run MediaPipe FaceMesh on the augmented frame
   6. If detection confidence < 0.8 OR detected landmarks < 468: discard, resample
   7. Extract 478 landmarks (x, y) in normalised image coords [0,1]
-  8. Save (landmarks[478×2], params[107]) pair
+  8. Save (landmarks[478×2], params[N]) pair  ← N = len(rig_config.param_ids)
 ```
 
 Discarded samples are resampled immediately — the dataset always hits exactly 100,000 valid pairs. Log the discard rate per param region (high discard = that region produces undetectable faces; flag for review).
@@ -212,7 +248,7 @@ These are computed once and frozen. The model exports with these as constants (e
 
 - Optimizer: AdamW, lr=3e-4, weight decay=1e-4
 - Schedule: cosine annealing over 100 epochs, no warmup
-- Loss: MSE on normalised outputs (so all 107 params contribute equally regardless of scale)
+- Loss: MSE on normalised outputs (so all N params contribute equally regardless of scale)
 - Batch size: 512 (GPU training on RTX 5090; inference is CPU-only)
 - Early stop: if validation RMSE hasn't improved for 10 epochs, stop
 - Target: validation RMSE <0.05 in normalised space (≈ <2 param units in original scale for the ±30-range params)
@@ -220,24 +256,43 @@ These are computed once and frozen. The model exports with these as constants (e
 
 ### Runtime
 
-`mlp/infer.py` exposes `predict(landmarks: np.ndarray) -> np.ndarray`. Loads model once at startup with `torch.jit.script` for optimised CPU execution. Benchmarks inference at startup (median of 50 cold calls) — falls back to `runtime/fallback.py` direct mapping if median >16ms. The model runs on CPU; GPU is reserved for ComfyUI.
+`mlp/infer.py` exposes `predict(landmarks: np.ndarray) -> np.ndarray`. Loads model once at startup with `torch.jit.script` for optimised CPU execution. Output length matches the rig the model was trained on (`len(rig_config.param_ids)`). Benchmarks inference at startup (median of 50 cold calls) — falls back to `runtime/fallback.py` direct mapping if median >16ms. The model runs on CPU; GPU is reserved for ComfyUI.
 
 ---
 
 ## Subsystem 4: BCI Injection
 
+### Design: VTS Custom Parameters API (not model file modification)
+
+The earlier design proposed appending to the `Parameters` array in `.model3.json`. This approach has two problems:
+1. Hiyori's `.model3.json` has no `Parameters` array — parameters are in the separate `.cdi3.json`.
+2. Custom parameters visible in VTube Studio don't need to be in `.model3.json` at all — VTS's custom parameter API creates them at runtime.
+
+The correct design is: **BCI parameters are registered via the VTube Studio WebSocket API on startup**. No model files are modified. This works with any rig, including models the user didn't create (Hiyori, commissioned rigs, future HaiMeng).
+
+The `.moc3` is never touched. Deformers for BCI params are wired in Cubism Editor by the user (future work) — the pipeline only ensures the parameter slots exist and receive values.
+
 ### bci_inject.py
 
-Reads `.model3.json`, checks if BCI params already exist (idempotent), appends to `Parameters` array:
+Connects to VTube Studio WebSocket. For each BCI parameter:
 
-```json
-{"Id": "ParamJawClench",  "Min": 0, "Max": 1, "Default": 0},
-{"Id": "ParamFocusLevel", "Min": 0, "Max": 1, "Default": 0},
-{"Id": "ParamRelaxation", "Min": 0, "Max": 1, "Default": 0},
-{"Id": "ParamHeartbeat",  "Min": 0, "Max": 1, "Default": 0}
-```
+1. Calls `InjectParameterDataV2` with `createNewParameters: true` — creates the custom parameter if it doesn't exist, or reuses it if already present (idempotent).
+2. Sends an initial value of 0.0.
 
-The `.moc3` binary is **never modified** — BCI params are runtime-injected via VTube Studio's custom parameter API. Deformers for these parameters are wired in Cubism Editor separately (future work).
+Parameters registered:
+
+| ID | Description |
+|---|---|
+| `ParamJawClench` | EMG jaw clench (0–1) |
+| `ParamFocusLevel` | EEG theta/beta concentration (0–1) |
+| `ParamRelaxation` | EEG alpha relaxation (0–1) |
+| `ParamHeartbeat` | PPG pulse (0–1) |
+
+On exit: parameters are left in VTube Studio (persist across sessions). Running the tool again is a no-op (VTS deduplicates by ID).
+
+### template.py
+
+Copies the rig bundle (`.moc3`, `.model3.json`, textures) from `rig_config` paths to the output directory. Rewrites the `Textures` array in the output `.model3.json` to reference the new texture file paths. Does not register BCI params — that is `bci_inject.py`'s job.
 
 ---
 
@@ -249,7 +304,7 @@ Async loop: webcam frame → MediaPipe FaceMesh → 478 landmarks as `np.ndarray
 
 ### param_bridge.py
 
-Consumes landmark queue. Calls `mlp/infer.py` → 107 params. Sends to VTube Studio via WebSocket (`vtube-studio` Python library). On `LOW_CONFIDENCE`: holds last values. On MLP timeout: falls back to `runtime/fallback.py`.
+Consumes landmark queue. Calls `mlp/infer.py` → N params (N = rig param count). Maps param array to named VTS parameters using `rig_config.param_ids` as the index→ID lookup. Sends to VTube Studio via WebSocket (`pyvts` library). On `LOW_CONFIDENCE`: holds last values. On MLP timeout: falls back to `runtime/fallback.py`.
 
 ### bci_bridge.py
 
@@ -259,29 +314,32 @@ Receives BCI parameter values from the Muse VTuber Bridge (existing system, Zyph
 
 ## Implementation Order
 
-These subsystems have the following dependencies:
+Dependencies with Hiyori as dev rig:
 
 ```
-Subsystem 1 (ComfyUI client)   → no deps, implement first
-Subsystem 2 (Portrait pipeline) → depends on 1 (ComfyUI) + textoon submodule
-Subsystem 3 (MLP)              → depends on live2d-py + HaiMeng template access
-Subsystem 4 (BCI injection)    → depends on 2 (assemble.py output)
+Subsystem 1 (ComfyUI client)   → no deps
+Subsystem 4 (BCI injection)    → depends on Hiyori (available) + VTS running
+Subsystem 3 (MLP)              → depends on Hiyori (available) + live2d-py
 Subsystem 5 (Runtime bridge)   → depends on 3 (MLP infer.py)
+Subsystem 2 (Portrait pipeline) → depends on 1 (ComfyUI) + textoon submodule
+                                   (UV transfer stage deferred until HaiMeng EULA)
 ```
 
-Each subsystem gets its own implementation plan. The suggested order:
+Each subsystem gets its own implementation plan. Implementation order with Hiyori:
 
-1. **Subsystem 1** — ComfyUI client + smoke test (already partially designed)
-2. **Subsystem 2** — Portrait pipeline (core value, unblocks everything visible)
-3. **Subsystem 4** — BCI injection (fast win, independent once Subsystem 2 assembles)
-4. **Subsystem 3** — MLP (needs HaiMeng EULA access for training data gen)
-5. **Subsystem 5** — Runtime bridge (needs MLP + VTube Studio integration test)
+1. **Subsystem 1** — ComfyUI client (plan written: `plans/2026-04-04-subsystem1-comfyui-client.md`)
+2. **Subsystem 4** — BCI injection via VTS custom params API (fast, unblocked, validates end-to-end VTS connection)
+3. **Subsystem 3** — MLP training on Hiyori (unblocked; retrain on HaiMeng later)
+4. **Subsystem 5** — Runtime bridge (needs MLP + VTS integration)
+5. **Subsystem 2** — Portrait pipeline (ComfyUI-dependent; UV transfer deferred until HaiMeng)
 
 ---
 
 ## Open Questions / Deferred
 
-- **HaiMeng EULA access**: Subsystems 2 (assemble) and 3 (MLP training) need the `.cmo3`/`.moc3` runtime files. Until access is granted, Subsystem 2 can be tested with the public `assets/haimeng/` sprite data and a placeholder rig.
+- **HaiMeng EULA access**: EULA form submitted via university account. Until approved, all development uses Hiyori. MLP trained on Hiyori will need retraining once HaiMeng is available — the infrastructure is identical.
+- **User will create their own rig**: The long-term plan is a custom rig. The `RigConfig` abstraction is deliberately designed so that any rig with a `.moc3`, `.model3.json`, and a parameter list can be plugged in. The UV transfer stage (Subsystem 2) is the only piece that requires per-rig UV coordinate mapping work; all other subsystems are rig-agnostic once `RigConfig` is populated.
+- **Hiyori UV coordinate table**: If full end-to-end texture generation on Hiyori is wanted before HaiMeng access, someone needs to produce a `hiyori_configuration.json` with UV crop coordinates for its 2 texture sheets. Deferred — not needed for MLP/BCI/runtime development.
 - **Flux ControlNet for structure guidance**: ControlNet for Flux is immature — deferred. Use img2img (denoise 0.35–0.45) for structure preservation instead.
-- **Style detection**: Automatic style detection from input portrait (to pick Flux prompt style) is deferred. For now, default = "match input style via Kontext reference"; explicit `--style anime` override available.
-- **Male rig (shenxinhui)**: `model_configuration.json` has both haimeng and shenxinhui UV tables. Male rig support is deferred until female rig pipeline is working end-to-end.
+- **Style detection**: Automatic style detection from input portrait is deferred. Default = "match input style via Kontext reference"; explicit `--style anime` override available.
+- **Male rig (shenxinhui)**: Deferred until female rig pipeline is working end-to-end.
