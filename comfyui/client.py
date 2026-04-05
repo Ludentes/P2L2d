@@ -63,3 +63,29 @@ class ComfyUIClient:
                 f"{data.get('error') or data.get('node_errors')}"
             )
         return data["prompt_id"]
+
+    async def wait(
+        self,
+        prompt_id: str,
+        timeout: float = 120.0,
+        poll_interval: float = 0.5,
+    ) -> dict:
+        deadline = time.monotonic() + timeout
+        while True:
+            response = await self._http.get(f"/history/{prompt_id}")
+            response.raise_for_status()
+            data = response.json()
+            if prompt_id in data:
+                job = data[prompt_id]
+                status = job.get("status", {})
+                if status.get("status_str") == "error":
+                    raise ComfyUIJobError(
+                        f"Job {prompt_id!r} failed: {status}"
+                    )
+                if status.get("completed"):
+                    return job["outputs"]
+            await asyncio.sleep(poll_interval)
+            if time.monotonic() >= deadline:
+                raise ComfyUITimeoutError(
+                    f"Job {prompt_id!r} timed out after {timeout}s"
+                )

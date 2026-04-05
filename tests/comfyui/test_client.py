@@ -161,3 +161,78 @@ async def test_submit_raises_on_connection_error():
     async with ComfyUIClient() as client:
         with pytest.raises(ComfyUIConnectionError):
             await client.submit(SAMPLE_WORKFLOW)
+
+
+@respx.mock
+async def test_wait_returns_outputs_when_already_complete():
+    respx.get("http://127.0.0.1:8188/history/abc-123").mock(
+        return_value=_httpx.Response(
+            200,
+            json={
+                "abc-123": {
+                    "outputs": SAMPLE_OUTPUTS,
+                    "status": {"status_str": "success", "completed": True},
+                }
+            },
+        )
+    )
+    async with ComfyUIClient() as client:
+        result = await client.wait("abc-123")
+    assert result == SAMPLE_OUTPUTS
+
+
+@respx.mock
+async def test_wait_polls_until_job_appears():
+    call_count = 0
+
+    async def history_side_effect(request: _httpx.Request) -> _httpx.Response:
+        nonlocal call_count
+        call_count += 1
+        if call_count == 1:
+            return _httpx.Response(200, json={})  # not ready yet
+        return _httpx.Response(
+            200,
+            json={
+                "abc-456": {
+                    "outputs": SAMPLE_OUTPUTS,
+                    "status": {"status_str": "success", "completed": True},
+                }
+            },
+        )
+
+    respx.get("http://127.0.0.1:8188/history/abc-456").mock(
+        side_effect=history_side_effect
+    )
+    async with ComfyUIClient() as client:
+        result = await client.wait("abc-456", poll_interval=0.0)
+    assert result == SAMPLE_OUTPUTS
+    assert call_count == 2
+
+
+@respx.mock
+async def test_wait_raises_on_job_error():
+    respx.get("http://127.0.0.1:8188/history/abc-789").mock(
+        return_value=_httpx.Response(
+            200,
+            json={
+                "abc-789": {
+                    "outputs": {},
+                    "status": {"status_str": "error", "completed": True},
+                }
+            },
+        )
+    )
+    async with ComfyUIClient() as client:
+        with pytest.raises(ComfyUIJobError):
+            await client.wait("abc-789")
+
+
+@respx.mock
+async def test_wait_raises_on_timeout():
+    # Returns "not done" on every call — timeout is 50ms, poll every 10ms
+    respx.get("http://127.0.0.1:8188/history/abc-999").mock(
+        return_value=_httpx.Response(200, json={})
+    )
+    async with ComfyUIClient() as client:
+        with pytest.raises(ComfyUITimeoutError):
+            await client.wait("abc-999", timeout=0.05, poll_interval=0.01)
