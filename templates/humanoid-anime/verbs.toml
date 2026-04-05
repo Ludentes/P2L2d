@@ -212,3 +212,27 @@ params = { EyeLOpen = 0.2, EyeROpen = 0.2, MouthOpenY = 0.15 }
 description = "Eyes up-left, slight frown"
 sliders = { pupil_x = -10.0, pupil_y = 8.0, smile = -0.1 }
 params = { EyeBallX = -0.7, EyeBallY = 0.7, MouthForm = -0.1 }
+
+# ===========================================================================
+# Squint-smile / eye-smile (activate EyeLSmile / EyeRSmile)
+# ===========================================================================
+
+[verbs.squint_smile]
+description = "Eyes squinted with smile (cheeks push up under eyes)"
+sliders = { smile = 0.9, blink = -6.0, aaa = 20.0 }
+params = { MouthForm = 0.7, MouthOpenY = 0.2, EyeLOpen = 0.6, EyeROpen = 0.6, EyeLSmile = 0.8, EyeRSmile = 0.8, Cheek = 0.6 }
+
+[verbs.happy_squint]
+description = "Wide happy grin with squinted eyes"
+sliders = { smile = 1.2, blink = -9.0, aaa = 35.0 }
+params = { MouthForm = 1.0, MouthOpenY = 0.35, EyeLOpen = 0.4, EyeROpen = 0.4, EyeLSmile = 1.0, EyeRSmile = 1.0, Cheek = 0.8 }
+
+[verbs.soft_smile_eyes]
+description = "Gentle smile, eyes slightly crinkled"
+sliders = { smile = 0.5, blink = -3.0 }
+params = { MouthForm = 0.4, EyeLOpen = 0.8, EyeROpen = 0.8, EyeLSmile = 0.4, EyeRSmile = 0.4, Cheek = 0.3 }
+
+[verbs.laugh]
+description = "Open-mouth laugh, eyes squinted shut"
+sliders = { smile = 1.3, blink = -12.0, aaa = 70.0 }
+params = { MouthForm = 1.0, MouthOpenY = 0.7, EyeLOpen = 0.2, EyeROpen = 0.2, EyeLSmile = 1.0, EyeRSmile = 1.0, Cheek = 1.0 }

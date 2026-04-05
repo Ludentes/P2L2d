@@ -63,3 +63,28 @@ Label spread:
 - Either extend verbs for EyeLSmile or prune from schema
 - Generate the full 10k dataset
 - Phase 4: MLP retraining on 1014-d input
+
+---
+
+## Update (same day): Multi-reference + baseline-bias correction
+
+**Resolved both known limitations.**
+
+1. **4 new squint-smile verbs** (`squint_smile`, `happy_squint`,
+   `soft_smile_eyes`, `laugh`) now activate EyeLSmile/EyeRSmile.
+   At N=500, 101 samples (20%) have nonzero eye-smile values.
+
+2. **Multi-reference support** with per-source pose baseline correction:
+   - CLI accepts a directory of reference images
+   - Neutral-render pose is measured per reference; jitter is biased by
+     `-baseline` so that MediaPipe-measured labels center around 0°
+   - Sources that fail neutral detection are dropped automatically
+
+3. **N=500 run with 6 references** (after dropping 2 that failed):
+   - AngleY pitch: mean **2.3°** (was 14.6° single-ref), std 8.3, range [-23, 22]
+   - All 16 template params now have nonzero variance
+   - All 36 verbs represented (8–20 samples each, uniform random)
+   - Throughput: 23.2 samples/s, rejection rate 1.6%
+
+Pipeline is ready to scale to 10k.
+

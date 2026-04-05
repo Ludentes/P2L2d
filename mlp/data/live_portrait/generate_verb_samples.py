@@ -30,7 +30,7 @@ from pathlib import Path
 import cv2
 import numpy as np
 
-from .renderer import VerbRenderer
+from .renderer import SourceState, VerbRenderer
 from .template_schema import TemplateSchema, load_schema
 from .verb_library import VerbEntry, load_verbs
 from .verb_sliders import VerbSliders
@@ -153,15 +153,48 @@ def jitter_sliders(base: VerbSliders, rng: np.random.Generator) -> VerbSliders:
 
 # -------------------- Generation loop --------------------
 
+def measure_source_baselines(
+    renderer: VerbRenderer,
+    landmarker,
+    mp_module,
+    sources: list[SourceState],
+) -> list[tuple[float, float, float]]:
+    """Render each source with neutral sliders, extract its MediaPipe pose.
+    Returns list of (pitch_deg, yaw_deg, roll_deg) baselines.
+
+    Used to bias rotate_pitch/yaw/roll jitter so the MediaPipe-measured
+    AngleX/Y/Z labels land near 0 on average (not on the reference's
+    baseline pose).
+    """
+    from .verb_sliders import VerbSliders as _VS
+    neutral = _VS()
+    baselines: list[tuple[float, float, float]] = []
+    for i, src in enumerate(sources):
+        img = renderer.render(src, neutral)
+        feat = extract_features(landmarker, mp_module, img)
+        if feat is None:
+            # Source failed neutral detection; use zero baseline as fallback
+            print(f"  WARN: source {i} has no face at neutral — using zero baseline")
+            baselines.append((0.0, 0.0, 0.0))
+            continue
+        pose_offset = N_LANDMARKS * 2 + N_BLENDSHAPES
+        rx = float(feat[pose_offset + 0])
+        ry = float(feat[pose_offset + 1])
+        rz = float(feat[pose_offset + 2])
+        baselines.append((rx, ry, rz))
+    return baselines
+
+
 def generate(
     renderer: VerbRenderer,
     landmarker,
     mp_module,
-    source,
+    sources: list[SourceState],
     verbs: list[VerbEntry],
     schema: TemplateSchema,
     n_samples: int,
     seed: int = 0,
+    source_baselines: list[tuple[float, float, float]] | None = None,
 ) -> dict:
     rng = np.random.default_rng(seed)
     default_label = schema.default_label()
@@ -172,13 +205,23 @@ def generate(
     features = np.empty((n_samples, FEATURE_DIM), dtype=np.float32)
     labels = np.empty((n_samples, schema.dim), dtype=np.float32)
     verb_names: list[str] = []
+    source_ids = np.empty(n_samples, dtype=np.int32)
     rejected = 0
     t0 = time.time()
 
     i = 0
     while i < n_samples:
+        src_id = int(rng.integers(0, len(sources)))
+        source = sources[src_id]
         verb = verbs[int(rng.integers(0, len(verbs)))]
         sliders = jitter_sliders(verb.sliders, rng)
+        # Bias rotation jitter by the negative of this source's baseline pose,
+        # so the MediaPipe-measured labels center near 0° on average.
+        if source_baselines is not None:
+            b_rx, b_ry, b_rz = source_baselines[src_id]
+            sliders.rotate_pitch -= b_rx  # rx/pitch
+            sliders.rotate_yaw   -= b_ry  # ry/yaw
+            sliders.rotate_roll  -= b_rz  # rz/roll
         img = renderer.render(source, sliders)
         feat = extract_features(landmarker, mp_module, img)
         if feat is None:
@@ -196,6 +239,7 @@ def generate(
         features[i] = feat
         labels[i] = label
         verb_names.append(verb.name)
+        source_ids[i] = src_id
         i += 1
 
         if (i % 50) == 0:
@@ -210,10 +254,23 @@ def generate(
         "features": features,
         "labels": labels,
         "verb_names": np.array(verb_names),
+        "source_ids": source_ids,
         "param_names": np.array(schema.names),
         "rejected": rejected,
         "seconds": dt,
     }
+
+
+_IMG_EXTS = {".jpg", ".jpeg", ".png", ".bmp", ".webp"}
+
+
+def _expand_references(path: Path) -> list[Path]:
+    """Return all image paths. Accepts a file or a directory."""
+    if path.is_dir():
+        return sorted(p for p in path.iterdir() if p.suffix.lower() in _IMG_EXTS)
+    if path.is_file():
+        return [path]
+    return []
 
 
 def main() -> int:
@@ -236,22 +293,64 @@ def main() -> int:
     verbs = load_verbs(args.verbs)
     print(f"  {len(verbs)} verbs, {schema.dim} template params, feature_dim={FEATURE_DIM}")
 
-    img_bgr = cv2.imread(str(args.reference))
-    if img_bgr is None:
-        print(f"ERROR: cannot read {args.reference}", file=sys.stderr)
+    # Reference can be a single file or a directory of images
+    ref_paths = _expand_references(args.reference)
+    if not ref_paths:
+        print(f"ERROR: no reference images at {args.reference}", file=sys.stderr)
         return 2
-    img_rgb = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2RGB)
+    print(f"References: {len(ref_paths)} image(s)")
 
     print("Loading LivePortrait...")
     renderer = VerbRenderer.from_default_checkpoints()
-    source = renderer.precompute_source(img_rgb)
+
+    sources: list = []
+    source_paths: list[Path] = []
+    for p in ref_paths:
+        img_bgr = cv2.imread(str(p))
+        if img_bgr is None:
+            print(f"  WARN: skipping unreadable {p}", file=sys.stderr)
+            continue
+        img_rgb = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2RGB)
+        try:
+            sources.append(renderer.precompute_source(img_rgb))
+            source_paths.append(p)
+        except RuntimeError as e:
+            print(f"  WARN: skipping {p.name} ({e})", file=sys.stderr)
+    if not sources:
+        print("ERROR: no usable reference images", file=sys.stderr)
+        return 2
+    print(f"  precomputed {len(sources)} source(s)")
 
     print("Loading MediaPipe FaceLandmarker...")
     import mediapipe as mp_module
     landmarker = build_landmarker()
 
+    print("Measuring per-source baseline poses...")
+    baselines = measure_source_baselines(renderer, landmarker, mp_module, sources)
+    # Drop sources whose neutral render did not produce a face (baseline==(0,0,0) fallback)
+    kept_sources: list = []
+    kept_paths: list[Path] = []
+    kept_baselines: list[tuple[float, float, float]] = []
+    for src, path, b in zip(sources, source_paths, baselines):
+        if b == (0.0, 0.0, 0.0):
+            print(f"  DROP {path.name}: neutral face detection failed")
+            continue
+        kept_sources.append(src)
+        kept_paths.append(path)
+        kept_baselines.append(b)
+        print(f"  KEEP {path.name:12s} baseline pitch={b[0]:+6.2f}° yaw={b[1]:+6.2f}° roll={b[2]:+6.2f}°")
+    if not kept_sources:
+        print("ERROR: no usable sources after baseline check", file=sys.stderr)
+        return 2
+    sources = kept_sources
+    source_paths = kept_paths
+    baselines = kept_baselines
+
     print("\n--- Generating ---")
-    out = generate(renderer, landmarker, mp_module, source, verbs, schema, args.n, seed=args.seed)
+    out = generate(
+        renderer, landmarker, mp_module, sources, verbs, schema, args.n,
+        seed=args.seed, source_baselines=baselines,
+    )
 
     args.out.parent.mkdir(parents=True, exist_ok=True)
     np.savez_compressed(
@@ -259,7 +358,9 @@ def main() -> int:
         features=out["features"],
         labels=out["labels"],
         verb_names=out["verb_names"],
+        source_ids=out["source_ids"],
         param_names=out["param_names"],
+        source_paths=np.array([str(p) for p in source_paths]),
     )
     print(f"\nWrote {args.out}")
     print(f"  features={out['features'].shape}, labels={out['labels'].shape}")
