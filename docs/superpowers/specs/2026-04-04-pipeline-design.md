@@ -35,7 +35,7 @@ Training: 100,000 synthetic pairs rendered with PyGame + Cubism SDK. Code **unre
 
 ## Approach: Hybrid (Textoon as submodule, new layers around it)
 
-Textoon's UV transfer logic and coordinate table are correct and production-tested. No reason to rewrite them. Everything else (generation, MLP, BCI, runtime bridge) is new.
+Textoon's UV transfer logic and coordinate table are correct and production-tested. No reason to rewrite them. Everything else (generation, MLP, runtime bridge) is new. BCI is handled by the existing Muse VTuber Bridge.
 
 Textoon is cloned as a git submodule (`textoon/`). The new pipeline imports from it.
 
@@ -120,7 +120,7 @@ portrait-to-live2d/
 
 **Already designed** (`docs/superpowers/specs/2026-04-04-project-init-design.md`).
 
-`ComfyUIClient` wraps six endpoints: `health`, `list_models`, `upload_image`, `submit`, `wait` (WebSocket completion), `download`. Used exclusively by `pipeline/stages/generate.py`.
+`ComfyUIClient` wraps six endpoints: `health`, `list_models`, `upload_image`, `submit`, `wait` (HTTP polling of `/history/{prompt_id}`), `download`. Used exclusively by `pipeline/stages/generate.py`.
 
 ---
 
@@ -160,7 +160,7 @@ Input: generated component images + component masks + `RigConfig`. Output: assem
 
 Input: texture sheets + `RigConfig`. Output: output directory with `.moc3` (copied), `textures/` (placed), `.model3.json` (texture refs updated).
 
-Copies the rig bundle from `rig_config.moc3_path` / `rig_config.model3_json_path`, rewrites the `Textures` array in `.model3.json` to point at the new texture files. Does not call `bci_inject.py` — BCI params are registered at runtime via the VTS API, not baked into the model file.
+Copies the rig bundle from `rig_config.moc3_path` / `rig_config.model3_json_path`, rewrites the `Textures` array in `.model3.json` to point at the new texture files. BCI params (`MuseClench` etc.) are created at runtime by the Muse VTuber Bridge — no model file modification needed.
 
 **Error handling:** any stage failure writes a `pipeline_error.json` to the output dir with the stage name, error message, and any partial files — then cleans up partial texture files. No silent failures.
 
@@ -178,8 +178,8 @@ InputNorm(956)                        ← learned per-coordinate mean/std, baked
 Linear(956, 512) → LayerNorm(512) → GELU
 Linear(512, 256) → LayerNorm(256) → GELU + skip(Linear(512,256))   ← residual
 Linear(256, 128) → LayerNorm(128) → GELU
-Linear(128, 107)
-OutputDenorm(107)                     ← per-param mean/std, baked in
+Linear(128, N)                        ← N = len(rig_config.param_ids): 74 Hiyori / 107 HaiMeng
+OutputDenorm(N)                       ← per-param mean/std, baked in
 ```
 
 - **LayerNorm over BatchNorm**: no running-statistics divergence at inference; more stable for variable-length input sequences.
@@ -205,7 +205,7 @@ The single output head handles all params jointly. A multi-head design is a futu
 
 Pure uniform random sampling across the ±30 parameter space produces a distribution of faces that are heavily weighted toward bizarre edge cases (all params at extremes simultaneously). We use **stratified sampling**:
 
-1. **Base poses** (20%): 8 canonical expressions (neutral, smile, surprised, sad, blink-L, blink-R, mouth-open, head-left) × 12,500 = 100,000 samples, each with Gaussian perturbation σ=3 per param around the base.
+1. **Base poses** (20%): 8 canonical expressions (neutral, smile, surprised, sad, blink-L, blink-R, mouth-open, head-left) × 2,500 = 20,000 samples, each with Gaussian perturbation σ=3 per param around the base.
 2. **Natural random** (50%): all params sampled from `Normal(0, 8)` clipped to valid range — centred on neutral, tail-heavy enough to reach extremes.
 3. **Extreme exploration** (20%): uniform random over full range to ensure the MLP learns boundary behaviour.
 4. **Symmetric pairs** (10%): for each bilateral param group, sample one side and mirror to the other — enforces symmetric training pressure.
@@ -334,3 +334,4 @@ Each subsystem gets its own implementation plan. Implementation order with Hiyor
 - **Flux ControlNet for structure guidance**: ControlNet for Flux is immature — deferred. Use img2img (denoise 0.35–0.45) for structure preservation instead.
 - **Style detection**: Automatic style detection from input portrait is deferred. Default = "match input style via Kontext reference"; explicit `--style anime` override available.
 - **Male rig (shenxinhui)**: Deferred until female rig pipeline is working end-to-end.
+- **Garment variants** (`ParamHairToggle`, `ParamSkirtToggle`, `ParamTrouserToggle`): HaiMeng-specific toggle parameters in the reference scenarios. Not designed or implemented — deferred until HaiMeng EULA access and the user's custom rig is available. The MLP and runtime bridge are unaffected; garment toggles are driven by hotkeys in VTube Studio, not the MLP output.
