@@ -11,4 +11,5 @@ mlp/data/live_portrait/smoke_outputs/
 mlp/data/live_portrait/datasets/
 mlp/checkpoints/
 assets/references/
+assets/generated-faces/
 mlp/data/face_landmarker_v2_with_blendshapes.task

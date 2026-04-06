@@ -8,9 +8,9 @@
 # Template parameter conventions (humanoid-anime standard):
 #   EyeLOpen, EyeROpen       ∈ [0, 1]   — 0 closed, 1 open
 #   EyeBallX                 ∈ [-1, 1]  — -1 left, +1 right
-#   EyeBallY                 ∈ [-1, 1]  — -1 down, +1 up
+#   (EyeBallY dropped v2 — LivePortrait pupil_y produces negligible shift)
 #   BrowLY, BrowRY           ∈ [-1, 1]  — -1 down/furrow, +1 up/raise
-#   BrowLAngle, BrowRAngle   ∈ [-1, 1]  — angry/sad tilt
+#   (BrowLAngle, BrowRAngle dropped v2 — LivePortrait can't control brow tilt)
 #   MouthOpenY               ∈ [0, 1]
 #   MouthForm                ∈ [-1, 1]  — -1 frown, +1 smile
 #   Cheek                    ∈ [0, 1]
@@ -80,22 +80,22 @@ params = { EyeBallX = 0.8 }
 [verbs.look_up]
 description = "Pupils shifted up"
 sliders = { pupil_y = 10.0 }
-params = { EyeBallY = 0.8 }
+params = {}
 
 [verbs.look_down]
 description = "Pupils shifted down"
 sliders = { pupil_y = -10.0 }
-params = { EyeBallY = -0.8 }
+params = {}
 
 [verbs.look_upleft]
 description = "Diagonal gaze, up+left"
 sliders = { pupil_x = -10.0, pupil_y = 8.0 }
-params = { EyeBallX = -0.7, EyeBallY = 0.7 }
+params = { EyeBallX = -0.7 }
 
 [verbs.look_upright]
 description = "Diagonal gaze, up+right"
 sliders = { pupil_x = 10.0, pupil_y = 8.0 }
-params = { EyeBallX = 0.7, EyeBallY = 0.7 }
+params = { EyeBallX = 0.7 }
 
 # ===========================================================================
 # Brows
@@ -114,7 +114,7 @@ params = { BrowLY = 0.4, BrowRY = 0.4 }
 [verbs.brow_furrow]
 description = "Brows furrowed (concern, anger)"
 sliders = { eyebrow = -8.0 }
-params = { BrowLY = -0.7, BrowRY = -0.7, BrowLAngle = 0.5, BrowRAngle = 0.5 }
+params = { BrowLY = -0.7, BrowRY = -0.7 }
 
 # ===========================================================================
 # Mouth — open
@@ -201,7 +201,7 @@ params = { MouthForm = -0.6, BrowLY = -0.5, BrowRY = -0.5, EyeLOpen = 0.6, EyeRO
 [verbs.angry]
 description = "Furrowed brows, frown"
 sliders = { eyebrow = -9.0, smile = -0.2, eee = 5.0 }
-params = { BrowLY = -0.9, BrowRY = -0.9, BrowLAngle = 0.8, BrowRAngle = 0.8, MouthForm = -0.4 }
+params = { BrowLY = -0.9, BrowRY = -0.9, MouthForm = -0.4 }
 
 [verbs.sleepy]
 description = "Eyes nearly closed, mouth slightly open"
@@ -211,7 +211,7 @@ params = { EyeLOpen = 0.2, EyeROpen = 0.2, MouthOpenY = 0.15 }
 [verbs.thinking]
 description = "Eyes up-left, slight frown"
 sliders = { pupil_x = -10.0, pupil_y = 8.0, smile = -0.1 }
-params = { EyeBallX = -0.7, EyeBallY = 0.7, MouthForm = -0.1 }
+params = { EyeBallX = -0.7, MouthForm = -0.1 }
 
 # ===========================================================================
 # Squint-smile / eye-smile (activate EyeLSmile / EyeRSmile)
@@ -236,3 +236,105 @@ params = { MouthForm = 0.4, EyeLOpen = 0.8, EyeROpen = 0.8, EyeLSmile = 0.4, Eye
 description = "Open-mouth laugh, eyes squinted shut"
 sliders = { smile = 1.3, blink = -12.0, aaa = 70.0 }
 params = { MouthForm = 1.0, MouthOpenY = 0.7, EyeLOpen = 0.2, EyeROpen = 0.2, EyeLSmile = 1.0, EyeRSmile = 1.0, Cheek = 1.0 }
+
+# ===========================================================================
+# Brow angle / tilt — BrowAngle params dropped (R²=0.04), verbs kept for BrowY
+# ===========================================================================
+
+[verbs.brow_angry_light]
+description = "Slight angry brow tilt"
+sliders = { eyebrow = -4.0 }
+params = { BrowLY = -0.3, BrowRY = -0.3 }
+
+[verbs.brow_angry_strong]
+description = "Strong angry brow furrow"
+sliders = { eyebrow = -10.0, smile = -0.1 }
+params = { BrowLY = -1.0, BrowRY = -1.0 }
+
+[verbs.brow_sad]
+description = "Sad brow tilt (inner up, outer down)"
+sliders = { eyebrow = 5.0, smile = -0.2 }
+params = { BrowLY = 0.3, BrowRY = 0.3, MouthForm = -0.3 }
+
+[verbs.brow_worried]
+description = "Worried brow — raised inner corners"
+sliders = { eyebrow = 8.0, smile = -0.15, blink = -2.0 }
+params = { BrowLY = 0.5, BrowRY = 0.5, MouthForm = -0.2 }
+
+[verbs.brow_skeptical]
+description = "One brow up, one level — skeptical"
+sliders = { eyebrow = 4.0, wink = 5.0 }
+params = { BrowLY = 0.3, BrowRY = -0.1 }
+
+[verbs.annoyed]
+description = "Furrowed brows, eyes narrowed, slight frown"
+sliders = { eyebrow = -7.0, blink = -5.0, smile = -0.15 }
+params = { BrowLY = -0.6, BrowRY = -0.6, EyeLOpen = 0.5, EyeROpen = 0.5, MouthForm = -0.3 }
+
+[verbs.determined]
+description = "Brows down and together, focused eyes"
+sliders = { eyebrow = -6.0, blink = 2.0, eee = 3.0 }
+params = { BrowLY = -0.5, BrowRY = -0.5, EyeLOpen = 1.0, EyeROpen = 1.0 }
+
+# ===========================================================================
+# Vertical gaze — EyeBallY param dropped (R²=0.13), verbs kept for head pose diversity
+# ===========================================================================
+
+[verbs.look_far_up]
+description = "Strong upward gaze"
+sliders = { pupil_y = 14.0 }
+params = {}
+
+[verbs.look_far_down]
+description = "Strong downward gaze"
+sliders = { pupil_y = -14.0 }
+params = {}
+
+[verbs.look_down_slight]
+description = "Slight downward gaze"
+sliders = { pupil_y = -5.0 }
+params = {}
+
+[verbs.glance_up]
+description = "Quick upward glance with slight brow raise"
+sliders = { pupil_y = 8.0, eyebrow = 4.0 }
+params = { BrowLY = 0.3, BrowRY = 0.3 }
+
+[verbs.glance_down_left]
+description = "Diagonal downward gaze, down+left"
+sliders = { pupil_x = -8.0, pupil_y = -8.0 }
+params = { EyeBallX = -0.55 }
+
+[verbs.glance_down_right]
+description = "Diagonal downward gaze, down+right"
+sliders = { pupil_x = 8.0, pupil_y = -8.0 }
+params = { EyeBallX = 0.55 }
+
+[verbs.reading]
+description = "Eyes angled down, relaxed"
+sliders = { pupil_y = -10.0, blink = -2.0 }
+params = { EyeLOpen = 0.8, EyeROpen = 0.8 }
+
+# ===========================================================================
+# Brow height — more BrowLY/BrowRY intermediate values (was R²=0.31)
+# ===========================================================================
+
+[verbs.brow_raise_high]
+description = "Brows fully raised"
+sliders = { eyebrow = 15.0 }
+params = { BrowLY = 1.0, BrowRY = 1.0 }
+
+[verbs.brow_lower]
+description = "Brows lowered gently"
+sliders = { eyebrow = -3.0 }
+params = { BrowLY = -0.3, BrowRY = -0.3 }
+
+[verbs.concern]
+description = "Brows up with slightly open mouth (worried expression)"
+sliders = { eyebrow = 10.0, aaa = 20.0, smile = -0.1 }
+params = { BrowLY = 0.7, BrowRY = 0.7, MouthOpenY = 0.2, MouthForm = -0.1 }
+
+[verbs.confused]
+description = "Asymmetric brows, mouth slightly open"
+sliders = { eyebrow = 3.0, wink = 8.0, aaa = 15.0 }
+params = { BrowLY = 0.2, BrowRY = -0.2, MouthOpenY = 0.15 }

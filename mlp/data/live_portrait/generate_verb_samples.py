@@ -44,7 +44,8 @@ _DEFAULT_OUT = _REPO_ROOT / "mlp" / "data" / "live_portrait" / "datasets" / "dev
 N_LANDMARKS = 478
 N_BLENDSHAPES = 52
 POSE_DIM = 6  # rx, ry, rz (deg), tx, ty, tz
-FEATURE_DIM = N_LANDMARKS * 2 + N_BLENDSHAPES + POSE_DIM  # 1014
+feature_dim_FULL = N_LANDMARKS * 2 + N_BLENDSHAPES + POSE_DIM  # 1014
+feature_dim_BS = N_BLENDSHAPES + POSE_DIM  # 58 (blendshapes + pose only)
 
 
 # -------------------- MediaPipe --------------------
@@ -70,25 +71,23 @@ def build_landmarker():
     return vision.FaceLandmarker.create_from_options(options)
 
 
-def extract_features(landmarker, mp_module, img_rgb: np.ndarray) -> np.ndarray | None:
-    """Return 1014-d feature vector, or None if no face detected."""
+def extract_features(
+    landmarker, mp_module, img_rgb: np.ndarray, *, bs_only: bool = False,
+) -> np.ndarray | None:
+    """Return feature vector, or None if no face detected.
+
+    If bs_only=True, returns 58-d (blendshapes + pose).
+    Otherwise returns 1014-d (landmarks + blendshapes + pose).
+    """
     mp_image = mp_module.Image(image_format=mp_module.ImageFormat.SRGB, data=img_rgb)
     result = landmarker.detect(mp_image)
     if not result.face_landmarks or not result.face_blendshapes:
         return None
 
-    # 478 landmarks × (x, y) normalized ∈ [0, 1]
-    lm = result.face_landmarks[0]
-    lm_xy = np.empty(N_LANDMARKS * 2, dtype=np.float32)
-    for i, p in enumerate(lm):
-        lm_xy[2 * i] = p.x
-        lm_xy[2 * i + 1] = p.y
-
     # 52 ARKit blendshapes
     bs = result.face_blendshapes[0]
     bs_arr = np.array([b.score for b in bs], dtype=np.float32)
     if bs_arr.size != N_BLENDSHAPES:
-        # In rare edge cases MP may return a different count — pad/truncate
         out = np.zeros(N_BLENDSHAPES, dtype=np.float32)
         out[:min(len(bs_arr), N_BLENDSHAPES)] = bs_arr[:N_BLENDSHAPES]
         bs_arr = out
@@ -96,6 +95,16 @@ def extract_features(landmarker, mp_module, img_rgb: np.ndarray) -> np.ndarray |
     # 4x4 facial transformation matrix → rotation (deg) + translation
     mat = np.array(result.facial_transformation_matrixes[0], dtype=np.float32)
     pose = pose_from_matrix(mat)  # (6,)
+
+    if bs_only:
+        return np.concatenate([bs_arr, pose]).astype(np.float32)
+
+    # 478 landmarks × (x, y) normalized ∈ [0, 1]
+    lm = result.face_landmarks[0]
+    lm_xy = np.empty(N_LANDMARKS * 2, dtype=np.float32)
+    for i, p in enumerate(lm):
+        lm_xy[2 * i] = p.x
+        lm_xy[2 * i + 1] = p.y
 
     return np.concatenate([lm_xy, bs_arr, pose]).astype(np.float32)
 
@@ -177,10 +186,10 @@ def measure_source_baselines(
             print(f"  WARN: source {i} has no face at neutral — using zero baseline")
             baselines.append((0.0, 0.0, 0.0))
             continue
-        pose_offset = N_LANDMARKS * 2 + N_BLENDSHAPES
-        rx = float(feat[pose_offset + 0])
-        ry = float(feat[pose_offset + 1])
-        rz = float(feat[pose_offset + 2])
+        # Pose is always the last 6 dims regardless of feature mode
+        rx = float(feat[-6])
+        ry = float(feat[-5])
+        rz = float(feat[-4])
         baselines.append((rx, ry, rz))
     return baselines
 
@@ -195,6 +204,7 @@ def generate(
     n_samples: int,
     seed: int = 0,
     source_baselines: list[tuple[float, float, float]] | None = None,
+    bs_only: bool = False,
 ) -> dict:
     rng = np.random.default_rng(seed)
     default_label = schema.default_label()
@@ -202,7 +212,8 @@ def generate(
     idx_angle_y = schema.index_of("AngleY")
     idx_angle_z = schema.index_of("AngleZ")
 
-    features = np.empty((n_samples, FEATURE_DIM), dtype=np.float32)
+    fdim = feature_dim_BS if bs_only else feature_dim_FULL
+    features = np.empty((n_samples, fdim), dtype=np.float32)
     labels = np.empty((n_samples, schema.dim), dtype=np.float32)
     verb_names: list[str] = []
     source_ids = np.empty(n_samples, dtype=np.int32)
@@ -223,15 +234,15 @@ def generate(
             sliders.rotate_yaw   -= b_ry  # ry/yaw
             sliders.rotate_roll  -= b_rz  # rz/roll
         img = renderer.render(source, sliders)
-        feat = extract_features(landmarker, mp_module, img)
+        feat = extract_features(landmarker, mp_module, img, bs_only=bs_only)
         if feat is None:
             rejected += 1
             continue
 
         # Build label: defaults + verb overrides + pose from MediaPipe
         label = schema.apply_verb_params(default_label, verb.params)
-        # feat's pose is at indices [N_LANDMARKS*2 + N_BLENDSHAPES : ...]
-        pose_offset = N_LANDMARKS * 2 + N_BLENDSHAPES
+        # Pose lives at the end of the feature vector (last 6 dims)
+        pose_offset = N_BLENDSHAPES if bs_only else (N_LANDMARKS * 2 + N_BLENDSHAPES)
         label[idx_angle_x] = feat[pose_offset + 1]  # ry (yaw) → horizontal head rotation
         label[idx_angle_y] = feat[pose_offset + 0]  # rx (pitch) → vertical head rotation
         label[idx_angle_z] = feat[pose_offset + 2]  # rz (roll) → head tilt
@@ -281,17 +292,21 @@ def main() -> int:
     ap.add_argument("--out", type=Path, default=_DEFAULT_OUT)
     ap.add_argument("--n", type=int, default=200)
     ap.add_argument("--seed", type=int, default=0)
+    ap.add_argument("--bs-only", action="store_true",
+                    help="Use blendshapes+pose (58-d) instead of full landmarks (1014-d)")
     args = ap.parse_args()
 
+    fdim = feature_dim_BS if args.bs_only else feature_dim_FULL
     print(f"Schema:    {args.schema}")
     print(f"Verbs:     {args.verbs}")
     print(f"Reference: {args.reference}")
     print(f"Out:       {args.out}")
     print(f"N samples: {args.n}")
+    print(f"Features:  {'blendshapes+pose (58-d)' if args.bs_only else 'full (1014-d)'}")
 
     schema = load_schema(args.schema)
     verbs = load_verbs(args.verbs)
-    print(f"  {len(verbs)} verbs, {schema.dim} template params, feature_dim={FEATURE_DIM}")
+    print(f"  {len(verbs)} verbs, {schema.dim} template params, feature_dim={fdim}")
 
     # Reference can be a single file or a directory of images
     ref_paths = _expand_references(args.reference)
@@ -349,7 +364,7 @@ def main() -> int:
     print("\n--- Generating ---")
     out = generate(
         renderer, landmarker, mp_module, sources, verbs, schema, args.n,
-        seed=args.seed, source_baselines=baselines,
+        seed=args.seed, source_baselines=baselines, bs_only=args.bs_only,
     )
 
     args.out.parent.mkdir(parents=True, exist_ok=True)

@@ -1,4 +1,4 @@
-# humanoid-anime template parameter schema
+# humanoid-anime template parameter schema (v2)
 #
 # Canonical ordered parameter list. The MLP predicts these in this order.
 # Each param has:
@@ -7,6 +7,18 @@
 #   curve  — post-MLP response curve applied at inference time
 #
 # Ordering is STABLE — do not reorder without retraining models.
+#
+# Dropped from v1 (unsolvable via LivePortrait + MediaPipe):
+#   BrowLAngle, BrowRAngle — LivePortrait has no brow tilt control (max r=0.12)
+#   EyeBallY              — pupil_y produces negligible vertical shift (max r=0.18)
+#
+# These params are NOT predicted by the MLP. At runtime they should be
+# driven by alternative sources:
+#   - BCI signals (Muse VTuber Bridge custom params)
+#   - Dedicated detectors (e.g. gaze-tracking model for EyeBallY)
+#   - Manual sliders in the VTuber app
+#   - Rule-based coupling (e.g. EyeBallY tracks head pitch)
+# Can be re-added to MLP if a better rendering source provides ground truth.
 
 # ---- Head pose (angles in degrees; labels come from MediaPipe, not verbs) ----
 [[params]]
@@ -47,12 +59,6 @@ default = 0.0
 curve = "linear"
 
 [[params]]
-name = "EyeBallY"
-range = [-1.0, 1.0]
-default = 0.0
-curve = "linear"
-
-[[params]]
 name = "EyeLSmile"
 range = [0.0, 1.0]
 default = 0.0
@@ -73,18 +79,6 @@ curve = "linear"
 
 [[params]]
 name = "BrowRY"
-range = [-1.0, 1.0]
-default = 0.0
-curve = "linear"
-
-[[params]]
-name = "BrowLAngle"
-range = [-1.0, 1.0]
-default = 0.0
-curve = "linear"
-
-[[params]]
-name = "BrowRAngle"
 range = [-1.0, 1.0]
 default = 0.0
 curve = "linear"

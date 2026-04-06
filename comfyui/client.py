@@ -61,7 +61,7 @@ class ComfyUIClient:
         except httpx.ConnectError as exc:
             raise ComfyUIConnectionError(str(exc)) from exc
         data = response.json()
-        if "error" in data or "node_errors" in data:
+        if data.get("error") or data.get("node_errors"):
             raise ComfyUIJobError(
                 f"Workflow validation failed: "
                 f"{data.get('error') or data.get('node_errors')}"
