@@ -1,8 +1,8 @@
 # Texture Pipeline — Phase 1 Design
 
-**Date:** 2026-04-06 (revised after texture inspection)
+**Date:** 2026-04-06 (revised after texture inspection + CartoonAlive analysis)
 **Scope:** Atlas coordinate config + strategy-aware texture swap + headless validation
-**Phase:** 1 of 2 (Phase 2 = AI generation from portrait, separate brainstorm)
+**Phase:** 1 of 3 — see `2026-04-06-texture-pipeline-phase2-design.md` for portrait extraction
 
 ---
 
@@ -49,18 +49,25 @@ A semantic region is a **group of drawables** that share a semantic role. The at
 stores the UV bounding box of each drawable individually. Swapping operates per-drawable
 using the right strategy for the region type.
 
-### Swap Strategies
+### Swap Strategies — Complete Registry
 
-| Strategy | Regions | How |
-|---|---|---|
-| `paste` | face_skin, left_cheek, right_cheek | Scale replacement to each drawable's bbox; alpha-composite |
-| `hue_shift` | hair_front, hair_back, hair_side_left, hair_side_right | HSV hue rotation on existing pixels; preserves highlights and shading |
-| `paste` (default for mouth/eyes) | left_eye, right_eye, left_eyebrow, right_eyebrow, mouth | Per-drawable scaled paste |
+| Strategy | Phase | Regions | How |
+|---|---|---|---|
+| `paste` | 1 | clothing, cheeks | Scale replacement to each drawable's bbox; alpha-composite. Caller provides pre-cropped image. |
+| `hue_shift` | 1 | all hair regions | HSV hue rotation on existing pixels; preserves highlights and shading. Caller provides target color swatch. |
+| `face_paste` | 2 | face_skin | Affine-warp portrait to UV region; paste; inpaint the feature mask areas (eye sockets, brow ridges, lip line) with surrounding skin. Prevents feature ghost-through during animation. |
+| `landmark_paste` | 2 | left_eye, right_eye, left_eyebrow, right_eyebrow, mouth | Landmark-guided crop from portrait; paste per-drawable. Caller provides portrait + detected landmarks. |
+| `cloth_paste` | 2 | clothing, body | Paste a generated outfit/skin image into drawables; feather seam edges between adjacent drawables. Includes inpainting at seam boundaries. |
 
-`hue_shift` is the key upgrade: instead of replacing hair pixels, we rotate their hue in
-HSV space. This preserves the existing shading, gradient, and highlight structure —
-only the color changes. The target hue is extracted from the portrait (Phase 2) or
-supplied directly.
+**Phase 1 implements:** `paste`, `hue_shift`
+
+**Phase 2 implements:** `face_paste`, `landmark_paste`, `cloth_paste`
+
+The `atlas_schema.toml` stores the target strategy per region. Phase 1's `swap_regions()`
+raises `NotImplementedError` for Phase 2 strategies, allowing gradual rollout.
+
+`hue_shift` is the key Phase 1 upgrade: instead of replacing hair pixels, we rotate their
+hue in HSV space. This preserves the existing shading, gradient, and highlight structure.
 
 ---
 
@@ -458,27 +465,35 @@ Visual confirmation / automated pixel check
 
 ---
 
-## Future Integration Point (Phase 2)
+## Integration Point: Phase 1 → Phase 2
 
-Phase 2 will generate replacement images from a portrait via segmentation + style transfer.
-The output of Phase 2 is exactly the `replacements: dict[str, Image.Image]` dict that
-Phase 1's `swap_regions()` already accepts. Phase 2 plugs in above Phase 1 with no
-changes to Phase 1 code.
+Phase 2 (see `2026-04-06-texture-pipeline-phase2-design.md`) sits above Phase 1.
+Its output is the `replacements: dict[str, Image.Image]` dict that `swap_regions()` accepts,
+plus the new strategy implementations added to `texture_swap.py`.
 
-For `hue_shift` regions (hair), Phase 2 provides a single color swatch extracted from
-the portrait's hair. For `paste` regions, Phase 2 provides a full replacement image.
+| Region | Phase 2 provides | Phase 1 strategy used |
+|---|---|---|
+| `face_skin` | warped+inpainted portrait crop | `face_paste` (Phase 2) |
+| `left_eye`, `right_eye`, brows, mouth | landmark-guided crops | `landmark_paste` (Phase 2) |
+| `hair_*` | average hue from portrait hair | `hue_shift` (Phase 1) ✓ |
+| `clothing` | generated outfit image | `cloth_paste` (Phase 2) |
+| `body` | warped skin-tone image | `face_paste` or `paste` (Phase 2) |
+
+Phase 1 does not depend on Phase 2. Phase 2 requires Phase 1's atlas config to be in place.
 
 ---
 
 ## What Phase 1 Does NOT Include
 
-- AI/diffusion generation
-- Portrait → anime style transfer
-- Segmentation of input portrait
+- Portrait ingestion of any kind (landmark detection, affine warp, segmentation)
+- `face_paste`, `landmark_paste`, `cloth_paste` strategy implementations
+- Mask generation or inpainting
+- AI/diffusion generation for clothing
 - HaiMeng support (EULA-pending)
-- Body/clothing texture regions (texture_01 scope, can be added to atlas_schema later)
-- UV polygon warp (non-rectangular paste). Current paste uses each drawable's bbox;
-  true UV warp would use the vertex polygon. Phase 2 enhancement.
+- UV polygon warp (non-rectangular paste). Phase 1 paste uses drawable bbox;
+  true polygon warp uses vertex mesh. Phase 2 enhancement.
+
+These are specified in `2026-04-06-texture-pipeline-phase2-design.md`.
 
 ---
 
