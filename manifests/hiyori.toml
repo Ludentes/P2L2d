@@ -1,0 +1,23 @@
+# Manifest for Hiyori VTS rig → humanoid-anime template.
+#
+# Maps Hiyori's Live2D param IDs (left side) to the template's
+# canonical param names (right side). At runtime, MLP outputs
+# template params which get remapped to these rig-specific names
+# before sending to VTube Studio.
+
+template = "humanoid-anime"
+
+[param_map]
+ParamAngleX = "AngleX"
+ParamAngleY = "AngleY"
+ParamAngleZ = "AngleZ"
+ParamEyeLOpen = "EyeLOpen"
+ParamEyeROpen = "EyeROpen"
+ParamEyeBallX = "EyeBallX"
+ParamEyeLSmile = "EyeLSmile"
+ParamEyeRSmile = "EyeRSmile"
+ParamBrowLY = "BrowLY"
+ParamBrowRY = "BrowRY"
+ParamMouthOpenY = "MouthOpenY"
+ParamMouthForm = "MouthForm"
+ParamCheek = "Cheek"
