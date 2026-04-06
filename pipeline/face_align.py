@@ -9,7 +9,7 @@ import json
 from pathlib import Path
 
 import numpy as np
-from PIL import Image, ImageFilter
+from PIL import Image, ImageDraw, ImageFilter
 
 from pipeline.atlas_config import AtlasConfig
 from pipeline.exceptions import MediaPipeLandmarkError
@@ -179,6 +179,7 @@ def build_face_inpaint_mask(
     face_y = int(face_region.y * scale_y)
 
     mask = Image.new("L", (face_w, face_h), 0)
+    draw = ImageDraw.Draw(mask)
 
     for feat_name in feature_regions:
         if not atlas_cfg.has(feat_name):
@@ -191,9 +192,6 @@ def build_face_inpaint_mask(
         fw = max(1, int(feat.w * scale_x))
         fh = max(1, int(feat.h * scale_y))
 
-        # Draw white rectangle for this feature
-        from PIL import ImageDraw
-        draw = ImageDraw.Draw(mask)
         draw.rectangle([fx, fy, fx + fw - 1, fy + fh - 1], fill=255)
 
     if dilation_px > 0:

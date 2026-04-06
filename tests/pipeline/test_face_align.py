@@ -2,7 +2,6 @@ import json
 from pathlib import Path
 
 import numpy as np
-import pytest
 from PIL import Image
 
 from pipeline.atlas_config import AtlasConfig, AtlasRegion
