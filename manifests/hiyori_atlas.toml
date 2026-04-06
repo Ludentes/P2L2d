@@ -1,141 +1,835 @@
-# Hiyori texture atlas region coordinates.
-# Measured by visual analysis of texture_00.png / texture_01.png (2048×2048).
-# Coordinates are tight bounding boxes of all sub-drawables that form each region.
-# Left/right refer to the character's perspective (mirror of viewer).
+# Hiyori texture atlas — per-drawable UV bboxes.
+# Generated from ctypes extraction (csmGetDrawableVertexUvs) on 2026-04-06.
+# Drawable IDs and UV coords are exact. Semantic grouping applied via draw-order analysis.
+# Left/right assignments are based on atlas x-position; verify against a render if needed.
 #
-# NOTE: mouth coords are approximate — sub-components are very small (< 60px each).
-# Run measure_regions.py with UV extraction to refine all coords precisely.
+# Unassigned drawables (ears, nose details, tiny highlights):
+#   ArtMesh52 (left ear), ArtMesh53 (right ear) — not in atlas_schema, excluded
+#   ArtMesh26, ArtMesh27, ArtMesh29, ArtMesh34, ArtMesh41, ArtMesh42 — tiny face details
+#   texture_01 drawables — body/clothing, out of Phase 1 scope
 
 rig          = "hiyori"
 template     = "humanoid-anime"
 texture_size = 2048
 
-# texture_00 = face + hair
-# texture_01 = body + clothing (out of Phase 1 scope)
-
 # ── Face skin ────────────────────────────────────────────────────────────────
+# Main face oval (order 600) + lower face/chin extensions + neck (order 550)
 [[regions]]
 name          = "face_skin"
-texture_index = 0
-x = 29
-y = 20
-w = 500
-h = 575
-# The large cream oval. Includes forehead through chin outline.
+swap_strategy = "paste"
+
+  [[regions.drawables]]
+  id = "ArtMesh51"
+  texture_index = 0
+  x = 15
+  y = 5
+  w = 532
+  h = 603
+  draw_order = 600
+
+  [[regions.drawables]]
+  id = "ArtMesh47"
+  texture_index = 0
+  x = 20
+  y = 1002
+  w = 90
+  h = 40
+  draw_order = 600
+
+  [[regions.drawables]]
+  id = "ArtMesh49"
+  texture_index = 0
+  x = 21
+  y = 1041
+  w = 85
+  h = 62
+  draw_order = 600
+
+  [[regions.drawables]]
+  id = "ArtMesh48"
+  texture_index = 0
+  x = 15
+  y = 1093
+  w = 96
+  h = 67
+  draw_order = 600
+
+  [[regions.drawables]]
+  id = "ArtMesh45"
+  texture_index = 0
+  x = 10
+  y = 1146
+  w = 17
+  h = 15
+  draw_order = 600
+
+  [[regions.drawables]]
+  id = "ArtMesh46"
+  texture_index = 0
+  x = 11
+  y = 1164
+  w = 51
+  h = 33
+  draw_order = 600
+
+  [[regions.drawables]]
+  id = "ArtMesh67"
+  texture_index = 0
+  x = 22
+  y = 1390
+  w = 141
+  h = 131
+  draw_order = 550
 
 # ── Eyebrows ─────────────────────────────────────────────────────────────────
+# Order 900 = topmost face feature
+
 [[regions]]
 name          = "left_eyebrow"
-texture_index = 0
-x = 20
-y = 576
-w = 230
-h = 60
-# Two thin dark arcs forming the left brow.
+swap_strategy = "paste"
+
+  [[regions.drawables]]
+  id = "ArtMesh8"
+  texture_index = 0
+  x = 15
+  y = 574
+  w = 148
+  h = 71
+  draw_order = 900
+
+  [[regions.drawables]]
+  id = "ArtMesh17"
+  texture_index = 0
+  x = 167
+  y = 636
+  w = 42
+  h = 13
+  draw_order = 900
 
 [[regions]]
 name          = "right_eyebrow"
-texture_index = 0
-x = 317
-y = 576
-w = 213
-h = 50
-# Two thin dark arcs forming the right brow.
+swap_strategy = "paste"
+
+  [[regions.drawables]]
+  id = "ArtMesh7"
+  texture_index = 0
+  x = 398
+  y = 572
+  w = 133
+  h = 67
+  draw_order = 900
+
+  [[regions.drawables]]
+  id = "ArtMesh18"
+  texture_index = 0
+  x = 275
+  y = 636
+  w = 39
+  h = 13
+  draw_order = 900
 
 # ── Eyes ─────────────────────────────────────────────────────────────────────
-# Each eye region is the union bbox of: sclera + lid + iris + pupil + highlights.
-# The sub-components span a large y range because sclera (y≈709) and
-# iris disc (y≈864) are laid out in separate rows in the atlas.
+# Three layers per eye: outer shell (640), sclera+details (700), iris+pupil (650)
 
 [[regions]]
 name          = "left_eye"
-texture_index = 0
-x = 13
-y = 648
-w = 240
-h = 650
-# Sclera (near-white oval), iris (dark blue-grey disc), pupil + highlights.
-# Left cluster in atlas (x ≈ 13–253).
+swap_strategy = "paste"
+
+  [[regions.drawables]]
+  id = "ArtMesh22"
+  texture_index = 0
+  x = 24
+  y = 647
+  w = 171
+  h = 107
+  draw_order = 700
+
+  [[regions.drawables]]
+  id = "ArtMesh36"
+  texture_index = 0
+  x = 47
+  y = 698
+  w = 150
+  h = 137
+  draw_order = 640
+
+  [[regions.drawables]]
+  id = "ArtMesh12"
+  texture_index = 0
+  x = 112
+  y = 850
+  w = 102
+  h = 135
+  draw_order = 650
+
+  [[regions.drawables]]
+  id = "ArtMesh23"
+  texture_index = 0
+  x = 6
+  y = 748
+  w = 41
+  h = 77
+  draw_order = 700
+
+  [[regions.drawables]]
+  id = "ArtMesh28"
+  texture_index = 0
+  x = 165
+  y = 608
+  w = 86
+  h = 31
+  draw_order = 700
+
+  [[regions.drawables]]
+  id = "ArtMesh21"
+  texture_index = 0
+  x = 180
+  y = 658
+  w = 65
+  h = 26
+  draw_order = 700
+
+  [[regions.drawables]]
+  id = "ArtMesh24"
+  texture_index = 0
+  x = 26
+  y = 650
+  w = 30
+  h = 22
+  draw_order = 700
+
+  [[regions.drawables]]
+  id = "ArtMesh25"
+  texture_index = 0
+  x = 12
+  y = 680
+  w = 21
+  h = 13
+  draw_order = 700
+
+  [[regions.drawables]]
+  id = "ArtMesh10"
+  texture_index = 0
+  x = 14
+  y = 837
+  w = 59
+  h = 42
+  draw_order = 650
+
+  [[regions.drawables]]
+  id = "ArtMesh11"
+  texture_index = 0
+  x = 84
+  y = 876
+  w = 32
+  h = 37
+  draw_order = 650
+
+  [[regions.drawables]]
+  id = "ArtMesh14"
+  texture_index = 0
+  x = 11
+  y = 886
+  w = 68
+  h = 46
+  draw_order = 650
+
+  [[regions.drawables]]
+  id = "ArtMesh15"
+  texture_index = 0
+  x = 86
+  y = 843
+  w = 25
+  h = 28
+  draw_order = 650
 
 [[regions]]
 name          = "right_eye"
-texture_index = 0
-x = 292
-y = 640
-w = 238
-h = 653
-# Same components, right cluster in atlas (x ≈ 292–530).
+swap_strategy = "paste"
+
+  [[regions.drawables]]
+  id = "ArtMesh30"
+  texture_index = 0
+  x = 326
+  y = 640
+  w = 155
+  h = 110
+  draw_order = 700
+
+  [[regions.drawables]]
+  id = "ArtMesh37"
+  texture_index = 0
+  x = 316
+  y = 703
+  w = 153
+  h = 139
+  draw_order = 640
+
+  [[regions.drawables]]
+  id = "ArtMesh16"
+  texture_index = 0
+  x = 322
+  y = 854
+  w = 105
+  h = 136
+  draw_order = 650
+
+  [[regions.drawables]]
+  id = "ArtMesh35"
+  texture_index = 0
+  x = 310
+  y = 604
+  w = 82
+  h = 25
+  draw_order = 700
+
+  [[regions.drawables]]
+  id = "ArtMesh31"
+  texture_index = 0
+  x = 472
+  y = 753
+  w = 39
+  h = 70
+  draw_order = 700
+
+  [[regions.drawables]]
+  id = "ArtMesh32"
+  texture_index = 0
+  x = 466
+  y = 654
+  w = 31
+  h = 24
+  draw_order = 700
+
+  [[regions.drawables]]
+  id = "ArtMesh33"
+  texture_index = 0
+  x = 480
+  y = 690
+  w = 28
+  h = 15
+  draw_order = 700
+
+  [[regions.drawables]]
+  id = "ArtMesh40"
+  texture_index = 0
+  x = 482
+  y = 710
+  w = 38
+  h = 30
+  draw_order = 700
+
+  [[regions.drawables]]
+  id = "ArtMesh19"
+  texture_index = 0
+  x = 504
+  y = 743
+  w = 29
+  h = 27
+  draw_order = 700
+
+  [[regions.drawables]]
+  id = "ArtMesh20"
+  texture_index = 0
+  x = 507
+  y = 644
+  w = 42
+  h = 31
+  draw_order = 700
+
+  [[regions.drawables]]
+  id = "ArtMesh38"
+  texture_index = 0
+  x = 561
+  y = 653
+  w = 29
+  h = 29
+  draw_order = 700
+
+  [[regions.drawables]]
+  id = "ArtMesh39"
+  texture_index = 0
+  x = 546
+  y = 692
+  w = 19
+  h = 13
+  draw_order = 700
+
+  [[regions.drawables]]
+  id = "ArtMesh9"
+  texture_index = 0
+  x = 280
+  y = 878
+  w = 29
+  h = 24
+  draw_order = 650
+
+  [[regions.drawables]]
+  id = "ArtMesh13"
+  texture_index = 0
+  x = 218
+  y = 870
+  w = 34
+  h = 32
+  draw_order = 650
+
+  [[regions.drawables]]
+  id = "ArtMesh0"
+  texture_index = 0
+  x = 301
+  y = 961
+  w = 20
+  h = 17
+  draw_order = 650
 
 # ── Mouth ────────────────────────────────────────────────────────────────────
+# Center-x (between eye columns), order 650+800
+# ArtMesh2=upper, ArtMesh1=lower lip shape, ArtMesh43=chin overlay
+# ArtMesh (unnamed) = additional mouth detail
+
 [[regions]]
 name          = "mouth"
-texture_index = 0
-x = 15
-y = 820
-w = 520
-h = 185
-# REVIEW: sub-components are tiny (< 60px each). Includes lip line (bright red),
-# teeth (near-white), and inner mouth. Exact coords need UV extraction to confirm.
+swap_strategy = "paste"
+
+  [[regions.drawables]]
+  id = "ArtMesh2"
+  texture_index = 0
+  x = 219
+  y = 744
+  w = 78
+  h = 50
+  draw_order = 650
+
+  [[regions.drawables]]
+  id = "ArtMesh1"
+  texture_index = 0
+  x = 213
+  y = 804
+  w = 97
+  h = 58
+  draw_order = 650
+
+  [[regions.drawables]]
+  id = "ArtMesh"
+  texture_index = 0
+  x = 34
+  y = 974
+  w = 23
+  h = 21
+  draw_order = 650
+
+  [[regions.drawables]]
+  id = "ArtMesh43"
+  texture_index = 0
+  x = 212
+  y = 950
+  w = 26
+  h = 30
+  draw_order = 800
 
 # ── Cheeks ───────────────────────────────────────────────────────────────────
+# Two render passes per cheek (additive blush blending)
+
 [[regions]]
 name          = "left_cheek"
-texture_index = 0
-x = 62
-y = 1192
-w = 156
-h = 109
-# Soft blush oval, light peach-pink. Left cluster in atlas.
+swap_strategy = "paste"
+
+  [[regions.drawables]]
+  id = "ArtMesh4"
+  texture_index = 0
+  x = 23
+  y = 1170
+  w = 226
+  h = 164
+  draw_order = 650
+
+  [[regions.drawables]]
+  id = "ArtMesh6"
+  texture_index = 0
+  x = 23
+  y = 1170
+  w = 226
+  h = 164
+  draw_order = 650
 
 [[regions]]
 name          = "right_cheek"
-texture_index = 0
-x = 292
-y = 1193
-w = 176
-h = 113
-# Soft blush oval, right cluster in atlas.
+swap_strategy = "paste"
+
+  [[regions.drawables]]
+  id = "ArtMesh3"
+  texture_index = 0
+  x = 257
+  y = 1170
+  w = 251
+  h = 155
+  draw_order = 650
+
+  [[regions.drawables]]
+  id = "ArtMesh5"
+  texture_index = 0
+  x = 257
+  y = 1170
+  w = 251
+  h = 155
+  draw_order = 650
 
 # ── Hair ─────────────────────────────────────────────────────────────────────
+
 [[regions]]
 name          = "hair_front"
-texture_index = 0
-x = 563
-y = 20
-w = 1310
-h = 490
-# Union of three front-hair pieces:
-#   - Peach/blonde highlight chunk (x=563, y=40, 464×402)
-#   - Dark brown hair frame + highlights (x=1385, y=62, 488×446)
-#   - Small top-center piece (x=1026, y=20, 179×122)
-# Large bbox; only the actual UV regions of the drawables will be visible.
+swap_strategy = "hue_shift"
+
+  [[regions.drawables]]
+  id = "ArtMesh50"
+  texture_index = 0
+  x = 549
+  y = 25
+  w = 500
+  h = 438
+  draw_order = 600
+
+  [[regions.drawables]]
+  id = "ArtMesh56"
+  texture_index = 0
+  x = 1376
+  y = 54
+  w = 507
+  h = 476
+  draw_order = 750
+
+  [[regions.drawables]]
+  id = "ArtMesh63"
+  texture_index = 0
+  x = 1018
+  y = 9
+  w = 196
+  h = 140
+  draw_order = 200
 
 [[regions]]
 name          = "hair_back"
-texture_index = 0
-x = 1180
-y = 867
-w = 831
-h = 1136
-# The dominant large dark-brown back hair mass. Bottom-right quadrant of texture.
+swap_strategy = "hue_shift"
+
+  [[regions.drawables]]
+  id = "ArtMesh64"
+  texture_index = 0
+  x = 1164
+  y = 856
+  w = 869
+  h = 1166
+  draw_order = 200
 
 [[regions]]
 name          = "hair_side_left"
-texture_index = 0
-x = 606
-y = 463
-w = 204
-h = 842
-# Main left-side physics strand (long, center-left of texture).
+swap_strategy = "hue_shift"
+
+  [[regions.drawables]]
+  id = "ArtMesh109"
+  texture_index = 0
+  x = 664
+  y = 451
+  w = 162
+  h = 191
+  draw_order = 200
+
+  [[regions.drawables]]
+  id = "ArtMesh111"
+  texture_index = 0
+  x = 644
+  y = 512
+  w = 140
+  h = 253
+  draw_order = 200
+
+  [[regions.drawables]]
+  id = "ArtMesh112"
+  texture_index = 0
+  x = 624
+  y = 672
+  w = 116
+  h = 240
+  draw_order = 200
+
+  [[regions.drawables]]
+  id = "ArtMesh113"
+  texture_index = 0
+  x = 604
+  y = 794
+  w = 120
+  h = 264
+  draw_order = 200
+
+  [[regions.drawables]]
+  id = "ArtMesh114"
+  texture_index = 0
+  x = 596
+  y = 961
+  w = 170
+  h = 274
+  draw_order = 200
+
+  [[regions.drawables]]
+  id = "ArtMesh115"
+  texture_index = 0
+  x = 596
+  y = 1083
+  w = 170
+  h = 233
+  draw_order = 200
+
+  [[regions.drawables]]
+  id = "ArtMesh116"
+  texture_index = 0
+  x = 648
+  y = 1242
+  w = 39
+  h = 73
+  draw_order = 200
+
+  [[regions.drawables]]
+  id = "ArtMesh65"
+  texture_index = 0
+  x = 849
+  y = 639
+  w = 100
+  h = 446
+  draw_order = 200
+
+  [[regions.drawables]]
+  id = "ArtMesh58"
+  texture_index = 0
+  x = 14
+  y = 1550
+  w = 111
+  h = 286
+  draw_order = 200
+
+  [[regions.drawables]]
+  id = "ArtMesh57"
+  texture_index = 0
+  x = 201
+  y = 1361
+  w = 103
+  h = 160
+  draw_order = 200
 
 [[regions]]
 name          = "hair_side_right"
-texture_index = 0
-x = 1081
-y = 61
-w = 754
-h = 913
-# Union of three right-side strands:
-#   - Center-right strand (x=1081, y=446, 181×842)
-#   - Right strand (x=1273, y=61, 154×839)
-#   - Far-right strand (x=1835, y=65, 160×909)
+swap_strategy = "hue_shift"
+
+  [[regions.drawables]]
+  id = "ArtMesh66"
+  texture_index = 0
+  x = 1028
+  y = 585
+  w = 97
+  h = 541
+  draw_order = 200
+
+  [[regions.drawables]]
+  id = "ArtMesh117"
+  texture_index = 0
+  x = 1076
+  y = 431
+  w = 148
+  h = 206
+  draw_order = 200
+
+  [[regions.drawables]]
+  id = "ArtMesh118"
+  texture_index = 0
+  x = 1110
+  y = 504
+  w = 130
+  h = 251
+  draw_order = 200
+
+  [[regions.drawables]]
+  id = "ArtMesh119"
+  texture_index = 0
+  x = 1151
+  y = 662
+  w = 98
+  h = 246
+  draw_order = 200
+
+  [[regions.drawables]]
+  id = "ArtMesh120"
+  texture_index = 0
+  x = 1168
+  y = 800
+  w = 100
+  h = 262
+  draw_order = 200
+
+  [[regions.drawables]]
+  id = "ArtMesh121"
+  texture_index = 0
+  x = 1072
+  y = 928
+  w = 202
+  h = 283
+  draw_order = 200
+
+  [[regions.drawables]]
+  id = "ArtMesh122"
+  texture_index = 0
+  x = 1072
+  y = 1080
+  w = 202
+  h = 218
+  draw_order = 200
+
+  [[regions.drawables]]
+  id = "ArtMesh123"
+  texture_index = 0
+  x = 1132
+  y = 1230
+  w = 64
+  h = 68
+  draw_order = 200
+
+  [[regions.drawables]]
+  id = "ArtMesh124"
+  texture_index = 0
+  x = 1266
+  y = 50
+  w = 109
+  h = 177
+  draw_order = 750
+
+  [[regions.drawables]]
+  id = "ArtMesh125"
+  texture_index = 0
+  x = 1261
+  y = 122
+  w = 90
+  h = 191
+  draw_order = 750
+
+  [[regions.drawables]]
+  id = "ArtMesh126"
+  texture_index = 0
+  x = 1261
+  y = 270
+  w = 93
+  h = 197
+  draw_order = 750
+
+  [[regions.drawables]]
+  id = "ArtMesh127"
+  texture_index = 0
+  x = 1272
+  y = 378
+  w = 99
+  h = 272
+  draw_order = 750
+
+  [[regions.drawables]]
+  id = "ArtMesh128"
+  texture_index = 0
+  x = 1298
+  y = 505
+  w = 140
+  h = 289
+  draw_order = 750
+
+  [[regions.drawables]]
+  id = "ArtMesh129"
+  texture_index = 0
+  x = 1332
+  y = 672
+  w = 106
+  h = 237
+  draw_order = 750
+
+  [[regions.drawables]]
+  id = "ArtMesh130"
+  texture_index = 0
+  x = 1363
+  y = 825
+  w = 65
+  h = 83
+  draw_order = 750
+
+  [[regions.drawables]]
+  id = "ArtMesh131"
+  texture_index = 0
+  x = 1855
+  y = 59
+  w = 153
+  h = 221
+  draw_order = 750
+
+  [[regions.drawables]]
+  id = "ArtMesh132"
+  texture_index = 0
+  x = 1895
+  y = 153
+  w = 120
+  h = 238
+  draw_order = 750
+
+  [[regions.drawables]]
+  id = "ArtMesh133"
+  texture_index = 0
+  x = 1913
+  y = 308
+  w = 102
+  h = 249
+  draw_order = 750
+
+  [[regions.drawables]]
+  id = "ArtMesh134"
+  texture_index = 0
+  x = 1888
+  y = 450
+  w = 118
+  h = 285
+  draw_order = 750
+
+  [[regions.drawables]]
+  id = "ArtMesh135"
+  texture_index = 0
+  x = 1818
+  y = 598
+  w = 156
+  h = 280
+  draw_order = 750
+
+  [[regions.drawables]]
+  id = "ArtMesh136"
+  texture_index = 0
+  x = 1818
+  y = 762
+  w = 107
+  h = 227
+  draw_order = 750
+
+  [[regions.drawables]]
+  id = "ArtMesh137"
+  texture_index = 0
+  x = 1860
+  y = 911
+  w = 65
+  h = 78
+  draw_order = 750
+
+  [[regions.drawables]]
+  id = "ArtMesh59"
+  texture_index = 0
+  x = 319
+  y = 1370
+  w = 107
+  h = 149
+  draw_order = 200
+
+  [[regions.drawables]]
+  id = "ArtMesh60"
+  texture_index = 0
+  x = 144
+  y = 1546
+  w = 92
+  h = 291
+  draw_order = 200
