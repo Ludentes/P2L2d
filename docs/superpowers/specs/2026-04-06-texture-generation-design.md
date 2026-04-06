@@ -248,6 +248,74 @@ async def generate_textures(
     """
 ```
 
+### `pipeline/package.py`
+
+**What it does:** Copies the rig's model files (moc3, model3.json) plus the modified
+atlases into a self-contained output directory. The output dir is the deliverable that
+`muse-vtuber` loads directly as a Live2D model.
+
+**Interface:**
+```python
+def package_output(
+    rig: RigConfig,
+    modified_atlases: dict[int, Image.Image],
+    output_dir: Path,
+) -> Path:
+    """
+    Writes to output_dir:
+      - character.model3.json  (copied from rig.model3_json_path)
+      - character.moc3         (copied from rig.moc3_path)
+      - textures/              (original atlases overwritten by modified_atlases)
+
+    Returns output_dir.
+    """
+```
+
+Does NOT copy `model.pt` — the MLP is template-level and lives in `templates/`;
+`muse-vtuber` loads it from there via the manifest.
+
+### `pipeline/run.py`
+
+**What it does:** Top-level orchestrator and CLI entry point. Connects
+`generate_textures()` → `swap_regions()` → `package_output()` into a single callable
+and exposes it as `python -m pipeline.run`.
+
+**Interface:**
+```python
+async def run_portrait_to_rig(
+    portrait_path: Path,
+    rig_config: RigConfig,
+    atlas_cfg: AtlasConfig,
+    output_dir: Path,
+    template_name: str = "humanoid-anime",
+    client: ComfyUIClient | None = None,
+) -> Path:
+    """
+    Full texture pipeline: portrait → output artifact directory.
+
+    Steps:
+    1. generate_textures(portrait, atlas_cfg, rig_config, client, template_name)
+       → replacements: dict[str, Image]
+    2. load_atlases(rig_config) → atlases: dict[int, Image]
+    3. swap_regions(atlases, atlas_cfg, replacements) → modified_atlases
+    4. package_output(rig_config, modified_atlases, output_dir)
+
+    Returns output_dir.
+    """
+```
+
+**CLI:**
+```
+python -m pipeline.run portrait.jpg \
+    --rig manifests/hiyori.toml \
+    --atlas manifests/hiyori_atlas.toml \
+    --out ./output/hiyori_portrait/ \
+    [--template humanoid-anime]
+```
+
+`load_atlases(rig_config)` is a small helper in `pipeline/run.py` that opens each
+texture file listed in `rig_config.textures` as a PIL Image, keyed by index.
+
 ### `scripts/generate_template_landmarks.py`
 
 **What it does:** One-time script. Renders the rig at neutral pose using `RigRenderer`,
@@ -347,8 +415,8 @@ kept and background made transparent. No text prompt needed for BiRefNet.
 - `cloth_and_body` region — deferred; too ambiguous without pixel-level mask
 - Phase 2 See-through decomposition — separate implementation after Phase 1 validates
   the pipeline end-to-end
-- Style transfer (portrait → anime) — deferred; Phase 1 works on both photos and anime
-  art if landmarks are detectable
+- Style transfer for non-anime templates — `humanoid-realistic` (future) sets
+  `style_transfer = "none"` in schema.toml and style_transfer.py passes through unchanged
 
 ---
 
@@ -395,5 +463,7 @@ No new Python dependencies beyond mediapipe (already in the project for MLP trai
 4. `pipeline/style_transfer.py` — FLUX Kontext img2img via ComfyUI + `style_transfer_anime.json` workflow
 5. `pipeline/face_inpaint.py` — FLUX Fill via ComfyUI + `face_inpaint.json` workflow
 6. `pipeline/hair_segment.py` — BiRefNet via ComfyUI + `hair_segment.json` workflow
-7. `pipeline/texture_gen.py` — orchestrator
-8. Integration test end-to-end with a sample portrait
+7. `pipeline/texture_gen.py` — texture generation orchestrator
+8. `pipeline/package.py` — artifact assembly (copy moc3 + model3.json + modified atlases)
+9. `pipeline/run.py` — top-level CLI orchestrator connecting all steps
+10. Integration test end-to-end with a sample portrait: `python -m pipeline.run portrait.jpg --rig ... --out /tmp/test_out/`
