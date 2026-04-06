@@ -80,9 +80,6 @@ def validate_textures(
     """
     from dataclasses import replace
 
-    from PIL import Image  # noqa: PLC0415 — deferred so unit tests stay fast
-
-    from rig.config import RigConfig  # noqa: PLC0415
     from rig.render import RigRenderer  # noqa: PLC0415
 
     tmpdir = Path(tempfile.mkdtemp(prefix="p2l_validate_"))
