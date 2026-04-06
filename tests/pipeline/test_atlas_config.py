@@ -1,5 +1,5 @@
 import pytest
-from pipeline.atlas_config import AtlasRegion, AtlasConfig, load_atlas_config
+from pipeline.atlas_config import AtlasRegion, load_atlas_config
 
 _SAMPLE_TOML = """\
 rig = "test_rig"
