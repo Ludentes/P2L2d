@@ -833,3 +833,379 @@ swap_strategy = "hue_shift"
   w = 92
   h = 291
   draw_order = 200
+
+# ── Body (skin) ───────────────────────────────────────────────────────────────
+# Texture 1: bare arms (sleeveless vest). All right-side strip pieces.
+# Order 300 = back-of-arm layers; 400 = mid-arm; 500 = main arm; 800 = arm shading.
+# NEEDS RENDER VERIFICATION: some mid-area drawables may be clothing not skin.
+[[regions]]
+name          = "body"
+swap_strategy = "paste"
+
+  [[regions.drawables]]
+  id = "ArtMesh68"
+  texture_index = 1
+  x = 1608
+  y = -1
+  w = 146
+  h = 280
+  draw_order = 300
+
+  [[regions.drawables]]
+  id = "ArtMesh69"
+  texture_index = 1
+  x = 1751
+  y = 1
+  w = 115
+  h = 303
+  draw_order = 300
+
+  [[regions.drawables]]
+  id = "ArtMesh70"
+  texture_index = 1
+  x = 1264
+  y = 1322
+  w = 152
+  h = 102
+  draw_order = 300
+
+  [[regions.drawables]]
+  id = "ArtMesh71"
+  texture_index = 1
+  x = 1669
+  y = 1346
+  w = 361
+  h = 691
+  draw_order = 300
+
+  [[regions.drawables]]
+  id = "ArtMesh72"
+  texture_index = 1
+  x = 1523
+  y = 1179
+  w = 209
+  h = 603
+  draw_order = 300
+
+  [[regions.drawables]]
+  id = "ArtMesh73"
+  texture_index = 1
+  x = 1229
+  y = 1621
+  w = 54
+  h = 60
+  draw_order = 300
+
+  [[regions.drawables]]
+  id = "ArtMesh74"
+  texture_index = 1
+  x = 1165
+  y = 624
+  w = 159
+  h = 80
+  draw_order = 300
+
+  [[regions.drawables]]
+  id = "ArtMesh75"
+  texture_index = 1
+  x = 1315
+  y = 1431
+  w = 212
+  h = 595
+  draw_order = 300
+
+  [[regions.drawables]]
+  id = "ArtMesh76"
+  texture_index = 1
+  x = 1342
+  y = 1203
+  w = 150
+  h = 105
+  draw_order = 300
+
+  [[regions.drawables]]
+  id = "ArtMesh77"
+  texture_index = 1
+  x = 1346
+  y = 538
+  w = 456
+  h = 646
+  draw_order = 300
+
+  [[regions.drawables]]
+  id = "ArtMesh78"
+  texture_index = 1
+  x = 1245
+  y = 1546
+  w = 74
+  h = 62
+  draw_order = 300
+
+  [[regions.drawables]]
+  id = "ArtMesh79"
+  texture_index = 1
+  x = 1316
+  y = 946
+  w = 137
+  h = 127
+  draw_order = 300
+
+  [[regions.drawables]]
+  id = "ArtMesh80"
+  texture_index = 1
+  x = 1751
+  y = 18
+  w = 115
+  h = 286
+  draw_order = 400
+
+  [[regions.drawables]]
+  id = "ArtMesh81"
+  texture_index = 1
+  x = 1608
+  y = 5
+  w = 145
+  h = 273
+  draw_order = 400
+
+  [[regions.drawables]]
+  id = "ArtMesh86"
+  texture_index = 1
+  x = 1203
+  y = 8
+  w = 226
+  h = 552
+  draw_order = 400
+
+  [[regions.drawables]]
+  id = "ArtMesh92"
+  texture_index = 1
+  x = 1442
+  y = 5
+  w = 214
+  h = 597
+  draw_order = 400
+
+  [[regions.drawables]]
+  id = "ArtMesh102"
+  texture_index = 1
+  x = 813
+  y = 707
+  w = 277
+  h = 944
+  draw_order = 500
+
+  [[regions.drawables]]
+  id = "ArtMesh103"
+  texture_index = 1
+  x = 932
+  y = 17
+  w = 316
+  h = 696
+  draw_order = 500
+
+  [[regions.drawables]]
+  id = "ArtMesh104"
+  texture_index = 1
+  x = 1048
+  y = 737
+  w = 263
+  h = 1005
+  draw_order = 500
+
+  [[regions.drawables]]
+  id = "ArtMesh97"
+  texture_index = 1
+  x = 1001
+  y = 1775
+  w = 211
+  h = 101
+  draw_order = 500
+
+  [[regions.drawables]]
+  id = "ArtMesh83"
+  texture_index = 1
+  x = 1746
+  y = 872
+  w = 216
+  h = 239
+  draw_order = 800
+
+  [[regions.drawables]]
+  id = "ArtMesh85"
+  texture_index = 1
+  x = 1804
+  y = 13
+  w = 237
+  h = 536
+  draw_order = 800
+
+  [[regions.drawables]]
+  id = "ArtMesh88"
+  texture_index = 1
+  x = 1736
+  y = 1106
+  w = 220
+  h = 229
+  draw_order = 800
+
+  [[regions.drawables]]
+  id = "ArtMesh91"
+  texture_index = 1
+  x = 1647
+  y = 298
+  w = 212
+  h = 586
+  draw_order = 800
+
+# ── Clothing ──────────────────────────────────────────────────────────────────
+# Texture 1: school uniform (vest, skirt, socks, collar, shoes).
+# ArtMesh99 = vest main (749×1207). ArtMesh100 = skirt (wide bottom band).
+# ArtMesh94/95 = socks (~90px wide, ~280px tall).
+[[regions]]
+name          = "clothing"
+swap_strategy = "hue_shift"
+
+  [[regions.drawables]]
+  id = "ArtMesh99"
+  texture_index = 1
+  x = 7
+  y = 16
+  w = 749
+  h = 1207
+  draw_order = 500
+
+  [[regions.drawables]]
+  id = "ArtMesh100"
+  texture_index = 1
+  x = 0
+  y = 1191
+  w = 759
+  h = 257
+  draw_order = 500
+
+  [[regions.drawables]]
+  id = "ArtMesh101"
+  texture_index = 1
+  x = 617
+  y = 19
+  w = 299
+  h = 714
+  draw_order = 500
+
+  [[regions.drawables]]
+  id = "ArtMesh93"
+  texture_index = 1
+  x = 9
+  y = 1762
+  w = 212
+  h = 143
+  draw_order = 500
+
+  [[regions.drawables]]
+  id = "ArtMesh94"
+  texture_index = 1
+  x = 466
+  y = 1466
+  w = 88
+  h = 285
+  draw_order = 500
+
+  [[regions.drawables]]
+  id = "ArtMesh95"
+  texture_index = 1
+  x = 748
+  y = 1435
+  w = 95
+  h = 281
+  draw_order = 500
+
+  [[regions.drawables]]
+  id = "ArtMesh96"
+  texture_index = 1
+  x = 465
+  y = 1708
+  w = 505
+  h = 315
+  draw_order = 500
+
+  [[regions.drawables]]
+  id = "ArtMesh98"
+  texture_index = 1
+  x = 1
+  y = 1933
+  w = 195
+  h = 111
+  draw_order = 500
+
+  [[regions.drawables]]
+  id = "ArtMesh105"
+  texture_index = 1
+  x = 20
+  y = 1460
+  w = 216
+  h = 285
+  draw_order = 500
+
+  [[regions.drawables]]
+  id = "ArtMesh106"
+  texture_index = 1
+  x = 238
+  y = 1462
+  w = 229
+  h = 372
+  draw_order = 500
+
+  [[regions.drawables]]
+  id = "ArtMesh110"
+  texture_index = 1
+  x = 1330
+  y = 879
+  w = 36
+  h = 48
+  draw_order = 500
+
+  [[regions.drawables]]
+  id = "ArtMesh82"
+  texture_index = 1
+  x = 1439
+  y = 1113
+  w = 133
+  h = 85
+  draw_order = 800
+
+  [[regions.drawables]]
+  id = "ArtMesh84"
+  texture_index = 1
+  x = 1260
+  y = 1436
+  w = 104
+  h = 100
+  draw_order = 800
+
+  [[regions.drawables]]
+  id = "ArtMesh87"
+  texture_index = 1
+  x = 1314
+  y = 1073
+  w = 127
+  h = 114
+  draw_order = 800
+
+  [[regions.drawables]]
+  id = "ArtMesh89"
+  texture_index = 1
+  x = 1427
+  y = 1293
+  w = 102
+  h = 116
+  draw_order = 800
+
+  [[regions.drawables]]
+  id = "ArtMesh90"
+  texture_index = 1
+  x = 1513
+  y = 1226
+  w = 44
+  h = 51
+  draw_order = 800

@@ -1,0 +1,2832 @@
+[
+  {
+    "id": "tears_left",
+    "tex": 0,
+    "order": 500,
+    "x": 2750,
+    "y": 45,
+    "w": 86,
+    "h": 27,
+    "verts": 66
+  },
+  {
+    "id": "tears_right",
+    "tex": 0,
+    "order": 500,
+    "x": 2852,
+    "y": 42,
+    "w": 83,
+    "h": 29,
+    "verts": 72
+  },
+  {
+    "id": "sign_shock",
+    "tex": 0,
+    "order": 500,
+    "x": 3851,
+    "y": 3224,
+    "w": 184,
+    "h": 262,
+    "verts": 4
+  },
+  {
+    "id": "sign_angry",
+    "tex": 0,
+    "order": 500,
+    "x": 3836,
+    "y": 3534,
+    "w": 203,
+    "h": 238,
+    "verts": 4
+  },
+  {
+    "id": "hair_clip_a_1",
+    "tex": 0,
+    "order": 500,
+    "x": 3046,
+    "y": 3574,
+    "w": 93,
+    "h": 57,
+    "verts": 21
+  },
+  {
+    "id": "hair_clip_a_2",
+    "tex": 0,
+    "order": 500,
+    "x": 3029,
+    "y": 3549,
+    "w": 98,
+    "h": 44,
+    "verts": 21
+  },
+  {
+    "id": "hair_clip_b_2",
+    "tex": 0,
+    "order": 500,
+    "x": 3011,
+    "y": 3442,
+    "w": 94,
+    "h": 115,
+    "verts": 22
+  },
+  {
+    "id": "tie_top_bottom",
+    "tex": 0,
+    "order": 500,
+    "x": 3185,
+    "y": 3610,
+    "w": 377,
+    "h": 144,
+    "verts": 49
+  },
+  {
+    "id": "eye_OO_right_tear",
+    "tex": 0,
+    "order": 500,
+    "x": 3486,
+    "y": 51,
+    "w": 29,
+    "h": 34,
+    "verts": 40
+  },
+  {
+    "id": "eye_OO_right_main",
+    "tex": 0,
+    "order": 500,
+    "x": 3294,
+    "y": 92,
+    "w": 112,
+    "h": 101,
+    "verts": 158
+  },
+  {
+    "id": "eye_OO_tear_right_shade",
+    "tex": 0,
+    "order": 500,
+    "x": 3523,
+    "y": 46,
+    "w": 22,
+    "h": 46,
+    "verts": 38
+  },
+  {
+    "id": "eye_OO_left_tear",
+    "tex": 0,
+    "order": 500,
+    "x": 3328,
+    "y": 46,
+    "w": 29,
+    "h": 34,
+    "verts": 38
+  },
+  {
+    "id": "eye_OO_left_main",
+    "tex": 0,
+    "order": 500,
+    "x": 3430,
+    "y": 92,
+    "w": 112,
+    "h": 101,
+    "verts": 152
+  },
+  {
+    "id": "eye_OO_tear_left_shade",
+    "tex": 0,
+    "order": 500,
+    "x": 3294,
+    "y": 41,
+    "w": 22,
+    "h": 46,
+    "verts": 37
+  },
+  {
+    "id": "eye_closed_left",
+    "tex": 0,
+    "order": 500,
+    "x": 3265,
+    "y": 220,
+    "w": 122,
+    "h": 73,
+    "verts": 117
+  },
+  {
+    "id": "eye_closed_right",
+    "tex": 0,
+    "order": 500,
+    "x": 3432,
+    "y": 220,
+    "w": 121,
+    "h": 73,
+    "verts": 129
+  },
+  {
+    "id": "eye_swirl_left",
+    "tex": 0,
+    "order": 500,
+    "x": 2984,
+    "y": 82,
+    "w": 105,
+    "h": 102,
+    "verts": 217
+  },
+  {
+    "id": "eye_swirl_right",
+    "tex": 0,
+    "order": 500,
+    "x": 3117,
+    "y": 81,
+    "w": 105,
+    "h": 102,
+    "verts": 259
+  },
+  {
+    "id": "eye_shines_right_1",
+    "tex": 0,
+    "order": 500,
+    "x": 2774,
+    "y": 411,
+    "w": 35,
+    "h": 30,
+    "verts": 41
+  },
+  {
+    "id": "eye_shines_right_2",
+    "tex": 0,
+    "order": 500,
+    "x": 2815,
+    "y": 388,
+    "w": 15,
+    "h": 15,
+    "verts": 24
+  },
+  {
+    "id": "eye_brows_right",
+    "tex": 0,
+    "order": 500,
+    "x": 3124,
+    "y": 180,
+    "w": 141,
+    "h": 60,
+    "verts": 83
+  },
+  {
+    "id": "eye_fold_right",
+    "tex": 0,
+    "order": 500,
+    "x": 3154,
+    "y": 379,
+    "w": 83,
+    "h": 23,
+    "verts": 57
+  },
+  {
+    "id": "eye_dots_right",
+    "tex": 0,
+    "order": 500,
+    "x": 2867,
+    "y": 329,
+    "w": 5,
+    "h": 5,
+    "verts": 8
+  },
+  {
+    "id": "eye_bottom_right",
+    "tex": 0,
+    "order": 500,
+    "x": 2804,
+    "y": 322,
+    "w": 45,
+    "h": 11,
+    "verts": 32
+  },
+  {
+    "id": "eye_top_ex_right",
+    "tex": 0,
+    "order": 500,
+    "x": 2805,
+    "y": 466,
+    "w": 69,
+    "h": 21,
+    "verts": 37
+  },
+  {
+    "id": "eye_side_right",
+    "tex": 0,
+    "order": 500,
+    "x": 2868,
+    "y": 346,
+    "w": 28,
+    "h": 64,
+    "verts": 46
+  },
+  {
+    "id": "eye_iris_right_shade",
+    "tex": 0,
+    "order": 500,
+    "x": 2757,
+    "y": 209,
+    "w": 162,
+    "h": 62,
+    "verts": 169
+  },
+  {
+    "id": "eye_heart_right",
+    "tex": 0,
+    "order": 500,
+    "x": 2664,
+    "y": 93,
+    "w": 78,
+    "h": 104,
+    "verts": 184
+  },
+  {
+    "id": "eye_iris_right",
+    "tex": 0,
+    "order": 500,
+    "x": 2854,
+    "y": 91,
+    "w": 74,
+    "h": 103,
+    "verts": 125
+  },
+  {
+    "id": "eye_white_right_shade",
+    "tex": 0,
+    "order": 500,
+    "x": 3124,
+    "y": 411,
+    "w": 196,
+    "h": 109,
+    "verts": 35
+  },
+  {
+    "id": "eye_white_right",
+    "tex": 0,
+    "order": 500,
+    "x": 3137,
+    "y": 261,
+    "w": 134,
+    "h": 118,
+    "verts": 32
+  },
+  {
+    "id": "eye_shines_left_1",
+    "tex": 0,
+    "order": 500,
+    "x": 2626,
+    "y": 408,
+    "w": 35,
+    "h": 30,
+    "verts": 46
+  },
+  {
+    "id": "eye_shines_left_2",
+    "tex": 0,
+    "order": 500,
+    "x": 2666,
+    "y": 386,
+    "w": 15,
+    "h": 15,
+    "verts": 24
+  },
+  {
+    "id": "eye_brows_left",
+    "tex": 0,
+    "order": 500,
+    "x": 2955,
+    "y": 181,
+    "w": 141,
+    "h": 60,
+    "verts": 96
+  },
+  {
+    "id": "eye_fold_left",
+    "tex": 0,
+    "order": 500,
+    "x": 3010,
+    "y": 376,
+    "w": 83,
+    "h": 23,
+    "verts": 60
+  },
+  {
+    "id": "eye_dots_left",
+    "tex": 0,
+    "order": 500,
+    "x": 2610,
+    "y": 333,
+    "w": 5,
+    "h": 5,
+    "verts": 10
+  },
+  {
+    "id": "eye_bottom_left",
+    "tex": 0,
+    "order": 500,
+    "x": 2634,
+    "y": 322,
+    "w": 44,
+    "h": 11,
+    "verts": 27
+  },
+  {
+    "id": "eye_top_ex_left",
+    "tex": 0,
+    "order": 500,
+    "x": 2614,
+    "y": 469,
+    "w": 68,
+    "h": 21,
+    "verts": 42
+  },
+  {
+    "id": "eye_side_left",
+    "tex": 0,
+    "order": 500,
+    "x": 2579,
+    "y": 346,
+    "w": 29,
+    "h": 64,
+    "verts": 51
+  },
+  {
+    "id": "eye_iris_left_shade",
+    "tex": 0,
+    "order": 500,
+    "x": 2574,
+    "y": 206,
+    "w": 162,
+    "h": 62,
+    "verts": 174
+  },
+  {
+    "id": "eye_left_heart",
+    "tex": 0,
+    "order": 500,
+    "x": 2581,
+    "y": 90,
+    "w": 76,
+    "h": 104,
+    "verts": 175
+  },
+  {
+    "id": "eye_iris_left",
+    "tex": 0,
+    "order": 500,
+    "x": 2757,
+    "y": 88,
+    "w": 74,
+    "h": 103,
+    "verts": 120
+  },
+  {
+    "id": "eye_white_left_shade",
+    "tex": 0,
+    "order": 500,
+    "x": 2924,
+    "y": 412,
+    "w": 198,
+    "h": 107,
+    "verts": 36
+  },
+  {
+    "id": "eye_white_left",
+    "tex": 0,
+    "order": 500,
+    "x": 2975,
+    "y": 255,
+    "w": 133,
+    "h": 118,
+    "verts": 31
+  },
+  {
+    "id": "face_shock_effect",
+    "tex": 0,
+    "order": 500,
+    "x": 62,
+    "y": 2827,
+    "w": 700,
+    "h": 737,
+    "verts": 4
+  },
+  {
+    "id": "blush_whites",
+    "tex": 0,
+    "order": 500,
+    "x": 3710,
+    "y": 208,
+    "w": 254,
+    "h": 28,
+    "verts": 22
+  },
+  {
+    "id": "blush_lines",
+    "tex": 0,
+    "order": 500,
+    "x": 3660,
+    "y": 79,
+    "w": 368,
+    "h": 120,
+    "verts": 39
+  },
+  {
+    "id": "blush_main",
+    "tex": 0,
+    "order": 500,
+    "x": 3583,
+    "y": 237,
+    "w": 497,
+    "h": 234,
+    "verts": 47
+  },
+  {
+    "id": "mouth_bottom",
+    "tex": 0,
+    "order": 500,
+    "x": 2292,
+    "y": 120,
+    "w": 121,
+    "h": 81,
+    "verts": 269
+  },
+  {
+    "id": "fang",
+    "tex": 0,
+    "order": 500,
+    "x": 2323,
+    "y": 174,
+    "w": 21,
+    "h": 18,
+    "verts": 22
+  },
+  {
+    "id": "mouth_shine",
+    "tex": 0,
+    "order": 500,
+    "x": 2353,
+    "y": 186,
+    "w": 38,
+    "h": 15,
+    "verts": 24
+  },
+  {
+    "id": "tongue",
+    "tex": 0,
+    "order": 500,
+    "x": 2288,
+    "y": 345,
+    "w": 146,
+    "h": 116,
+    "verts": 264
+  },
+  {
+    "id": "mouth_inner",
+    "tex": 0,
+    "order": 500,
+    "x": 2303,
+    "y": 197,
+    "w": 107,
+    "h": 78,
+    "verts": 184
+  },
+  {
+    "id": "ear_left_light",
+    "tex": 0,
+    "order": 500,
+    "x": 3118,
+    "y": 3009,
+    "w": 103,
+    "h": 139,
+    "verts": 33
+  },
+  {
+    "id": "ear_left",
+    "tex": 0,
+    "order": 500,
+    "x": 3102,
+    "y": 3139,
+    "w": 99,
+    "h": 136,
+    "verts": 30
+  },
+  {
+    "id": "collar_front_left",
+    "tex": 0,
+    "order": 500,
+    "x": 1880,
+    "y": 3870,
+    "w": 130,
+    "h": 182,
+    "verts": 136
+  },
+  {
+    "id": "collar_front_right",
+    "tex": 0,
+    "order": 500,
+    "x": 2551,
+    "y": 3878,
+    "w": 111,
+    "h": 174,
+    "verts": 122
+  },
+  {
+    "id": "tie_mid",
+    "tex": 0,
+    "order": 500,
+    "x": 3365,
+    "y": 2463,
+    "w": 28,
+    "h": 27,
+    "verts": 32
+  },
+  {
+    "id": "shirt_top_left",
+    "tex": 0,
+    "order": 500,
+    "x": 1968,
+    "y": 3306,
+    "w": 311,
+    "h": 386,
+    "verts": 100
+  },
+  {
+    "id": "shirt_top_right",
+    "tex": 0,
+    "order": 500,
+    "x": 2321,
+    "y": 3309,
+    "w": 323,
+    "h": 387,
+    "verts": 110
+  },
+  {
+    "id": "oppai_left",
+    "tex": 0,
+    "order": 500,
+    "x": 2119,
+    "y": 3833,
+    "w": 100,
+    "h": 239,
+    "verts": 25
+  },
+  {
+    "id": "oppai_right",
+    "tex": 0,
+    "order": 500,
+    "x": 2393,
+    "y": 3829,
+    "w": 97,
+    "h": 233,
+    "verts": 24
+  },
+  {
+    "id": "oppai_under",
+    "tex": 0,
+    "order": 500,
+    "x": 2222,
+    "y": 3840,
+    "w": 171,
+    "h": 253,
+    "verts": 37
+  },
+  {
+    "id": "shirt_bottom_left",
+    "tex": 0,
+    "order": 500,
+    "x": 1928,
+    "y": 2676,
+    "w": 328,
+    "h": 639,
+    "verts": 76
+  },
+  {
+    "id": "shirt_bottom_right",
+    "tex": 0,
+    "order": 500,
+    "x": 2300,
+    "y": 2680,
+    "w": 346,
+    "h": 649,
+    "verts": 53
+  },
+  {
+    "id": "sleeve_left",
+    "tex": 0,
+    "order": 500,
+    "x": 1769,
+    "y": 3489,
+    "w": 390,
+    "h": 410,
+    "verts": 84
+  },
+  {
+    "id": "sleeve_right",
+    "tex": 0,
+    "order": 500,
+    "x": 2475,
+    "y": 3482,
+    "w": 400,
+    "h": 410,
+    "verts": 83
+  },
+  {
+    "id": "shirt_skirt_shade_right",
+    "tex": 0,
+    "order": 500,
+    "x": 405,
+    "y": 966,
+    "w": 346,
+    "h": 643,
+    "verts": 43
+  },
+  {
+    "id": "shirt_skirt_shade_left",
+    "tex": 0,
+    "order": 500,
+    "x": 50,
+    "y": 954,
+    "w": 347,
+    "h": 650,
+    "verts": 55
+  },
+  {
+    "id": "skirt_main",
+    "tex": 0,
+    "order": 500,
+    "x": 1909,
+    "y": 2058,
+    "w": 720,
+    "h": 541,
+    "verts": 99
+  },
+  {
+    "id": "neck_lines",
+    "tex": 0,
+    "order": 500,
+    "x": 2872,
+    "y": 2698,
+    "w": 297,
+    "h": 228,
+    "verts": 174
+  },
+  {
+    "id": "neck_shade",
+    "tex": 0,
+    "order": 500,
+    "x": 3493,
+    "y": 2791,
+    "w": 277,
+    "h": 124,
+    "verts": 41
+  },
+  {
+    "id": "neck_main",
+    "tex": 0,
+    "order": 500,
+    "x": 3244,
+    "y": 2707,
+    "w": 296,
+    "h": 225,
+    "verts": 202
+  },
+  {
+    "id": "collar_back",
+    "tex": 0,
+    "order": 500,
+    "x": 2201,
+    "y": 3676,
+    "w": 201,
+    "h": 159,
+    "verts": 69
+  },
+  {
+    "id": "back_hair_shadow",
+    "tex": 0,
+    "order": 500,
+    "x": 1204,
+    "y": 1774,
+    "w": 569,
+    "h": 333,
+    "verts": 61
+  },
+  {
+    "id": "thumb_left",
+    "tex": 0,
+    "order": 500,
+    "x": 852,
+    "y": 26,
+    "w": 175,
+    "h": 252,
+    "verts": 47
+  },
+  {
+    "id": "finger_left",
+    "tex": 0,
+    "order": 500,
+    "x": 756,
+    "y": 78,
+    "w": 207,
+    "h": 263,
+    "verts": 62
+  },
+  {
+    "id": "f1_left",
+    "tex": 0,
+    "order": 500,
+    "x": 1006,
+    "y": 67,
+    "w": 100,
+    "h": 185,
+    "verts": 37
+  },
+  {
+    "id": "f2_left",
+    "tex": 0,
+    "order": 500,
+    "x": 1051,
+    "y": 60,
+    "w": 56,
+    "h": 150,
+    "verts": 28
+  },
+  {
+    "id": "f3_left",
+    "tex": 0,
+    "order": 500,
+    "x": 1093,
+    "y": 84,
+    "w": 62,
+    "h": 128,
+    "verts": 26
+  },
+  {
+    "id": "arm_main_left",
+    "tex": 0,
+    "order": 500,
+    "x": 930,
+    "y": 269,
+    "w": 347,
+    "h": 786,
+    "verts": 52
+  },
+  {
+    "id": "under_shirt_belly_shade_right",
+    "tex": 0,
+    "order": 500,
+    "x": 387,
+    "y": 327,
+    "w": 359,
+    "h": 619,
+    "verts": 121
+  },
+  {
+    "id": "under_shirt_belly_shade_left",
+    "tex": 0,
+    "order": 500,
+    "x": 36,
+    "y": 310,
+    "w": 344,
+    "h": 617,
+    "verts": 78
+  },
+  {
+    "id": "belly_in",
+    "tex": 0,
+    "order": 500,
+    "x": 2077,
+    "y": 2587,
+    "w": 402,
+    "h": 374,
+    "verts": 61
+  },
+  {
+    "id": "leg_left_knee",
+    "tex": 0,
+    "order": 500,
+    "x": 946,
+    "y": 2306,
+    "w": 155,
+    "h": 274,
+    "verts": 36
+  },
+  {
+    "id": "leg_left_main",
+    "tex": 0,
+    "order": 500,
+    "x": 998,
+    "y": 2553,
+    "w": 336,
+    "h": 1544,
+    "verts": 91
+  },
+  {
+    "id": "leg_right_knee",
+    "tex": 0,
+    "order": 500,
+    "x": 1737,
+    "y": 2380,
+    "w": 170,
+    "h": 273,
+    "verts": 37
+  },
+  {
+    "id": "leg_right_main",
+    "tex": 0,
+    "order": 500,
+    "x": 1357,
+    "y": 2572,
+    "w": 330,
+    "h": 1511,
+    "verts": 76
+  },
+  {
+    "id": "shoe_right",
+    "tex": 0,
+    "order": 500,
+    "x": 1523,
+    "y": 2230,
+    "w": 202,
+    "h": 334,
+    "verts": 31
+  },
+  {
+    "id": "shoe_left",
+    "tex": 0,
+    "order": 500,
+    "x": 1182,
+    "y": 2210,
+    "w": 206,
+    "h": 334,
+    "verts": 31
+  },
+  {
+    "id": "shadow_legs_skirt",
+    "tex": 0,
+    "order": 500,
+    "x": 32,
+    "y": 1653,
+    "w": 765,
+    "h": 574,
+    "verts": 347
+  },
+  {
+    "id": "nose",
+    "tex": 0,
+    "order": 500,
+    "x": 3374,
+    "y": 3022,
+    "w": 21,
+    "h": 24,
+    "verts": 21
+  },
+  {
+    "id": "head",
+    "tex": 0,
+    "order": 500,
+    "x": 3149,
+    "y": 3054,
+    "w": 465,
+    "h": 588,
+    "verts": 216
+  },
+  {
+    "id": "ear_right",
+    "tex": 0,
+    "order": 500,
+    "x": 3564,
+    "y": 3153,
+    "w": 102,
+    "h": 135,
+    "verts": 31
+  },
+  {
+    "id": "ear_right_light",
+    "tex": 0,
+    "order": 500,
+    "x": 3576,
+    "y": 3038,
+    "w": 103,
+    "h": 142,
+    "verts": 32
+  },
+  {
+    "id": "hair_back",
+    "tex": 0,
+    "order": 500,
+    "x": 3041,
+    "y": 1597,
+    "w": 329,
+    "h": 242,
+    "verts": 102
+  },
+  {
+    "id": "hair_middle2",
+    "tex": 0,
+    "order": 500,
+    "x": 3138,
+    "y": 1407,
+    "w": 142,
+    "h": 147,
+    "verts": 94
+  },
+  {
+    "id": "hair_middle3",
+    "tex": 0,
+    "order": 500,
+    "x": 3132,
+    "y": 1289,
+    "w": 159,
+    "h": 219,
+    "verts": 179
+  },
+  {
+    "id": "hair_middle4",
+    "tex": 0,
+    "order": 500,
+    "x": 3132,
+    "y": 1186,
+    "w": 159,
+    "h": 215,
+    "verts": 190
+  },
+  {
+    "id": "hair_middle5",
+    "tex": 0,
+    "order": 500,
+    "x": 3140,
+    "y": 1133,
+    "w": 159,
+    "h": 165,
+    "verts": 136
+  },
+  {
+    "id": "hair_middle6",
+    "tex": 0,
+    "order": 500,
+    "x": 3203,
+    "y": 1133,
+    "w": 96,
+    "h": 55,
+    "verts": 44
+  },
+  {
+    "id": "hair_mid_left2",
+    "tex": 0,
+    "order": 500,
+    "x": 2917,
+    "y": 1383,
+    "w": 208,
+    "h": 173,
+    "verts": 145
+  },
+  {
+    "id": "hair_mid_left3",
+    "tex": 0,
+    "order": 500,
+    "x": 2872,
+    "y": 1315,
+    "w": 240,
+    "h": 223,
+    "verts": 234
+  },
+  {
+    "id": "hair_mid_left4",
+    "tex": 0,
+    "order": 500,
+    "x": 2868,
+    "y": 1198,
+    "w": 228,
+    "h": 241,
+    "verts": 259
+  },
+  {
+    "id": "hair_mid_left5",
+    "tex": 0,
+    "order": 500,
+    "x": 2868,
+    "y": 1128,
+    "w": 224,
+    "h": 181,
+    "verts": 236
+  },
+  {
+    "id": "hair_mid_left6",
+    "tex": 0,
+    "order": 500,
+    "x": 2878,
+    "y": 1128,
+    "w": 214,
+    "h": 104,
+    "verts": 86
+  },
+  {
+    "id": "hair_mid_right2",
+    "tex": 0,
+    "order": 500,
+    "x": 3314,
+    "y": 1396,
+    "w": 186,
+    "h": 163,
+    "verts": 121
+  },
+  {
+    "id": "hair_mid_right3",
+    "tex": 0,
+    "order": 500,
+    "x": 3327,
+    "y": 1316,
+    "w": 214,
+    "h": 224,
+    "verts": 198
+  },
+  {
+    "id": "hair_mid_right4",
+    "tex": 0,
+    "order": 500,
+    "x": 3345,
+    "y": 1200,
+    "w": 204,
+    "h": 245,
+    "verts": 243
+  },
+  {
+    "id": "hair_mid_right5",
+    "tex": 0,
+    "order": 500,
+    "x": 3349,
+    "y": 1159,
+    "w": 200,
+    "h": 161,
+    "verts": 199
+  },
+  {
+    "id": "hair_mid_right6",
+    "tex": 0,
+    "order": 500,
+    "x": 3390,
+    "y": 1159,
+    "w": 130,
+    "h": 45,
+    "verts": 61
+  },
+  {
+    "id": "lip",
+    "tex": 0,
+    "order": 500,
+    "x": 2324,
+    "y": 34,
+    "w": 66,
+    "h": 30,
+    "verts": 48
+  },
+  {
+    "id": "hair_left2",
+    "tex": 0,
+    "order": 500,
+    "x": 2712,
+    "y": 1486,
+    "w": 243,
+    "h": 172,
+    "verts": 69
+  },
+  {
+    "id": "hair_left3",
+    "tex": 0,
+    "order": 500,
+    "x": 2660,
+    "y": 1375,
+    "w": 209,
+    "h": 277,
+    "verts": 87
+  },
+  {
+    "id": "hair_left4",
+    "tex": 0,
+    "order": 500,
+    "x": 2657,
+    "y": 1240,
+    "w": 132,
+    "h": 289,
+    "verts": 88
+  },
+  {
+    "id": "hair_left5",
+    "tex": 0,
+    "order": 500,
+    "x": 2657,
+    "y": 1113,
+    "w": 157,
+    "h": 262,
+    "verts": 88
+  },
+  {
+    "id": "hair_left6",
+    "tex": 0,
+    "order": 500,
+    "x": 2672,
+    "y": 1021,
+    "w": 163,
+    "h": 229,
+    "verts": 76
+  },
+  {
+    "id": "hair_left7",
+    "tex": 0,
+    "order": 500,
+    "x": 2734,
+    "y": 1006,
+    "w": 120,
+    "h": 142,
+    "verts": 52
+  },
+  {
+    "id": "hair_left8",
+    "tex": 0,
+    "order": 500,
+    "x": 2792,
+    "y": 1006,
+    "w": 62,
+    "h": 34,
+    "verts": 13
+  },
+  {
+    "id": "hair_right2",
+    "tex": 0,
+    "order": 500,
+    "x": 3447,
+    "y": 1535,
+    "w": 190,
+    "h": 120,
+    "verts": 54
+  },
+  {
+    "id": "hair_right3",
+    "tex": 0,
+    "order": 500,
+    "x": 3508,
+    "y": 1445,
+    "w": 219,
+    "h": 208,
+    "verts": 74
+  },
+  {
+    "id": "hair_right4",
+    "tex": 0,
+    "order": 500,
+    "x": 3591,
+    "y": 1318,
+    "w": 163,
+    "h": 279,
+    "verts": 95
+  },
+  {
+    "id": "hair_right5",
+    "tex": 0,
+    "order": 500,
+    "x": 3607,
+    "y": 1162,
+    "w": 148,
+    "h": 299,
+    "verts": 103
+  },
+  {
+    "id": "hair_right6",
+    "tex": 0,
+    "order": 500,
+    "x": 3585,
+    "y": 1035,
+    "w": 169,
+    "h": 272,
+    "verts": 97
+  },
+  {
+    "id": "hair_right7",
+    "tex": 0,
+    "order": 500,
+    "x": 3570,
+    "y": 1008,
+    "w": 148,
+    "h": 176,
+    "verts": 68
+  },
+  {
+    "id": "hair_right8",
+    "tex": 0,
+    "order": 500,
+    "x": 3570,
+    "y": 1008,
+    "w": 68,
+    "h": 40,
+    "verts": 19
+  },
+  {
+    "id": "hair_back_left4",
+    "tex": 0,
+    "order": 500,
+    "x": 2447,
+    "y": 1232,
+    "w": 157,
+    "h": 403,
+    "verts": 129
+  },
+  {
+    "id": "hair_back_left5",
+    "tex": 0,
+    "order": 500,
+    "x": 2447,
+    "y": 1172,
+    "w": 139,
+    "h": 265,
+    "verts": 85
+  },
+  {
+    "id": "hair_back_left6",
+    "tex": 0,
+    "order": 500,
+    "x": 2544,
+    "y": 1172,
+    "w": 41,
+    "h": 40,
+    "verts": 11
+  },
+  {
+    "id": "hair_back_right2",
+    "tex": 0,
+    "order": 500,
+    "x": 3623,
+    "y": 1691,
+    "w": 278,
+    "h": 208,
+    "verts": 124
+  },
+  {
+    "id": "hair_back_right3",
+    "tex": 0,
+    "order": 500,
+    "x": 3732,
+    "y": 1560,
+    "w": 230,
+    "h": 312,
+    "verts": 150
+  },
+  {
+    "id": "hair_back_right4",
+    "tex": 0,
+    "order": 500,
+    "x": 3822,
+    "y": 1363,
+    "w": 140,
+    "h": 363,
+    "verts": 174
+  },
+  {
+    "id": "hair_back_right5",
+    "tex": 0,
+    "order": 500,
+    "x": 3782,
+    "y": 1306,
+    "w": 179,
+    "h": 246,
+    "verts": 140
+  },
+  {
+    "id": "hair_back_right6",
+    "tex": 0,
+    "order": 500,
+    "x": 3782,
+    "y": 1306,
+    "w": 128,
+    "h": 84,
+    "verts": 40
+  },
+  {
+    "id": "back_hair_bottom2",
+    "tex": 0,
+    "order": 500,
+    "x": 3033,
+    "y": 914,
+    "w": 411,
+    "h": 156,
+    "verts": 170
+  },
+  {
+    "id": "back_hair_bottom3",
+    "tex": 0,
+    "order": 500,
+    "x": 3021,
+    "y": 804,
+    "w": 432,
+    "h": 225,
+    "verts": 219
+  },
+  {
+    "id": "back_hair_bottom4",
+    "tex": 0,
+    "order": 500,
+    "x": 3021,
+    "y": 692,
+    "w": 432,
+    "h": 249,
+    "verts": 241
+  },
+  {
+    "id": "back_hair_bottom5",
+    "tex": 0,
+    "order": 500,
+    "x": 3023,
+    "y": 677,
+    "w": 425,
+    "h": 171,
+    "verts": 147
+  },
+  {
+    "id": "back_hair_bottom6",
+    "tex": 0,
+    "order": 500,
+    "x": 3218,
+    "y": 677,
+    "w": 28,
+    "h": 8,
+    "verts": 9
+  },
+  {
+    "id": "eye_top_left",
+    "tex": 0,
+    "order": 500,
+    "x": 2581,
+    "y": 418,
+    "w": 150,
+    "h": 52,
+    "verts": 115
+  },
+  {
+    "id": "eye_top_right",
+    "tex": 0,
+    "order": 500,
+    "x": 2750,
+    "y": 418,
+    "w": 148,
+    "h": 51,
+    "verts": 129
+  },
+  {
+    "id": "arm_main_right",
+    "tex": 0,
+    "order": 500,
+    "x": 930,
+    "y": 269,
+    "w": 347,
+    "h": 786,
+    "verts": 52
+  },
+  {
+    "id": "f3_right",
+    "tex": 0,
+    "order": 500,
+    "x": 1093,
+    "y": 84,
+    "w": 62,
+    "h": 128,
+    "verts": 26
+  },
+  {
+    "id": "f2_right",
+    "tex": 0,
+    "order": 500,
+    "x": 1051,
+    "y": 60,
+    "w": 56,
+    "h": 150,
+    "verts": 28
+  },
+  {
+    "id": "f1_right",
+    "tex": 0,
+    "order": 500,
+    "x": 1006,
+    "y": 67,
+    "w": 100,
+    "h": 185,
+    "verts": 37
+  },
+  {
+    "id": "finger_right",
+    "tex": 0,
+    "order": 500,
+    "x": 756,
+    "y": 78,
+    "w": 207,
+    "h": 263,
+    "verts": 62
+  },
+  {
+    "id": "thumb_right",
+    "tex": 0,
+    "order": 500,
+    "x": 852,
+    "y": 26,
+    "w": 175,
+    "h": 252,
+    "verts": 47
+  },
+  {
+    "id": "tie_top_left_shade",
+    "tex": 0,
+    "order": 500,
+    "x": 2768,
+    "y": 2498,
+    "w": 142,
+    "h": 133,
+    "verts": 68
+  },
+  {
+    "id": "tie_top_left2",
+    "tex": 0,
+    "order": 500,
+    "x": 3269,
+    "y": 2516,
+    "w": 97,
+    "h": 162,
+    "verts": 32
+  },
+  {
+    "id": "tie_top_right_shade",
+    "tex": 0,
+    "order": 500,
+    "x": 3074,
+    "y": 2495,
+    "w": 141,
+    "h": 133,
+    "verts": 69
+  },
+  {
+    "id": "tie_top_right2",
+    "tex": 0,
+    "order": 500,
+    "x": 3396,
+    "y": 2521,
+    "w": 103,
+    "h": 149,
+    "verts": 30
+  },
+  {
+    "id": "tie_top_right3",
+    "tex": 0,
+    "order": 500,
+    "x": 3394,
+    "y": 3781,
+    "w": 143,
+    "h": 141,
+    "verts": 80
+  },
+  {
+    "id": "tie_top_right4",
+    "tex": 0,
+    "order": 500,
+    "x": 3410,
+    "y": 3812,
+    "w": 184,
+    "h": 180,
+    "verts": 156
+  },
+  {
+    "id": "tie_top_right5",
+    "tex": 0,
+    "order": 500,
+    "x": 3469,
+    "y": 3812,
+    "w": 225,
+    "h": 196,
+    "verts": 205
+  },
+  {
+    "id": "tie_top_right6",
+    "tex": 0,
+    "order": 500,
+    "x": 3586,
+    "y": 3812,
+    "w": 224,
+    "h": 196,
+    "verts": 202
+  },
+  {
+    "id": "tie_top_right7",
+    "tex": 0,
+    "order": 500,
+    "x": 3700,
+    "y": 3830,
+    "w": 176,
+    "h": 176,
+    "verts": 136
+  },
+  {
+    "id": "tie_top_right8",
+    "tex": 0,
+    "order": 500,
+    "x": 3782,
+    "y": 3892,
+    "w": 108,
+    "h": 102,
+    "verts": 57
+  },
+  {
+    "id": "tie_top_right9",
+    "tex": 0,
+    "order": 500,
+    "x": 3870,
+    "y": 3957,
+    "w": 20,
+    "h": 29,
+    "verts": 10
+  },
+  {
+    "id": "tie_top_left3",
+    "tex": 0,
+    "order": 500,
+    "x": 3268,
+    "y": 3779,
+    "w": 102,
+    "h": 104,
+    "verts": 51
+  },
+  {
+    "id": "tie_top_left4",
+    "tex": 0,
+    "order": 500,
+    "x": 3216,
+    "y": 3803,
+    "w": 150,
+    "h": 168,
+    "verts": 100
+  },
+  {
+    "id": "tie_top_left5",
+    "tex": 0,
+    "order": 500,
+    "x": 3126,
+    "y": 3818,
+    "w": 202,
+    "h": 200,
+    "verts": 171
+  },
+  {
+    "id": "tie_top_left6",
+    "tex": 0,
+    "order": 500,
+    "x": 3007,
+    "y": 3818,
+    "w": 240,
+    "h": 202,
+    "verts": 221
+  },
+  {
+    "id": "tie_top_left7",
+    "tex": 0,
+    "order": 500,
+    "x": 2913,
+    "y": 3828,
+    "w": 217,
+    "h": 192,
+    "verts": 189
+  },
+  {
+    "id": "tie_top_left8",
+    "tex": 0,
+    "order": 500,
+    "x": 2887,
+    "y": 3879,
+    "w": 143,
+    "h": 137,
+    "verts": 92
+  },
+  {
+    "id": "tie_top_left9",
+    "tex": 0,
+    "order": 500,
+    "x": 2887,
+    "y": 3957,
+    "w": 34,
+    "h": 51,
+    "verts": 15
+  },
+  {
+    "id": "tie_left2",
+    "tex": 0,
+    "order": 500,
+    "x": 3307,
+    "y": 2434,
+    "w": 49,
+    "h": 82,
+    "verts": 46
+  },
+  {
+    "id": "tie_left3",
+    "tex": 0,
+    "order": 500,
+    "x": 3281,
+    "y": 2422,
+    "w": 60,
+    "h": 101,
+    "verts": 62
+  },
+  {
+    "id": "tie_left4",
+    "tex": 0,
+    "order": 500,
+    "x": 3261,
+    "y": 2418,
+    "w": 52,
+    "h": 105,
+    "verts": 61
+  },
+  {
+    "id": "tie_left5",
+    "tex": 0,
+    "order": 500,
+    "x": 3236,
+    "y": 2416,
+    "w": 46,
+    "h": 106,
+    "verts": 60
+  },
+  {
+    "id": "tie_left6",
+    "tex": 0,
+    "order": 500,
+    "x": 3235,
+    "y": 2416,
+    "w": 28,
+    "h": 60,
+    "verts": 33
+  },
+  {
+    "id": "tie_bottom_left_shade2",
+    "tex": 0,
+    "order": 500,
+    "x": 2909,
+    "y": 2453,
+    "w": 68,
+    "h": 81,
+    "verts": 45
+  },
+  {
+    "id": "tie_bottom_left_shade3",
+    "tex": 0,
+    "order": 500,
+    "x": 2887,
+    "y": 2450,
+    "w": 55,
+    "h": 97,
+    "verts": 49
+  },
+  {
+    "id": "tie_bottom_left_shade4",
+    "tex": 0,
+    "order": 500,
+    "x": 2861,
+    "y": 2441,
+    "w": 56,
+    "h": 106,
+    "verts": 60
+  },
+  {
+    "id": "tie_bottom_left_shade5",
+    "tex": 0,
+    "order": 500,
+    "x": 2831,
+    "y": 2441,
+    "w": 55,
+    "h": 106,
+    "verts": 76
+  },
+  {
+    "id": "tie_bottom_left_shade6",
+    "tex": 0,
+    "order": 500,
+    "x": 2831,
+    "y": 2441,
+    "w": 29,
+    "h": 62,
+    "verts": 41
+  },
+  {
+    "id": "tie_bottom_right_shade2",
+    "tex": 0,
+    "order": 500,
+    "x": 3005,
+    "y": 2456,
+    "w": 60,
+    "h": 81,
+    "verts": 53
+  },
+  {
+    "id": "tie_bottom_right_shade3",
+    "tex": 0,
+    "order": 500,
+    "x": 3037,
+    "y": 2452,
+    "w": 59,
+    "h": 96,
+    "verts": 59
+  },
+  {
+    "id": "tie_bottom_right_shade4",
+    "tex": 0,
+    "order": 500,
+    "x": 3062,
+    "y": 2446,
+    "w": 60,
+    "h": 102,
+    "verts": 59
+  },
+  {
+    "id": "tie_bottom_right_shade5",
+    "tex": 0,
+    "order": 500,
+    "x": 3087,
+    "y": 2437,
+    "w": 60,
+    "h": 110,
+    "verts": 56
+  },
+  {
+    "id": "tie_bottom_right_shade6",
+    "tex": 0,
+    "order": 500,
+    "x": 3110,
+    "y": 2437,
+    "w": 43,
+    "h": 66,
+    "verts": 34
+  },
+  {
+    "id": "tie_right2",
+    "tex": 0,
+    "order": 500,
+    "x": 3407,
+    "y": 2432,
+    "w": 43,
+    "h": 81,
+    "verts": 52
+  },
+  {
+    "id": "tie_right3",
+    "tex": 0,
+    "order": 500,
+    "x": 3419,
+    "y": 2420,
+    "w": 62,
+    "h": 99,
+    "verts": 65
+  },
+  {
+    "id": "tie_right4",
+    "tex": 0,
+    "order": 500,
+    "x": 3449,
+    "y": 2416,
+    "w": 63,
+    "h": 104,
+    "verts": 67
+  },
+  {
+    "id": "tie_right5",
+    "tex": 0,
+    "order": 500,
+    "x": 3483,
+    "y": 2414,
+    "w": 45,
+    "h": 105,
+    "verts": 54
+  },
+  {
+    "id": "tie_right6",
+    "tex": 0,
+    "order": 500,
+    "x": 3510,
+    "y": 2414,
+    "w": 18,
+    "h": 55,
+    "verts": 21
+  },
+  {
+    "id": "tie_bottom_right2",
+    "tex": 0,
+    "order": 500,
+    "x": 3377,
+    "y": 2346,
+    "w": 66,
+    "h": 67,
+    "verts": 51
+  },
+  {
+    "id": "tie_bottom_right3",
+    "tex": 0,
+    "order": 500,
+    "x": 3388,
+    "y": 2319,
+    "w": 99,
+    "h": 93,
+    "verts": 80
+  },
+  {
+    "id": "tie_bottom_right4",
+    "tex": 0,
+    "order": 500,
+    "x": 3412,
+    "y": 2306,
+    "w": 101,
+    "h": 96,
+    "verts": 79
+  },
+  {
+    "id": "tie_bottom_right5",
+    "tex": 0,
+    "order": 500,
+    "x": 3447,
+    "y": 2306,
+    "w": 66,
+    "h": 82,
+    "verts": 47
+  },
+  {
+    "id": "tie_bottom_right6",
+    "tex": 0,
+    "order": 500,
+    "x": 3484,
+    "y": 2323,
+    "w": 24,
+    "h": 28,
+    "verts": 9
+  },
+  {
+    "id": "under_tie_right2",
+    "tex": 0,
+    "order": 500,
+    "x": 3008,
+    "y": 2364,
+    "w": 65,
+    "h": 60,
+    "verts": 53
+  },
+  {
+    "id": "under_tie_right3",
+    "tex": 0,
+    "order": 500,
+    "x": 3018,
+    "y": 2332,
+    "w": 99,
+    "h": 89,
+    "verts": 67
+  },
+  {
+    "id": "under_tie_right4",
+    "tex": 0,
+    "order": 500,
+    "x": 3048,
+    "y": 2307,
+    "w": 107,
+    "h": 104,
+    "verts": 73
+  },
+  {
+    "id": "under_tie_right5",
+    "tex": 0,
+    "order": 500,
+    "x": 3092,
+    "y": 2307,
+    "w": 70,
+    "h": 91,
+    "verts": 52
+  },
+  {
+    "id": "under_tie_right6",
+    "tex": 0,
+    "order": 500,
+    "x": 3124,
+    "y": 2313,
+    "w": 38,
+    "h": 69,
+    "verts": 15
+  },
+  {
+    "id": "tie_bottom_left2",
+    "tex": 0,
+    "order": 500,
+    "x": 3309,
+    "y": 2352,
+    "w": 58,
+    "h": 65,
+    "verts": 49
+  },
+  {
+    "id": "tie_bottom_left3",
+    "tex": 0,
+    "order": 500,
+    "x": 3267,
+    "y": 2328,
+    "w": 91,
+    "h": 87,
+    "verts": 78
+  },
+  {
+    "id": "tie_bottom_left4",
+    "tex": 0,
+    "order": 500,
+    "x": 3232,
+    "y": 2310,
+    "w": 101,
+    "h": 100,
+    "verts": 89
+  },
+  {
+    "id": "tie_bottom_left5",
+    "tex": 0,
+    "order": 500,
+    "x": 3232,
+    "y": 2310,
+    "w": 75,
+    "h": 85,
+    "verts": 71
+  },
+  {
+    "id": "tie_bottom_left6",
+    "tex": 0,
+    "order": 500,
+    "x": 3235,
+    "y": 2328,
+    "w": 23,
+    "h": 37,
+    "verts": 18
+  },
+  {
+    "id": "under_tie_left2",
+    "tex": 0,
+    "order": 500,
+    "x": 2900,
+    "y": 2347,
+    "w": 92,
+    "h": 85,
+    "verts": 68
+  },
+  {
+    "id": "under_tie_left3",
+    "tex": 0,
+    "order": 500,
+    "x": 2855,
+    "y": 2330,
+    "w": 100,
+    "h": 99,
+    "verts": 76
+  },
+  {
+    "id": "under_tie_left4",
+    "tex": 0,
+    "order": 500,
+    "x": 2817,
+    "y": 2315,
+    "w": 112,
+    "h": 99,
+    "verts": 88
+  },
+  {
+    "id": "under_tie_left5",
+    "tex": 0,
+    "order": 500,
+    "x": 2816,
+    "y": 2315,
+    "w": 70,
+    "h": 88,
+    "verts": 64
+  },
+  {
+    "id": "under_tie_left6",
+    "tex": 0,
+    "order": 500,
+    "x": 2816,
+    "y": 2317,
+    "w": 36,
+    "h": 65,
+    "verts": 15
+  },
+  {
+    "id": "under_boob_shadow2",
+    "tex": 0,
+    "order": 500,
+    "x": 35,
+    "y": 227,
+    "w": 613,
+    "h": 113,
+    "verts": 106
+  },
+  {
+    "id": "under_boob_shadow3",
+    "tex": 0,
+    "order": 500,
+    "x": 17,
+    "y": 125,
+    "w": 665,
+    "h": 205,
+    "verts": 149
+  },
+  {
+    "id": "under_boob_shadow4",
+    "tex": 0,
+    "order": 500,
+    "x": 17,
+    "y": 39,
+    "w": 665,
+    "h": 172,
+    "verts": 115
+  },
+  {
+    "id": "under_boob_shadow5",
+    "tex": 0,
+    "order": 500,
+    "x": 20,
+    "y": 14,
+    "w": 653,
+    "h": 107,
+    "verts": 78
+  },
+  {
+    "id": "under_boob_shadow6",
+    "tex": 0,
+    "order": 500,
+    "x": 100,
+    "y": 14,
+    "w": 517,
+    "h": 18,
+    "verts": 14
+  },
+  {
+    "id": "uh_left2",
+    "tex": 0,
+    "order": 500,
+    "x": 1225,
+    "y": 1588,
+    "w": 234,
+    "h": 157,
+    "verts": 39
+  },
+  {
+    "id": "uh_left3",
+    "tex": 0,
+    "order": 500,
+    "x": 1163,
+    "y": 1464,
+    "w": 197,
+    "h": 266,
+    "verts": 51
+  },
+  {
+    "id": "uh_left4",
+    "tex": 0,
+    "order": 500,
+    "x": 1160,
+    "y": 1333,
+    "w": 132,
+    "h": 283,
+    "verts": 50
+  },
+  {
+    "id": "uh_left5",
+    "tex": 0,
+    "order": 500,
+    "x": 1160,
+    "y": 1228,
+    "w": 157,
+    "h": 234,
+    "verts": 41
+  },
+  {
+    "id": "uh_left6",
+    "tex": 0,
+    "order": 500,
+    "x": 1169,
+    "y": 1115,
+    "w": 163,
+    "h": 223,
+    "verts": 39
+  },
+  {
+    "id": "uh_left7",
+    "tex": 0,
+    "order": 500,
+    "x": 1246,
+    "y": 1096,
+    "w": 120,
+    "h": 139,
+    "verts": 29
+  },
+  {
+    "id": "uh_left8",
+    "tex": 0,
+    "order": 500,
+    "x": 1289,
+    "y": 1096,
+    "w": 77,
+    "h": 28,
+    "verts": 11
+  },
+  {
+    "id": "uh_mid2",
+    "tex": 0,
+    "order": 500,
+    "x": 1365,
+    "y": 1454,
+    "w": 165,
+    "h": 177,
+    "verts": 79
+  },
+  {
+    "id": "uh_mid3",
+    "tex": 0,
+    "order": 500,
+    "x": 1359,
+    "y": 1336,
+    "w": 175,
+    "h": 230,
+    "verts": 110
+  },
+  {
+    "id": "uh_mid4",
+    "tex": 0,
+    "order": 500,
+    "x": 1359,
+    "y": 1250,
+    "w": 175,
+    "h": 192,
+    "verts": 92
+  },
+  {
+    "id": "uh_mid5",
+    "tex": 0,
+    "order": 500,
+    "x": 1373,
+    "y": 1199,
+    "w": 175,
+    "h": 145,
+    "verts": 69
+  },
+  {
+    "id": "uh_mid6",
+    "tex": 0,
+    "order": 500,
+    "x": 1439,
+    "y": 1199,
+    "w": 108,
+    "h": 43,
+    "verts": 31
+  },
+  {
+    "id": "uh_mid_left2",
+    "tex": 0,
+    "order": 500,
+    "x": 762,
+    "y": 1583,
+    "w": 216,
+    "h": 179,
+    "verts": 84
+  },
+  {
+    "id": "uh_mid_left3",
+    "tex": 0,
+    "order": 500,
+    "x": 721,
+    "y": 1495,
+    "w": 239,
+    "h": 241,
+    "verts": 98
+  },
+  {
+    "id": "uh_mid_left4",
+    "tex": 0,
+    "order": 500,
+    "x": 719,
+    "y": 1379,
+    "w": 224,
+    "h": 243,
+    "verts": 129
+  },
+  {
+    "id": "uh_mid_left5",
+    "tex": 0,
+    "order": 500,
+    "x": 719,
+    "y": 1326,
+    "w": 222,
+    "h": 170,
+    "verts": 124
+  },
+  {
+    "id": "uh_mid_left6",
+    "tex": 0,
+    "order": 500,
+    "x": 774,
+    "y": 1326,
+    "w": 133,
+    "h": 79,
+    "verts": 35
+  },
+  {
+    "id": "uh_right2",
+    "tex": 0,
+    "order": 500,
+    "x": 1495,
+    "y": 1595,
+    "w": 210,
+    "h": 154,
+    "verts": 33
+  },
+  {
+    "id": "uh_right3",
+    "tex": 0,
+    "order": 500,
+    "x": 1565,
+    "y": 1491,
+    "w": 223,
+    "h": 247,
+    "verts": 43
+  },
+  {
+    "id": "uh_right4",
+    "tex": 0,
+    "order": 500,
+    "x": 1636,
+    "y": 1381,
+    "w": 166,
+    "h": 282,
+    "verts": 38
+  },
+  {
+    "id": "uh_right5",
+    "tex": 0,
+    "order": 500,
+    "x": 1646,
+    "y": 1226,
+    "w": 157,
+    "h": 277,
+    "verts": 34
+  },
+  {
+    "id": "uh_right6",
+    "tex": 0,
+    "order": 500,
+    "x": 1627,
+    "y": 1120,
+    "w": 176,
+    "h": 248,
+    "verts": 47
+  },
+  {
+    "id": "uh_right7",
+    "tex": 0,
+    "order": 500,
+    "x": 1618,
+    "y": 1093,
+    "w": 136,
+    "h": 176,
+    "verts": 46
+  },
+  {
+    "id": "uh_right8",
+    "tex": 0,
+    "order": 500,
+    "x": 1618,
+    "y": 1093,
+    "w": 68,
+    "h": 49,
+    "verts": 16
+  },
+  {
+    "id": "uh_mid_right2",
+    "tex": 0,
+    "order": 500,
+    "x": 2027,
+    "y": 1567,
+    "w": 186,
+    "h": 176,
+    "verts": 68
+  },
+  {
+    "id": "uh_mid_right3",
+    "tex": 0,
+    "order": 500,
+    "x": 2052,
+    "y": 1504,
+    "w": 208,
+    "h": 223,
+    "verts": 88
+  },
+  {
+    "id": "uh_mid_right4",
+    "tex": 0,
+    "order": 500,
+    "x": 2066,
+    "y": 1400,
+    "w": 210,
+    "h": 222,
+    "verts": 104
+  },
+  {
+    "id": "uh_mid_right5",
+    "tex": 0,
+    "order": 500,
+    "x": 2070,
+    "y": 1337,
+    "w": 206,
+    "h": 173,
+    "verts": 115
+  },
+  {
+    "id": "uh_mid_right6",
+    "tex": 0,
+    "order": 500,
+    "x": 2082,
+    "y": 1337,
+    "w": 184,
+    "h": 59,
+    "verts": 55
+  },
+  {
+    "id": "hair_over_shade_left2",
+    "tex": 0,
+    "order": 500,
+    "x": 1054,
+    "y": 1612,
+    "w": 180,
+    "h": 129,
+    "verts": 46
+  },
+  {
+    "id": "hair_over_shade_left3",
+    "tex": 0,
+    "order": 500,
+    "x": 979,
+    "y": 1510,
+    "w": 215,
+    "h": 221,
+    "verts": 70
+  },
+  {
+    "id": "hair_over_shade_left4",
+    "tex": 0,
+    "order": 500,
+    "x": 957,
+    "y": 1367,
+    "w": 154,
+    "h": 297,
+    "verts": 90
+  },
+  {
+    "id": "hair_over_shade_left5",
+    "tex": 0,
+    "order": 500,
+    "x": 957,
+    "y": 1229,
+    "w": 154,
+    "h": 288,
+    "verts": 102
+  },
+  {
+    "id": "hair_over_shade_left6",
+    "tex": 0,
+    "order": 500,
+    "x": 960,
+    "y": 1124,
+    "w": 175,
+    "h": 239,
+    "verts": 79
+  },
+  {
+    "id": "hair_over_shade_left7",
+    "tex": 0,
+    "order": 500,
+    "x": 1019,
+    "y": 1084,
+    "w": 135,
+    "h": 154,
+    "verts": 43
+  },
+  {
+    "id": "hair_over_shade_left8",
+    "tex": 0,
+    "order": 500,
+    "x": 1095,
+    "y": 1084,
+    "w": 59,
+    "h": 45,
+    "verts": 14
+  },
+  {
+    "id": "hair_over_shade_right2",
+    "tex": 0,
+    "order": 500,
+    "x": 1741,
+    "y": 1610,
+    "w": 194,
+    "h": 145,
+    "verts": 50
+  },
+  {
+    "id": "hair_over_shade_right3",
+    "tex": 0,
+    "order": 500,
+    "x": 1800,
+    "y": 1518,
+    "w": 210,
+    "h": 228,
+    "verts": 77
+  },
+  {
+    "id": "hair_over_shade_right4",
+    "tex": 0,
+    "order": 500,
+    "x": 1861,
+    "y": 1408,
+    "w": 163,
+    "h": 257,
+    "verts": 89
+  },
+  {
+    "id": "hair_over_shade_right5",
+    "tex": 0,
+    "order": 500,
+    "x": 1880,
+    "y": 1274,
+    "w": 145,
+    "h": 269,
+    "verts": 95
+  },
+  {
+    "id": "hair_over_shade_right6",
+    "tex": 0,
+    "order": 500,
+    "x": 1855,
+    "y": 1145,
+    "w": 169,
+    "h": 256,
+    "verts": 94
+  },
+  {
+    "id": "hair_over_shade_right7",
+    "tex": 0,
+    "order": 500,
+    "x": 1840,
+    "y": 1111,
+    "w": 148,
+    "h": 182,
+    "verts": 72
+  },
+  {
+    "id": "hair_over_shade_right8",
+    "tex": 0,
+    "order": 500,
+    "x": 1840,
+    "y": 1111,
+    "w": 68,
+    "h": 45,
+    "verts": 25
+  },
+  {
+    "id": "mouth_top",
+    "tex": 0,
+    "order": 500,
+    "x": 2293,
+    "y": 264,
+    "w": 131,
+    "h": 62,
+    "verts": 205
+  },
+  {
+    "id": "lip_overlay",
+    "tex": 0,
+    "order": 500,
+    "x": 2332,
+    "y": 71,
+    "w": 56,
+    "h": 42,
+    "verts": 53
+  },
+  {
+    "id": "hair_back_left2",
+    "tex": 0,
+    "order": 500,
+    "x": 2527,
+    "y": 1573,
+    "w": 253,
+    "h": 197,
+    "verts": 91
+  },
+  {
+    "id": "hair_back_left3",
+    "tex": 0,
+    "order": 500,
+    "x": 2447,
+    "y": 1451,
+    "w": 252,
+    "h": 301,
+    "verts": 116
+  },
+  {
+    "id": "eye_shines_left_6",
+    "tex": 0,
+    "order": 500,
+    "x": 2666,
+    "y": 386,
+    "w": 15,
+    "h": 15,
+    "verts": 24
+  },
+  {
+    "id": "eye_shines_left_5",
+    "tex": 0,
+    "order": 500,
+    "x": 2626,
+    "y": 408,
+    "w": 35,
+    "h": 30,
+    "verts": 46
+  },
+  {
+    "id": "eye_side_left3",
+    "tex": 0,
+    "order": 500,
+    "x": 2579,
+    "y": 346,
+    "w": 29,
+    "h": 64,
+    "verts": 51
+  },
+  {
+    "id": "eye_bottom_left3",
+    "tex": 0,
+    "order": 500,
+    "x": 2634,
+    "y": 322,
+    "w": 44,
+    "h": 11,
+    "verts": 27
+  },
+  {
+    "id": "eye_dots_left3",
+    "tex": 0,
+    "order": 500,
+    "x": 2610,
+    "y": 333,
+    "w": 5,
+    "h": 5,
+    "verts": 10
+  },
+  {
+    "id": "eye_fold_left3",
+    "tex": 0,
+    "order": 500,
+    "x": 3010,
+    "y": 376,
+    "w": 83,
+    "h": 23,
+    "verts": 60
+  },
+  {
+    "id": "eye_brows_left3",
+    "tex": 0,
+    "order": 500,
+    "x": 2955,
+    "y": 181,
+    "w": 141,
+    "h": 60,
+    "verts": 96
+  },
+  {
+    "id": "eye_top_left3",
+    "tex": 0,
+    "order": 500,
+    "x": 2581,
+    "y": 418,
+    "w": 150,
+    "h": 52,
+    "verts": 115
+  },
+  {
+    "id": "eye_shines_right_6",
+    "tex": 0,
+    "order": 500,
+    "x": 2815,
+    "y": 388,
+    "w": 15,
+    "h": 15,
+    "verts": 24
+  },
+  {
+    "id": "eye_shines_right_5",
+    "tex": 0,
+    "order": 500,
+    "x": 2774,
+    "y": 411,
+    "w": 35,
+    "h": 30,
+    "verts": 41
+  },
+  {
+    "id": "eye_side_right3",
+    "tex": 0,
+    "order": 500,
+    "x": 2868,
+    "y": 346,
+    "w": 28,
+    "h": 64,
+    "verts": 46
+  },
+  {
+    "id": "eye_bottom_right3",
+    "tex": 0,
+    "order": 500,
+    "x": 2804,
+    "y": 322,
+    "w": 45,
+    "h": 11,
+    "verts": 32
+  },
+  {
+    "id": "eye_dots_right3",
+    "tex": 0,
+    "order": 500,
+    "x": 2867,
+    "y": 329,
+    "w": 5,
+    "h": 5,
+    "verts": 8
+  },
+  {
+    "id": "eye_fold_right3",
+    "tex": 0,
+    "order": 500,
+    "x": 3154,
+    "y": 379,
+    "w": 83,
+    "h": 23,
+    "verts": 57
+  },
+  {
+    "id": "eye_brows_right3",
+    "tex": 0,
+    "order": 500,
+    "x": 3124,
+    "y": 180,
+    "w": 141,
+    "h": 60,
+    "verts": 83
+  },
+  {
+    "id": "eye_top_right3",
+    "tex": 0,
+    "order": 500,
+    "x": 2750,
+    "y": 418,
+    "w": 148,
+    "h": 51,
+    "verts": 129
+  },
+  {
+    "id": "eye_swirl_right3",
+    "tex": 0,
+    "order": 500,
+    "x": 3117,
+    "y": 81,
+    "w": 105,
+    "h": 102,
+    "verts": 259
+  },
+  {
+    "id": "eye_swirl_left3",
+    "tex": 0,
+    "order": 500,
+    "x": 2984,
+    "y": 82,
+    "w": 105,
+    "h": 102,
+    "verts": 217
+  },
+  {
+    "id": "eye_closed_right3",
+    "tex": 0,
+    "order": 500,
+    "x": 3432,
+    "y": 220,
+    "w": 121,
+    "h": 73,
+    "verts": 129
+  },
+  {
+    "id": "eye_closed_left3",
+    "tex": 0,
+    "order": 500,
+    "x": 3265,
+    "y": 220,
+    "w": 122,
+    "h": 73,
+    "verts": 117
+  },
+  {
+    "id": "eye_OO_tear_left_shade3",
+    "tex": 0,
+    "order": 500,
+    "x": 3294,
+    "y": 41,
+    "w": 22,
+    "h": 46,
+    "verts": 37
+  },
+  {
+    "id": "eye_OO_left_main3",
+    "tex": 0,
+    "order": 500,
+    "x": 3430,
+    "y": 92,
+    "w": 261,
+    "h": 101,
+    "verts": 104
+  },
+  {
+    "id": "eye_OO_left_tear3",
+    "tex": 0,
+    "order": 500,
+    "x": 3328,
+    "y": 46,
+    "w": 29,
+    "h": 34,
+    "verts": 38
+  },
+  {
+    "id": "eye_OO_tear_right_shade3",
+    "tex": 0,
+    "order": 500,
+    "x": 3523,
+    "y": 46,
+    "w": 22,
+    "h": 46,
+    "verts": 38
+  },
+  {
+    "id": "eye_OO_right_main3",
+    "tex": 0,
+    "order": 500,
+    "x": 3149,
+    "y": 92,
+    "w": 256,
+    "h": 101,
+    "verts": 104
+  },
+  {
+    "id": "eye_OO_right_tear3",
+    "tex": 0,
+    "order": 500,
+    "x": 3486,
+    "y": 51,
+    "w": 29,
+    "h": 34,
+    "verts": 40
+  }
+]

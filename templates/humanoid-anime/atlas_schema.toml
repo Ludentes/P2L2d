@@ -72,3 +72,15 @@ swap_strategy = "hue_shift"
 name          = "hair_side_right"
 required      = false
 swap_strategy = "hue_shift"
+
+[[regions]]
+name          = "body"
+description   = "Exposed skin — arms, hands, legs, visible torso skin"
+required      = false
+swap_strategy = "paste"
+
+[[regions]]
+name          = "clothing"
+description   = "Complete outfit — top, skirt/pants, socks, accessories"
+required      = false
+swap_strategy = "hue_shift"
