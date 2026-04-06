@@ -1,58 +1,74 @@
 # Canonical texture region names for humanoid-anime rigs.
-# Each rig provides pixel coordinates for these in manifests/<rig>_atlas.toml.
+# Each rig provides per-drawable UV bboxes in manifests/<rig>_atlas.toml.
 # Regions marked required = true must be present; others are optional.
+#
+# swap_strategy controls how replacements are applied:
+#   paste      — scale replacement image to each drawable's bbox and alpha-composite
+#   hue_shift  — rotate hue of existing pixels to match target color; preserves shading
 
 [[regions]]
-name        = "face_skin"
-description = "Face skin base (forehead, cheeks, chin)"
-required    = true
+name          = "face_skin"
+description   = "Face skin base (forehead, cheeks, chin)"
+required      = true
+swap_strategy = "paste"
 
 [[regions]]
-name        = "left_eye"
-description = "Left eye (iris, pupil, white, lashes)"
-required    = true
+name          = "left_eye"
+description   = "Left eye (iris, pupil, sclera, lashes, lid)"
+required      = true
+swap_strategy = "paste"
 
 [[regions]]
-name        = "right_eye"
-description = "Right eye"
-required    = true
+name          = "right_eye"
+description   = "Right eye"
+required      = true
+swap_strategy = "paste"
 
 [[regions]]
-name        = "left_eyebrow"
-required    = true
+name          = "left_eyebrow"
+required      = true
+swap_strategy = "paste"
 
 [[regions]]
-name        = "right_eyebrow"
-required    = true
+name          = "right_eyebrow"
+required      = true
+swap_strategy = "paste"
 
 [[regions]]
-name        = "mouth"
-description = "Mouth region (open/closed area)"
-required    = true
+name          = "mouth"
+description   = "Mouth region (lip line, teeth, inner)"
+required      = true
+swap_strategy = "paste"
 
 [[regions]]
-name        = "left_cheek"
-description = "Cheek blush / highlight"
-required    = false
+name          = "left_cheek"
+description   = "Cheek blush / highlight"
+required      = false
+swap_strategy = "paste"
 
 [[regions]]
-name        = "right_cheek"
-required    = false
+name          = "right_cheek"
+required      = false
+swap_strategy = "paste"
 
 [[regions]]
-name        = "hair_front"
-description = "Front hair layer (bangs, face frame)"
-required    = true
+name          = "hair_front"
+description   = "Front hair layer (bangs, face frame)"
+required      = true
+swap_strategy = "hue_shift"
 
 [[regions]]
-name        = "hair_back"
-description = "Back hair layer"
-required    = false
+name          = "hair_back"
+description   = "Back hair layer"
+required      = false
+swap_strategy = "hue_shift"
 
 [[regions]]
-name        = "hair_side_left"
-required    = false
+name          = "hair_side_left"
+required      = false
+swap_strategy = "hue_shift"
 
 [[regions]]
-name        = "hair_side_right"
-required    = false
+name          = "hair_side_right"
+required      = false
+swap_strategy = "hue_shift"

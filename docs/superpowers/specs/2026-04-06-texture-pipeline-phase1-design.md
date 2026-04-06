@@ -1,7 +1,7 @@
 # Texture Pipeline — Phase 1 Design
 
-**Date:** 2026-04-06  
-**Scope:** Atlas coordinate config + texture region swap + headless validation  
+**Date:** 2026-04-06 (revised after texture inspection)
+**Scope:** Atlas coordinate config + strategy-aware texture swap + headless validation
 **Phase:** 1 of 2 (Phase 2 = AI generation from portrait, separate brainstorm)
 
 ---
@@ -9,11 +9,58 @@
 ## Goal
 
 Build the mechanical foundation for texture personalization: define where semantic regions
-live in a Live2D texture atlas, swap those regions programmatically, and validate the result
-with a headless render. No AI generation in Phase 1.
+live in a Live2D texture atlas (per-drawable precision), swap those regions using the right
+strategy for each region type, and validate the result with a headless render.
 
-Success criterion: paste a solid-color block into Hiyori's face skin region → headless render
-shows the replacement colour on the model's face with no UV misalignment.
+Success criterion: apply a solid-color replacement to Hiyori's face_skin → headless render
+shows the replacement colour with no UV misalignment.
+
+---
+
+## Why Rectangular Bbox Swap Is Insufficient
+
+Inspection of Hiyori's texture_00.png revealed three structural problems:
+
+**1. Scattered multi-component regions**
+Each semantic region is made of 3–12 separate drawables laid out non-contiguously in the
+atlas. A union bbox captures mostly empty space:
+- `left_eye`: sclera (y≈709) and iris (y≈864) are 155px apart → 650px tall union bbox
+- `hair_front`: highlight piece at x=563, dark frame at x=1385 → 1310px wide union bbox
+
+Pasting into a union bbox wastes the paste and distorts proportions.
+
+**2. Hair color = many scattered patches**
+Hiyori's hair spans hair_front (two non-adjacent pieces), hair_back, hair_side_left,
+hair_side_right. All must shift to the same new hue for consistent color. But the pieces
+have different shapes, shading gradients, and highlights — replacing pixels destroys the
+existing render quality.
+
+**3. Mouth components are < 60px each**
+The mouth in the atlas consists of tiny scattered blobs. A rectangular paste is
+meaningless; per-drawable UV precision is required.
+
+---
+
+## Revised Design: Per-Drawable Precision + Swap Strategies
+
+### Core Insight
+
+A semantic region is a **group of drawables** that share a semantic role. The atlas config
+stores the UV bounding box of each drawable individually. Swapping operates per-drawable
+using the right strategy for the region type.
+
+### Swap Strategies
+
+| Strategy | Regions | How |
+|---|---|---|
+| `paste` | face_skin, left_cheek, right_cheek | Scale replacement to each drawable's bbox; alpha-composite |
+| `hue_shift` | hair_front, hair_back, hair_side_left, hair_side_right | HSV hue rotation on existing pixels; preserves highlights and shading |
+| `paste` (default for mouth/eyes) | left_eye, right_eye, left_eyebrow, right_eyebrow, mouth | Per-drawable scaled paste |
+
+`hue_shift` is the key upgrade: instead of replacing hair pixels, we rotate their hue in
+HSV space. This preserves the existing shading, gradient, and highlight structure —
+only the color changes. The target hue is extracted from the portrait (Phase 2) or
+supplied directly.
 
 ---
 
@@ -24,29 +71,26 @@ Atlas config parallels the manifest system (param name mapping):
 | Layer | Params | Atlas |
 |---|---|---|
 | Template | `schema.toml` — canonical param names | `atlas_schema.toml` — canonical region names |
-| Rig | `manifests/hiyori.toml` — coord mapping | `manifests/hiyori_atlas.toml` — pixel coords |
+| Rig | `manifests/hiyori.toml` — coord mapping | `manifests/hiyori_atlas.toml` — per-drawable UV bboxes |
 
-**For existing rigs (Hiyori):** measure once with `measure_regions.py` → commit
-`manifests/hiyori_atlas.toml`. Never needs to change unless the rig file changes.
+**For existing rigs (Hiyori):** `measure_regions.py` extracts per-drawable UV bboxes via
+ctypes, labels them with VLM, writes `manifests/hiyori_atlas.toml`. Committed once.
 
-**For generated rigs (future):** the rig generator outputs `atlas_config.toml` as part of the
-artifact bundle (spec-driven from `atlas_schema.toml`). No manual measurement needed.
-The atlas layout is designed upfront when we design the rig.
+**For generated rigs (future):** rig generator outputs `atlas_config.toml` as part of
+the artifact bundle. UV layout is designed upfront. No measurement needed.
 
-This means `pipeline/texture_swap.py` is completely generic — it works with any
-`AtlasConfig`, whether measured or generated.
+`pipeline/texture_swap.py` is completely generic — it dispatches on `swap_strategy`.
 
 ---
 
 ## Style Constraint Note
 
-The atlas swap pipeline is style-agnostic (PIL coordinate paste). What constrains viable
-art styles is the **mesh**, not the textures:
+The atlas swap pipeline is style-agnostic. What constrains viable art styles is the
+**mesh**, not the textures:
 
 - Hiyori mesh: anime-proportioned. Anime, stylized, watercolour textures look natural.
   Photorealistic textures will look uncanny on exaggerated anime deformers.
-- For generated rigs (when P2L controls the mesh), we choose proportions that match the
-  intended style range. No pipeline-level pigeonholing.
+- For generated rigs, we choose proportions that match the intended style range.
 
 ---
 
@@ -54,86 +98,115 @@ art styles is the **mesh**, not the textures:
 
 ### 1. `templates/humanoid-anime/atlas_schema.toml`
 
-Defines canonical region names for this template type. Rig manifests must provide
-coordinates for all required regions. Optional regions may be omitted.
+Unchanged. Defines canonical region names + required/optional flag.
 
 ```toml
-# Canonical texture region names for humanoid-anime rigs.
-# Each rig provides pixel coordinates for these in manifests/<rig>_atlas.toml.
-
 [[regions]]
 name        = "face_skin"
 description = "Face skin base (forehead, cheeks, chin)"
 required    = true
+swap_strategy = "paste"
 
 [[regions]]
 name        = "left_eye"
-description = "Left eye including white, iris, pupil, lashes"
 required    = true
+swap_strategy = "paste"
 
 [[regions]]
 name        = "right_eye"
-description = "Right eye"
 required    = true
+swap_strategy = "paste"
 
 [[regions]]
 name        = "left_eyebrow"
 required    = true
+swap_strategy = "paste"
 
 [[regions]]
 name        = "right_eyebrow"
 required    = true
+swap_strategy = "paste"
 
 [[regions]]
 name        = "mouth"
-description = "Mouth open/closed region"
 required    = true
+swap_strategy = "paste"
 
 [[regions]]
 name        = "left_cheek"
-description = "Cheek blush / highlight"
 required    = false
+swap_strategy = "paste"
 
 [[regions]]
 name        = "right_cheek"
 required    = false
+swap_strategy = "paste"
 
 [[regions]]
 name        = "hair_front"
-description = "Front hair layer (bangs, frame)"
 required    = true
+swap_strategy = "hue_shift"
 
 [[regions]]
 name        = "hair_back"
-description = "Back hair layer"
 required    = false
+swap_strategy = "hue_shift"
 
 [[regions]]
 name        = "hair_side_left"
 required    = false
+swap_strategy = "hue_shift"
 
 [[regions]]
 name        = "hair_side_right"
 required    = false
+swap_strategy = "hue_shift"
 ```
 
 ### 2. `pipeline/atlas_config.py`
 
 ```python
 @dataclass
+class DrawableRegion:
+    drawable_id: str        # e.g. "ArtMesh023"
+    texture_index: int      # 0 or 1
+    x: int                  # left edge of UV bbox in pixels
+    y: int                  # top edge
+    w: int                  # width
+    h: int                  # height
+    draw_order: int         # from csmGetDrawableDrawOrders
+
+    def __post_init__(self) -> None:
+        if self.w <= 0 or self.h <= 0:
+            raise ValueError(f"DrawableRegion {self.drawable_id!r}: w and h must be positive")
+
+@dataclass
 class AtlasRegion:
-    name: str           # canonical name, e.g. "face_skin"
-    texture_index: int  # 0 or 1 (texture_00 / texture_01)
-    x: int              # left edge in pixels
-    y: int              # top edge in pixels
-    w: int              # width in pixels
-    h: int              # height in pixels
+    name: str                           # canonical region name
+    swap_strategy: str                  # "paste" | "hue_shift"
+    drawables: list[DrawableRegion]     # per-drawable UV bboxes
+
+    def bbox(self, texture_index: int | None = None) -> tuple[int, int, int, int]:
+        """Union bbox of all drawables (optionally filtered by texture_index)."""
+        items = self.drawables
+        if texture_index is not None:
+            items = [d for d in items if d.texture_index == texture_index]
+        if not items:
+            raise ValueError(f"No drawables for texture_index={texture_index}")
+        x = min(d.x for d in items)
+        y = min(d.y for d in items)
+        x2 = max(d.x + d.w for d in items)
+        y2 = max(d.y + d.h for d in items)
+        return x, y, x2 - x, y2 - y
+
+    def texture_indices(self) -> set[int]:
+        return {d.texture_index for d in self.drawables}
 
 @dataclass
 class AtlasConfig:
     rig_name: str
     template_name: str
-    texture_size: int          # assumed square (2048 for Hiyori)
+    texture_size: int           # assumed square
     regions: list[AtlasRegion]
 
     def get(self, name: str) -> AtlasRegion: ...   # raises KeyError if not found
@@ -142,61 +215,165 @@ class AtlasConfig:
 def load_atlas_config(path: Path) -> AtlasConfig: ...
 ```
 
-TOML format:
+TOML format — each region contains a list of per-drawable entries:
+
 ```toml
-rig        = "hiyori"
-template   = "humanoid-anime"
+rig          = "hiyori"
+template     = "humanoid-anime"
 texture_size = 2048
 
 [[regions]]
-name          = "face_skin"
-texture_index = 0
-x = 412
-y = 88
-w = 280
-h = 320
-# ... etc
+name           = "face_skin"
+swap_strategy  = "paste"
+
+  [[regions.drawables]]
+  id           = "ArtMesh001"
+  texture_index = 0
+  x = 29
+  y = 20
+  w = 500
+  h = 575
+  draw_order   = 5
+
+[[regions]]
+name           = "hair_front"
+swap_strategy  = "hue_shift"
+
+  [[regions.drawables]]
+  id           = "ArtMesh045"
+  texture_index = 0
+  x = 563
+  y = 40
+  w = 464
+  h = 402
+  draw_order   = 80
+
+  [[regions.drawables]]
+  id           = "ArtMesh046"
+  texture_index = 0
+  x = 1385
+  y = 62
+  w = 488
+  h = 446
+  draw_order   = 81
 ```
 
 ### 3. `manifests/hiyori_atlas.toml`
 
-Hiyori-specific atlas coordinates. Populated by running `measure_regions.py` once on
-Hiyori's `texture_00.png` and `texture_01.png`, then committed.
+Populated by `measure_regions.py`. Contains one `[[regions.drawables]]` entry per
+drawable with exact UV bbox from ctypes extraction and semantic label from VLM.
 
-This file is the one-time manual artifact. All downstream code reads it via
-`load_atlas_config()`.
+The current version (manually measured union bboxes) is a placeholder until
+`measure_regions.py` runs and generates per-drawable entries.
 
 ### 4. `pipeline/texture_swap.py`
 
-Generic region paste. No rig-specific logic.
+Strategy dispatch. No rig-specific logic.
 
 ```python
 def swap_region(
-    atlas: Image.Image,
+    atlases: dict[int, Image.Image],
+    region: AtlasRegion,
+    replacement: Image.Image,          # for "paste": the replacement image
+                                        # for "hue_shift": target color (used to extract hue)
+) -> dict[int, Image.Image]:
+    """Apply strategy-aware swap for one region. Returns modified atlases dict."""
+    if region.swap_strategy == "paste":
+        return _paste_region(atlases, region, replacement)
+    elif region.swap_strategy == "hue_shift":
+        return _hue_shift_region(atlases, region, replacement)
+    else:
+        raise ValueError(f"Unknown swap_strategy: {region.swap_strategy!r}")
+
+
+def _paste_region(
+    atlases: dict[int, Image.Image],
     region: AtlasRegion,
     replacement: Image.Image,
-) -> Image.Image:
-    """Paste replacement into atlas at region coordinates. Alpha compositing."""
-    out = atlas.copy()
-    src = replacement.resize((region.w, region.h), Image.LANCZOS)
-    if src.mode != "RGBA":
-        src = src.convert("RGBA")
-    out.paste(src, (region.x, region.y), src)
+) -> dict[int, Image.Image]:
+    """Scale replacement to each drawable's bbox and alpha-composite."""
+    out = {k: v.copy() for k, v in atlases.items()}
+    # Union bbox of all drawables on each texture
+    for tex_idx in region.texture_indices():
+        x, y, w, h = region.bbox(texture_index=tex_idx)
+        src = replacement.resize((w, h), Image.Resampling.LANCZOS)
+        if src.mode != "RGBA":
+            src = src.convert("RGBA")
+        # Paste each drawable's sub-region
+        for d in region.drawables:
+            if d.texture_index != tex_idx:
+                continue
+            # Crop the sub-region of the replacement that corresponds to this drawable
+            # within the union bbox
+            rx = d.x - x
+            ry = d.y - y
+            sub = src.crop((rx, ry, rx + d.w, ry + d.h))
+            out[tex_idx].paste(sub, (d.x, d.y), sub)
     return out
 
-def swap_regions(
-    atlases: dict[int, Image.Image],   # {texture_index: PIL image}
-    config: AtlasConfig,
-    replacements: dict[str, Image.Image],   # {region_name: replacement image}
+
+def _hue_shift_region(
+    atlases: dict[int, Image.Image],
+    region: AtlasRegion,
+    target_color: Image.Image,
 ) -> dict[int, Image.Image]:
-    """Batch replacement. Returns modified atlas images."""
-    ...
+    """Shift hue of existing pixels to match target_color's hue.
+
+    Preserves the original lightness and saturation structure (highlights,
+    shading gradients). Only the hue channel rotates.
+
+    target_color: any image; its average hue is extracted and used as target.
+    """
+    import colorsys
+    out = {k: v.copy() for k, v in atlases.items()}
+
+    # Extract target hue from replacement image
+    arr = np.array(target_color.convert("RGB")).reshape(-1, 3) / 255.0
+    hsv = np.array([colorsys.rgb_to_hsv(*px) for px in arr])
+    target_h = float(hsv[:, 0].mean())
+
+    for d in region.drawables:
+        atlas_arr = np.array(out[d.texture_index]).astype(float)
+        patch = atlas_arr[d.y:d.y + d.h, d.x:d.x + d.w]
+        alpha = patch[:, :, 3]
+        rgb = patch[:, :, :3] / 255.0
+
+        # Shift hue pixel by pixel where alpha > 0
+        result = np.zeros_like(patch)
+        for row in range(d.h):
+            for col in range(d.w):
+                if alpha[row, col] < 10:
+                    result[row, col] = patch[row, col]
+                    continue
+                h, s, v = colorsys.rgb_to_hsv(*rgb[row, col])
+                r2, g2, b2 = colorsys.hsv_to_rgb(target_h, s, v)
+                result[row, col] = [r2 * 255, g2 * 255, b2 * 255, alpha[row, col]]
+
+        atlas_arr[d.y:d.y + d.h, d.x:d.x + d.w] = result
+        out[d.texture_index] = Image.fromarray(atlas_arr.astype(np.uint8))
+
+    return out
+
+
+def swap_regions(
+    atlases: dict[int, Image.Image],
+    config: AtlasConfig,
+    replacements: dict[str, Image.Image],
+) -> dict[int, Image.Image]:
+    """Batch replacement. Applies each region's strategy."""
+    out = {k: v.copy() for k, v in atlases.items()}
+    for name, replacement in replacements.items():
+        region = config.get(name)
+        out = swap_region(out, region, replacement)
+    return out
 ```
+
+Note: The pixel-loop hue shift in `_hue_shift_region` is shown for clarity. The
+implementation should use numpy vectorized HSV conversion for performance.
 
 ### 5. `pipeline/validate.py`
 
-Uses `rig/render.py` headless renderer. Copies modified textures to a temp dir alongside
-Hiyori model files, renders neutral pose, returns the frame as `np.ndarray`.
+Unchanged from previous spec. Uses `rig/render.py` headless renderer.
 
 ```python
 def validate_textures(
@@ -205,10 +382,7 @@ def validate_textures(
 ) -> np.ndarray:
     """Render with modified textures. Returns (H, W, 4) RGBA frame."""
     ...
-```
 
-Also provides a simple pixel-region check:
-```python
 def check_region_color(
     frame: np.ndarray,
     expected_color: tuple[int, int, int],
@@ -220,16 +394,8 @@ def check_region_color(
 
 ### 6. `pipeline/measure_regions.py`
 
-Fully automated tool to produce `manifests/<rig>_atlas.toml` for existing rigs.
-
-**Why VLM, not MediaPipe:** Some drawables cannot be identified from the texture atlas
-alone — a detached hair strand only exists for physics simulation, and a fingertip looks
-like any other skin patch when isolated. MediaPipe covers only face landmarks and misses
-hair, body, accessories entirely. A vision LLM understands the full character in rendered
-context and can distinguish "left-side physics hair" from "back hair layer" by visual
-shape and position.
-
-**Three-phase workflow:**
+Three-phase automated tool. Produces `manifests/<rig>_atlas.toml` with per-drawable
+entries (not union bboxes).
 
 **Phase 1 — UV extraction (ctypes)**
 Calls Cubism Core C functions via ctypes (exported symbols in `live2d.so`):
@@ -239,52 +405,23 @@ Calls Cubism Core C functions via ctypes (exported symbols in `live2d.so`):
 - Output: list of `{id, texture_index, uv_bbox, draw_order}` for all drawables
 
 **Phase 2 — Render isolation (live2d-py)**
-For each drawable `i`, render it as solid green on black background:
+For each drawable `i`:
 - Set ALL drawables' multiply color to `(0, 0, 0, 1)` → renders black
-- Set ALL drawables' screen color to `(0, 0, 0, 255)` → stays black
 - Set drawable `i`'s screen color to `(0, 255, 0, 255)` → renders solid green
-- Render neutral pose → only drawable `i` appears (green), background is black
-- Find green-pixel bounding box in rendered frame → screen-space extent
+- Render neutral pose → only drawable `i` appears
 - Save the isolated render frame for VLM input
 
-Also render the full model at neutral pose once (normal colours) for context.
+Also render the full model at neutral pose once for context.
 
-**Phase 3 — VLM labeling (Claude API)**
-Group drawables by spatial proximity of their UV bboxes — nearby drawables likely
-belong to the same semantic region (e.g., eye white + iris + pupil + lash = left_eye).
-For each group (typically 15-25 groups for a humanoid-anime rig):
+**Phase 3 — VLM labeling (local VLM or Claude API)**
+Group drawables by UV bbox proximity. For each group, compose a 3-panel image and call
+the VLM (see `docs/runbooks/drawable-labeling-playbook.md` for the prompt).
 
-1. Compose a 3-panel image:
-   - Panel A: group's isolated renders composited (green on black)
-   - Panel B: group highlighted on the full normal render (yellow overlay)
-   - Panel C: texture atlas with UV bboxes outlined
-
-2. Call `claude-sonnet-4-6` with the 3-panel image and prompt:
-   ```
-   You are labeling texture regions of a Live2D anime character rig for automated
-   texture replacement. The panels show: (A) the isolated drawables in green,
-   (B) the same drawables highlighted on the full character render, (C) their
-   location in the texture atlas.
-
-   Choose the best canonical region name from this list:
-   face_skin, left_eye, right_eye, left_eyebrow, right_eyebrow, mouth,
-   left_cheek, right_cheek, hair_front, hair_back, hair_side_left,
-   hair_side_right, body, clothing, accessory, other
-
-   Respond with JSON: {"label": "<name>", "confidence": 0.0-1.0, "note": "<brief reason>"}
-   ```
-
-3. Groups with confidence < 0.7 are written as `label = "other"` in the TOML with a
-   comment showing the VLM's note — user can manually correct these only.
-
-**Output:** `manifests/<rig>_atlas.toml` with:
-- UV-exact pixel coordinates (from ctypes, not screen-space estimates)
-- Semantic region names (from VLM)
-- Draw order range per region (min/max draw_order of member drawables)
-- Any low-confidence entries flagged with `# REVIEW: <note>`
-
-**Efficiency:** ~133 renders (Hiyori) + ~20 VLM API calls ≈ 2-3 minutes total.
-Runs once per rig and the result is committed.
+Output format: `manifests/<rig>_atlas.toml` with:
+- Per-drawable UV bbox (from ctypes, not estimated)
+- Semantic region name (from VLM) → `name` on parent `[[regions]]`
+- `swap_strategy` inherited from `atlas_schema.toml`
+- Low-confidence entries flagged `# REVIEW: <note>`
 
 CLI:
 ```
@@ -295,7 +432,10 @@ uv run python -m pipeline.measure_regions \
     --out manifests/hiyori_atlas.toml
 ```
 
-**Dependency:** `anthropic` Python SDK. Add to project: `uv add anthropic`.
+**Dependency:** No external VLM API required — the playbook prompt is designed to be
+run by the operator (Claude Code session) rather than via an autonomous API call. The
+tool outputs the 3-panel images; the operator runs the playbook and edits the TOML.
+(Fully automated API mode can be added later.)
 
 ---
 
@@ -303,11 +443,13 @@ uv run python -m pipeline.measure_regions \
 
 ```
 Input: replacement images (one per region name)
-       manifests/hiyori_atlas.toml  (coordinates)
+       manifests/hiyori_atlas.toml  (per-drawable UV bboxes + strategies)
          ↓
 load_atlas_config() → AtlasConfig
          ↓
-swap_regions(atlases, config, replacements) → modified atlas images
+swap_regions(atlases, config, replacements)
+  → paste regions: per-drawable scaled paste
+  → hue_shift regions: HSV hue rotation preserving shading
          ↓
 validate.validate_textures(rig_config, modified_atlases) → frame
          ↓
@@ -318,10 +460,13 @@ Visual confirmation / automated pixel check
 
 ## Future Integration Point (Phase 2)
 
-Phase 2 will generate replacement images from a portrait via SDXL img2img + segmentation.
+Phase 2 will generate replacement images from a portrait via segmentation + style transfer.
 The output of Phase 2 is exactly the `replacements: dict[str, Image.Image]` dict that
 Phase 1's `swap_regions()` already accepts. Phase 2 plugs in above Phase 1 with no
 changes to Phase 1 code.
+
+For `hue_shift` regions (hair), Phase 2 provides a single color swatch extracted from
+the portrait's hair. For `paste` regions, Phase 2 provides a full replacement image.
 
 ---
 
@@ -329,10 +474,11 @@ changes to Phase 1 code.
 
 - AI/diffusion generation
 - Portrait → anime style transfer
-- Segmentation of input portrait into components
+- Segmentation of input portrait
 - HaiMeng support (EULA-pending)
-- Body/clothing texture regions (can be added to atlas_schema later)
-- Atlas config generation for new rigs (just the measure tool for existing rigs)
+- Body/clothing texture regions (texture_01 scope, can be added to atlas_schema later)
+- UV polygon warp (non-rectangular paste). Current paste uses each drawable's bbox;
+  true UV warp would use the vertex polygon. Phase 2 enhancement.
 
 ---
 
@@ -340,15 +486,18 @@ changes to Phase 1 code.
 
 | Test | Type | What it checks |
 |---|---|---|
-| `test_load_atlas_config` | unit | TOML loads to `AtlasConfig`, types correct |
+| `test_load_atlas_config` | unit | TOML loads to `AtlasConfig`, drawables parsed |
 | `test_atlas_config_get` | unit | `get()` returns correct region, raises `KeyError` |
-| `test_swap_region_pixels` | unit | Paste solid red block → verify pixels at region coords |
-| `test_swap_preserves_other_regions` | unit | Pixels outside region unchanged |
-| `test_swap_alpha_compositing` | unit | RGBA replacement blends correctly |
+| `test_atlas_region_bbox` | unit | Union bbox computed correctly from drawables |
+| `test_swap_paste_pixels` | unit | paste strategy: replacement pixels appear at drawable bbox |
+| `test_swap_paste_preserves_outside` | unit | Pixels outside drawables unchanged |
+| `test_swap_hue_shift_changes_hue` | unit | hue_shift: hue changes, lightness preserved |
+| `test_swap_hue_shift_alpha` | unit | Fully transparent pixels not modified |
+| `test_swap_regions_batch` | unit | Multiple regions swapped, correct strategies applied |
 | `test_validate_textures` | integration | Modified atlas → headless render → non-null frame |
 | `test_validate_region_color` | integration | Red-filled face region appears red in render |
 
-Integration tests skip if Hiyori model files not present (same pattern as existing tests).
+Integration tests skip if Hiyori model files not present.
 
 ---
 
@@ -357,19 +506,22 @@ Integration tests skip if Hiyori model files not present (same pattern as existi
 ```
 templates/
   humanoid-anime/
-    atlas_schema.toml          ← new (canonical region names)
+    atlas_schema.toml          ← updated (adds swap_strategy per region)
 manifests/
   hiyori.toml                  ← existing (param mapping)
-  hiyori_atlas.toml            ← new (measured pixel coords)
+  hiyori_atlas.toml            ← per-drawable UV bboxes (from measure_regions.py)
 pipeline/
   __init__.py
-  atlas_config.py              ← new
-  texture_swap.py              ← new
+  atlas_config.py              ← updated (DrawableRegion, AtlasRegion.drawables)
+  texture_swap.py              ← updated (strategy dispatch, hue_shift)
   validate.py                  ← new
-  measure_regions.py           ← new (one-time tool)
+  measure_regions.py           ← new (produces per-drawable TOML)
 tests/
   pipeline/
-    test_atlas_config.py       ← new
-    test_texture_swap.py       ← new
+    test_atlas_config.py       ← updated
+    test_texture_swap.py       ← updated
     test_validate.py           ← new (integration, skips if no model)
+docs/
+  runbooks/
+    drawable-labeling-playbook.md  ← existing
 ```
