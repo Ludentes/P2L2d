@@ -1,0 +1,75 @@
+# Canonical texture region names for pet-mascot rigs.
+# Covers non-humanoid / animal / chibi mascot characters.
+# Each rig provides per-drawable UV bboxes in manifests/<rig>_atlas.toml.
+#
+# swap_strategy controls how replacements are applied:
+#   paste      — scale replacement image to each drawable's bbox and alpha-composite
+#   hue_shift  — rotate hue of existing pixels to match target color; preserves shading
+
+[[regions]]
+name          = "face"
+description   = "Face base (muzzle, forehead, cheeks)"
+required      = true
+swap_strategy = "hue_shift"
+
+[[regions]]
+name          = "left_eye"
+description   = "Left eye (iris, pupil, whites, lash layers)"
+required      = true
+swap_strategy = "hue_shift"
+
+[[regions]]
+name          = "right_eye"
+description   = "Right eye"
+required      = true
+swap_strategy = "hue_shift"
+
+[[regions]]
+name          = "nose"
+required      = false
+swap_strategy = "hue_shift"
+
+[[regions]]
+name          = "mouth"
+description   = "Mouth region (lip line, inner, expression variants)"
+required      = false
+swap_strategy = "hue_shift"
+
+[[regions]]
+name          = "left_ear"
+required      = false
+swap_strategy = "hue_shift"
+
+[[regions]]
+name          = "right_ear"
+required      = false
+swap_strategy = "hue_shift"
+
+[[regions]]
+name          = "left_cheek"
+description   = "Cheek blush / highlight"
+required      = false
+swap_strategy = "hue_shift"
+
+[[regions]]
+name          = "right_cheek"
+required      = false
+swap_strategy = "hue_shift"
+
+[[regions]]
+name          = "body"
+description   = "Animal body — torso, limbs, paws, tail"
+required      = true
+swap_strategy = "hue_shift"
+
+[[regions]]
+name          = "prop"
+description   = "The main prop or container the mascot holds / is inside (e.g. bowl, cup, box)"
+required      = false
+swap_strategy = "hue_shift"
+
+[[regions]]
+name          = "effects"
+description   = "Particle effects, sparkles, emotion bubbles"
+required      = false
+swap_strategy = "hue_shift"

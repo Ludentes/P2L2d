@@ -1,0 +1,205 @@
+# Wanko rig — atlas region assignments
+# Template: pet-mascot
+# Texture: 1 × 1024px (texture_00.png)
+# Total drawables: 33 (8 D_REF_PT reference points excluded — deformer anchors, ~1px)
+#
+# Left/right convention: lower atlas x = character's screen-left (viewer's left for mirrored anime rigs)
+# Wanko is a symmetric bowl mascot — left/right ears and eyes are nearly symmetric in UV space.
+# D_EAR_00 x=463 < D_EAR_01 x=763 → EAR_00 is character's left (lower x)
+# D_EYE_00 x=388 < D_EYE_01 x=491 → EYE_00 is character's left
+
+template          = "pet-mascot"
+rig               = "wanko"
+texture_size      = 1024
+texture_count     = 1
+
+# ── Face base ──────────────────────────────────────────────────────────────────
+
+[[regions]]
+name          = "face"
+swap_strategy = "hue_shift"
+
+  [[regions.drawables]]
+  id = "D_FACE_00"
+  tex = 0
+  x = 543; y = 454; w = 274; h = 208
+
+  [[regions.drawables]]
+  id = "D_FACE_01"
+  tex = 0
+  x = 445; y = 545; w = 66; h = 31
+
+# ── Eyes ───────────────────────────────────────────────────────────────────────
+
+[[regions]]
+name          = "left_eye"
+swap_strategy = "hue_shift"
+
+  [[regions.drawables]]
+  id = "D_EYE_00"
+  tex = 0
+  x = 388; y = 505; w = 40; h = 25
+
+[[regions]]
+name          = "right_eye"
+swap_strategy = "hue_shift"
+
+  [[regions.drawables]]
+  id = "D_EYE_01"
+  tex = 0
+  x = 491; y = 508; w = 40; h = 23
+
+  [[regions.drawables]]
+  id = "D_EYE_02"
+  tex = 0
+  x = 508; y = 689; w = 34; h = 31
+
+# ── Nose ───────────────────────────────────────────────────────────────────────
+
+[[regions]]
+name          = "nose"
+swap_strategy = "hue_shift"
+
+  [[regions.drawables]]
+  id = "D_NOSE_00"
+  tex = 0
+  x = 434; y = 486; w = 50; h = 33
+
+# ── Mouth ──────────────────────────────────────────────────────────────────────
+
+[[regions]]
+name          = "mouth"
+swap_strategy = "hue_shift"
+
+  [[regions.drawables]]
+  id = "D_MOUTH_00"
+  tex = 0
+  x = 812; y = 480; w = 63; h = 44
+
+  [[regions.drawables]]
+  id = "D_MOUTH_01"
+  tex = 0
+  x = 737; y = 328; w = 100; h = 55
+
+  [[regions.drawables]]
+  id = "D_MOUTH_02"
+  tex = 0
+  x = 624; y = 378; w = 119; h = 56
+
+# ── Ears ───────────────────────────────────────────────────────────────────────
+
+[[regions]]
+name          = "left_ear"
+swap_strategy = "hue_shift"
+
+  [[regions.drawables]]
+  id = "D_EAR_00"
+  tex = 0
+  x = 463; y = 582; w = 127; h = 104
+
+[[regions]]
+name          = "right_ear"
+swap_strategy = "hue_shift"
+
+  [[regions.drawables]]
+  id = "D_EAR_01"
+  tex = 0
+  x = 763; y = 578; w = 126; h = 102
+
+# ── Cheeks ─────────────────────────────────────────────────────────────────────
+
+[[regions]]
+name          = "left_cheek"
+swap_strategy = "hue_shift"
+
+  [[regions.drawables]]
+  id = "D_HOHO_00"
+  tex = 0
+  x = 568; y = 309; w = 68; h = 59
+
+[[regions]]
+name          = "right_cheek"
+swap_strategy = "hue_shift"
+
+  [[regions.drawables]]
+  id = "D_HOHO_01"
+  tex = 0
+  x = 658; y = 312; w = 65; h = 56
+
+# ── Body ───────────────────────────────────────────────────────────────────────
+
+[[regions]]
+name          = "body"
+swap_strategy = "hue_shift"
+
+  [[regions.drawables]]
+  id = "D_BODY_00"
+  tex = 0
+  x = 490; y = 669; w = 389; h = 346
+
+  [[regions.drawables]]
+  id = "D_BODY_01"
+  tex = 0
+  x = 537; y = 392; w = 96; h = 86
+
+  [[regions.drawables]]
+  id = "D_BODY_02"
+  tex = 0
+  x = 738; y = 388; w = 90; h = 84
+
+# ── Prop (bowl) ────────────────────────────────────────────────────────────────
+
+[[regions]]
+name          = "prop"
+swap_strategy = "hue_shift"
+
+  [[regions.drawables]]
+  id = "D_BOWL_00"
+  tex = 0
+  x = 13; y = 741; w = 478; h = 272
+
+  [[regions.drawables]]
+  id = "D_BOWL_01"
+  tex = 0
+  x = 3; y = 471; w = 501; h = 339
+
+  [[regions.drawables]]
+  id = "D_BOWL_02"
+  tex = 0
+  x = 2; y = 244; w = 509; h = 230
+
+# ── Effects ────────────────────────────────────────────────────────────────────
+
+[[regions]]
+name          = "effects"
+swap_strategy = "hue_shift"
+
+  [[regions.drawables]]
+  id = "D_EFFECT_00"
+  tex = 0
+  x = 819; y = 152; w = 167; h = 154
+
+  [[regions.drawables]]
+  id = "D_EFFECT_01"
+  tex = 0
+  x = 868; y = 293; w = 142; h = 154
+
+  [[regions.drawables]]
+  id = "D_EFFECT_03"
+  tex = 0
+  x = 820; y = 151; w = 180; h = 154
+
+  [[regions.drawables]]
+  id = "D_EFFECT_04"
+  tex = 0
+  x = 856; y = 287; w = 155; h = 161
+
+  [[regions.drawables]]
+  id = "D_EFFECT_05"
+  tex = 0
+  x = 821; y = 151; w = 175; h = 165
+
+# ── Excluded ───────────────────────────────────────────────────────────────────
+# D_BACKGROUND_00  — static background, not personalized
+# D_REF_PT_BOWL, D_REF_PT_OUCH_01, D_REF_PT_SOBA_01..06
+#   — deformer reference anchors (~1–8px at y>1015), no visual content
