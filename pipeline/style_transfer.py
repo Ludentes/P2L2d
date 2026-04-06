@@ -53,11 +53,12 @@ async def stylize_portrait(
 
     workflow_text = (_WORKFLOWS_DIR / "style_transfer_anime.json").read_text()
 
-    with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as tmp:
-        tmp_path = Path(tmp.name)
-    portrait.save(tmp_path, format="PNG")
-    uploaded_name = await client.upload_image(tmp_path)
-    tmp_path.unlink(missing_ok=True)
+    tmp_path = Path(tempfile.mktemp(suffix=".png"))
+    try:
+        portrait.save(tmp_path, format="PNG")
+        uploaded_name = await client.upload_image(tmp_path)
+    finally:
+        tmp_path.unlink(missing_ok=True)
 
     workflow_text = workflow_text.replace('"__IMAGE__"', json.dumps(uploaded_name))
     workflow_text = workflow_text.replace('"__MODEL__"', json.dumps(model))
@@ -68,11 +69,12 @@ async def stylize_portrait(
     outputs = await client.wait(prompt_id)
     out_filename = _extract_output_filename(outputs)
 
-    with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as tmp:
-        dest = Path(tmp.name)
-    await client.download(out_filename, dest)
-    result = Image.open(dest).copy()
-    dest.unlink(missing_ok=True)
+    dest = Path(tempfile.mktemp(suffix=".png"))
+    try:
+        await client.download(out_filename, dest)
+        result = Image.open(dest).copy()
+    finally:
+        dest.unlink(missing_ok=True)
 
     return result
 
