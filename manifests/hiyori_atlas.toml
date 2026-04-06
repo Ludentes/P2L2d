@@ -1143,24 +1143,6 @@ swap_strategy = "hue_shift"
   draw_order = 500
 
   [[regions.drawables]]
-  id = "ArtMesh102"
-  texture_index = 1
-  x = 813
-  y = 707
-  w = 277
-  h = 944
-  draw_order = 500
-
-  [[regions.drawables]]
-  id = "ArtMesh104"
-  texture_index = 1
-  x = 1048
-  y = 737
-  w = 263
-  h = 1005
-  draw_order = 500
-
-  [[regions.drawables]]
   id = "ArtMesh68"
   texture_index = 1
   x = 1608
@@ -1299,4 +1281,27 @@ swap_strategy = "hue_shift"
   h = 597
   draw_order = 400
 
-  
+# ── Mixed skin/clothing ───────────────────────────────────────────────────────
+# Drawables whose texture region contains both bare skin and clothing detail.
+# Swap pipeline should treat these as clothing (hue_shift) but mask skin areas.
+[[regions]]
+name          = "cloth_and_body"
+swap_strategy = "hue_shift"
+
+  [[regions.drawables]]
+  id = "ArtMesh102"
+  texture_index = 1
+  x = 813
+  y = 707
+  w = 277
+  h = 944
+  draw_order = 500
+
+  [[regions.drawables]]
+  id = "ArtMesh104"
+  texture_index = 1
+  x = 1048
+  y = 737
+  w = 263
+  h = 1005
+  draw_order = 500
