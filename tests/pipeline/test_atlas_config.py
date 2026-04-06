@@ -1,4 +1,3 @@
-from pathlib import Path
 import pytest
 from pipeline.atlas_config import AtlasRegion, AtlasConfig, load_atlas_config
 
@@ -57,6 +56,25 @@ def test_atlas_config_has(tmp_atlas):
     assert not tmp_atlas.has("nonexistent")
 
 
-def test_load_atlas_config_missing_file():
+def test_load_atlas_config_missing_file(tmp_path):
     with pytest.raises(FileNotFoundError):
-        load_atlas_config(Path("nonexistent_atlas.toml"))
+        load_atlas_config(tmp_path / "nonexistent_atlas.toml")
+
+
+def test_load_atlas_config_invalid_texture_size(tmp_path):
+    bad_toml = """\
+rig = "test"
+template = "humanoid-anime"
+texture_size = 0
+"""
+    p = tmp_path / "bad.toml"
+    p.write_text(bad_toml)
+    with pytest.raises(ValueError, match="texture_size"):
+        load_atlas_config(p)
+
+
+def test_atlas_region_invalid_dimensions():
+    with pytest.raises(ValueError, match="positive"):
+        AtlasRegion(name="face_skin", texture_index=0, x=0, y=0, w=0, h=100)
+    with pytest.raises(ValueError, match="positive"):
+        AtlasRegion(name="face_skin", texture_index=0, x=0, y=0, w=100, h=-1)

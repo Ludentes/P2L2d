@@ -19,6 +19,12 @@ class AtlasRegion:
     w: int              # width in pixels
     h: int              # height in pixels
 
+    def __post_init__(self) -> None:
+        if self.w <= 0 or self.h <= 0:
+            raise ValueError(
+                f"AtlasRegion {self.name!r}: w and h must be positive, got w={self.w}, h={self.h}"
+            )
+
 
 @dataclass
 class AtlasConfig:
@@ -44,6 +50,8 @@ def load_atlas_config(path: Path) -> AtlasConfig:
         raise FileNotFoundError(f"Atlas config not found: {path}")
     with open(path, "rb") as f:
         data = tomllib.load(f)
+    if data["texture_size"] <= 0:
+        raise ValueError(f"texture_size must be positive, got {data['texture_size']} in {path}")
     regions = [
         AtlasRegion(
             name=r["name"],
