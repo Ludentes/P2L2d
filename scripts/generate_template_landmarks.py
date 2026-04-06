@@ -154,8 +154,7 @@ def generate(
     for confidence in (0.5, 0.3, 0.1):
         try:
             pts = _run_mediapipe(
-                face_rgb_512, crop_box, model_path,
-                min_detection_confidence=confidence,
+                face_rgb_512, crop_box, model_path, confidence,
             )
             print(f"  Detected face at confidence={confidence}")
             break
