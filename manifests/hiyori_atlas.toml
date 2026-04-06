@@ -100,15 +100,6 @@ swap_strategy = "paste"
   draw_order = 700
 
   [[regions.drawables]]
-  id = "ArtMesh29"
-  texture_index = 0
-  x = 276
-  y = 648
-  w = 63
-  h = 27
-  draw_order = 700
-
-  [[regions.drawables]]
   id = "ArtMesh34"
   texture_index = 0
   x = 296
@@ -116,27 +107,6 @@ swap_strategy = "paste"
   w = 13
   h = 12
   draw_order = 700
-
-  [[regions.drawables]]
-  id = "ArtMesh41"
-  texture_index = 0
-  x = 212
-  y = 699
-  w = 51
-  h = 26
-  draw_order = 700
-
-  [[regions.drawables]]
-  id = "ArtMesh42"
-  texture_index = 0
-  x = 268
-  y = 696
-  w = 56
-  h = 27
-  draw_order = 700
-
-# ── Eyebrows ─────────────────────────────────────────────────────────────────
-# Order 900 = topmost face feature
 
 [[regions]]
 name          = "left_eyebrow"
@@ -561,6 +531,39 @@ swap_strategy = "hue_shift"
   h = 140
   draw_order = 200
 
+  [[regions.drawables]]
+  id = "ArtMesh29"
+  texture_index = 0
+  x = 276
+  y = 648
+  w = 63
+  h = 27
+  draw_order = 700
+
+  
+  [[regions.drawables]]
+  id = "ArtMesh41"
+  texture_index = 0
+  x = 212
+  y = 699
+  w = 51
+  h = 26
+  draw_order = 700
+
+  
+  [[regions.drawables]]
+  id = "ArtMesh42"
+  texture_index = 0
+  x = 268
+  y = 696
+  w = 56
+  h = 27
+  draw_order = 700
+
+# ── Eyebrows ─────────────────────────────────────────────────────────────────
+# Order 900 = topmost face feature
+
+
 [[regions]]
 name          = "hair_back"
 swap_strategy = "hue_shift"
@@ -898,48 +901,12 @@ name          = "body"
 swap_strategy = "paste"
 
   [[regions.drawables]]
-  id = "ArtMesh68"
-  texture_index = 1
-  x = 1608
-  y = -1
-  w = 146
-  h = 280
-  draw_order = 300
-
-  [[regions.drawables]]
-  id = "ArtMesh69"
-  texture_index = 1
-  x = 1751
-  y = 1
-  w = 115
-  h = 303
-  draw_order = 300
-
-  [[regions.drawables]]
   id = "ArtMesh70"
   texture_index = 1
   x = 1264
   y = 1322
   w = 152
   h = 102
-  draw_order = 300
-
-  [[regions.drawables]]
-  id = "ArtMesh71"
-  texture_index = 1
-  x = 1669
-  y = 1346
-  w = 361
-  h = 691
-  draw_order = 300
-
-  [[regions.drawables]]
-  id = "ArtMesh72"
-  texture_index = 1
-  x = 1523
-  y = 1179
-  w = 209
-  h = 603
   draw_order = 300
 
   [[regions.drawables]]
@@ -952,39 +919,12 @@ swap_strategy = "paste"
   draw_order = 300
 
   [[regions.drawables]]
-  id = "ArtMesh74"
-  texture_index = 1
-  x = 1165
-  y = 624
-  w = 159
-  h = 80
-  draw_order = 300
-
-  [[regions.drawables]]
-  id = "ArtMesh75"
-  texture_index = 1
-  x = 1315
-  y = 1431
-  w = 212
-  h = 595
-  draw_order = 300
-
-  [[regions.drawables]]
   id = "ArtMesh76"
   texture_index = 1
   x = 1342
   y = 1203
   w = 150
   h = 105
-  draw_order = 300
-
-  [[regions.drawables]]
-  id = "ArtMesh77"
-  texture_index = 1
-  x = 1346
-  y = 538
-  w = 456
-  h = 646
   draw_order = 300
 
   [[regions.drawables]]
@@ -1006,66 +946,12 @@ swap_strategy = "paste"
   draw_order = 300
 
   [[regions.drawables]]
-  id = "ArtMesh80"
-  texture_index = 1
-  x = 1751
-  y = 18
-  w = 115
-  h = 286
-  draw_order = 400
-
-  [[regions.drawables]]
-  id = "ArtMesh81"
-  texture_index = 1
-  x = 1608
-  y = 5
-  w = 145
-  h = 273
-  draw_order = 400
-
-  [[regions.drawables]]
-  id = "ArtMesh86"
-  texture_index = 1
-  x = 1203
-  y = 8
-  w = 226
-  h = 552
-  draw_order = 400
-
-  [[regions.drawables]]
-  id = "ArtMesh92"
-  texture_index = 1
-  x = 1442
-  y = 5
-  w = 214
-  h = 597
-  draw_order = 400
-
-  [[regions.drawables]]
-  id = "ArtMesh102"
-  texture_index = 1
-  x = 813
-  y = 707
-  w = 277
-  h = 944
-  draw_order = 500
-
-  [[regions.drawables]]
   id = "ArtMesh103"
   texture_index = 1
   x = 932
   y = 17
   w = 316
   h = 696
-  draw_order = 500
-
-  [[regions.drawables]]
-  id = "ArtMesh104"
-  texture_index = 1
-  x = 1048
-  y = 737
-  w = 263
-  h = 1005
   draw_order = 500
 
   [[regions.drawables]]
@@ -1078,13 +964,13 @@ swap_strategy = "paste"
   draw_order = 500
 
   [[regions.drawables]]
-  id = "ArtMesh83"
+  id = "ArtMesh101"
   texture_index = 1
-  x = 1746
-  y = 872
-  w = 216
-  h = 239
-  draw_order = 800
+  x = 617
+  y = 19
+  w = 299
+  h = 714
+  draw_order = 500
 
   [[regions.drawables]]
   id = "ArtMesh85"
@@ -1093,24 +979,6 @@ swap_strategy = "paste"
   y = 13
   w = 237
   h = 536
-  draw_order = 800
-
-  [[regions.drawables]]
-  id = "ArtMesh88"
-  texture_index = 1
-  x = 1736
-  y = 1106
-  w = 220
-  h = 229
-  draw_order = 800
-
-  [[regions.drawables]]
-  id = "ArtMesh91"
-  texture_index = 1
-  x = 1647
-  y = 298
-  w = 212
-  h = 586
   draw_order = 800
 
   [[regions.drawables]]
@@ -1203,15 +1071,6 @@ swap_strategy = "hue_shift"
   draw_order = 500
 
   [[regions.drawables]]
-  id = "ArtMesh101"
-  texture_index = 1
-  x = 617
-  y = 19
-  w = 299
-  h = 714
-  draw_order = 500
-
-  [[regions.drawables]]
   id = "ArtMesh93"
   texture_index = 1
   x = 9
@@ -1282,3 +1141,162 @@ swap_strategy = "hue_shift"
   w = 36
   h = 48
   draw_order = 500
+
+  [[regions.drawables]]
+  id = "ArtMesh102"
+  texture_index = 1
+  x = 813
+  y = 707
+  w = 277
+  h = 944
+  draw_order = 500
+
+  [[regions.drawables]]
+  id = "ArtMesh104"
+  texture_index = 1
+  x = 1048
+  y = 737
+  w = 263
+  h = 1005
+  draw_order = 500
+
+  [[regions.drawables]]
+  id = "ArtMesh68"
+  texture_index = 1
+  x = 1608
+  y = -1
+  w = 146
+  h = 280
+  draw_order = 300
+
+  
+  [[regions.drawables]]
+  id = "ArtMesh69"
+  texture_index = 1
+  x = 1751
+  y = 1
+  w = 115
+  h = 303
+  draw_order = 300
+
+  
+  [[regions.drawables]]
+  id = "ArtMesh71"
+  texture_index = 1
+  x = 1669
+  y = 1346
+  w = 361
+  h = 691
+  draw_order = 300
+
+  
+  [[regions.drawables]]
+  id = "ArtMesh72"
+  texture_index = 1
+  x = 1523
+  y = 1179
+  w = 209
+  h = 603
+  draw_order = 300
+
+  
+  [[regions.drawables]]
+  id = "ArtMesh74"
+  texture_index = 1
+  x = 1165
+  y = 624
+  w = 159
+  h = 80
+  draw_order = 300
+
+  
+  [[regions.drawables]]
+  id = "ArtMesh75"
+  texture_index = 1
+  x = 1315
+  y = 1431
+  w = 212
+  h = 595
+  draw_order = 300
+
+  
+  [[regions.drawables]]
+  id = "ArtMesh77"
+  texture_index = 1
+  x = 1346
+  y = 538
+  w = 456
+  h = 646
+  draw_order = 300
+
+  
+  [[regions.drawables]]
+  id = "ArtMesh80"
+  texture_index = 1
+  x = 1751
+  y = 18
+  w = 115
+  h = 286
+  draw_order = 400
+
+  
+  [[regions.drawables]]
+  id = "ArtMesh81"
+  texture_index = 1
+  x = 1608
+  y = 5
+  w = 145
+  h = 273
+  draw_order = 400
+
+  
+  [[regions.drawables]]
+  id = "ArtMesh83"
+  texture_index = 1
+  x = 1746
+  y = 872
+  w = 216
+  h = 239
+  draw_order = 800
+
+  
+  [[regions.drawables]]
+  id = "ArtMesh86"
+  texture_index = 1
+  x = 1203
+  y = 8
+  w = 226
+  h = 552
+  draw_order = 400
+
+  
+  [[regions.drawables]]
+  id = "ArtMesh88"
+  texture_index = 1
+  x = 1736
+  y = 1106
+  w = 220
+  h = 229
+  draw_order = 800
+
+  
+  [[regions.drawables]]
+  id = "ArtMesh91"
+  texture_index = 1
+  x = 1647
+  y = 298
+  w = 212
+  h = 586
+  draw_order = 800
+
+  
+  [[regions.drawables]]
+  id = "ArtMesh92"
+  texture_index = 1
+  x = 1442
+  y = 5
+  w = 214
+  h = 597
+  draw_order = 400
+
+  
