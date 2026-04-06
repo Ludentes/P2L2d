@@ -1,0 +1,25 @@
+{
+  "1": {
+    "class_type": "LoadImage",
+    "inputs": {"image": "__IMAGE__", "upload": "image"},
+    "_meta": {"title": "Load Portrait"}
+  },
+  "2": {
+    "class_type": "BiRefNetUltra",
+    "inputs": {"images": ["1", 0], "model": "General", "render_size": 1024, "threshold": 0.5},
+    "_meta": {
+      "title": "BiRefNet Hair Segmentation",
+      "note": "Requires ComfyUI-BiRefNet-Ultra. Install from https://github.com/viperyl/ComfyUI-BiRefNet-Ultra"
+    }
+  },
+  "3": {
+    "class_type": "JoinImageWithAlpha",
+    "inputs": {"image": ["1", 0], "alpha": ["2", 1]},
+    "_meta": {"title": "Apply Hair Mask as Alpha"}
+  },
+  "6": {
+    "class_type": "SaveImage",
+    "inputs": {"images": ["3", 0], "filename_prefix": "p2l_hair"},
+    "_meta": {"title": "Save Hair RGBA"}
+  }
+}
