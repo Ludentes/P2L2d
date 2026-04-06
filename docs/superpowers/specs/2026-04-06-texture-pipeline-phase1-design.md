@@ -220,25 +220,82 @@ def check_region_color(
 
 ### 6. `pipeline/measure_regions.py`
 
-One-time tool to produce `manifests/<rig>_atlas.toml` for existing rigs.
+Fully automated tool to produce `manifests/<rig>_atlas.toml` for existing rigs.
 
-**Method:** calls Cubism Core C functions directly via ctypes (they are exported symbols
-in `live2d.so`). No moc3 parser library needed. Workflow:
-1. Load moc3 → `csmReviveMocInPlace` + `csmInitializeModelInPlace`
-2. Call `csmGetDrawableIds`, `csmGetDrawableTextureIndices`, `csmGetDrawableVertexUvs`,
-   `csmGetDrawableVertexCounts` to get per-drawable UV bounding boxes in pixel coords
-3. Display texture atlas image with all drawable UV bboxes overlaid (matplotlib)
-4. User assigns canonical region names to drawable groups (e.g. ArtMesh12+ArtMesh13 → `face_skin`)
-5. Outputs `manifests/<rig>_atlas.toml`
+**Why VLM, not MediaPipe:** Some drawables cannot be identified from the texture atlas
+alone — a detached hair strand only exists for physics simulation, and a fingertip looks
+like any other skin patch when isolated. MediaPipe covers only face landmarks and misses
+hair, body, accessories entirely. A vision LLM understands the full character in rendered
+context and can distinguish "left-side physics hair" from "back hair layer" by visual
+shape and position.
 
-**Note:** Hiyori drawables are all named `ArtMesh0..133` (not semantic). User labels once,
-result is committed. For generated rigs with semantic drawable names, this step can be
-fully automated.
+**Three-phase workflow:**
+
+**Phase 1 — UV extraction (ctypes)**
+Calls Cubism Core C functions via ctypes (exported symbols in `live2d.so`):
+- `csmReviveMocInPlace` + `csmInitializeModelInPlace` to load the moc3
+- `csmGetDrawableIds`, `csmGetDrawableTextureIndices`, `csmGetDrawableVertexUvs`,
+  `csmGetDrawableVertexCounts`, `csmGetDrawableDrawOrders` per drawable
+- Output: list of `{id, texture_index, uv_bbox, draw_order}` for all drawables
+
+**Phase 2 — Render isolation (live2d-py)**
+For each drawable `i`, render it as solid green on black background:
+- Set ALL drawables' multiply color to `(0, 0, 0, 1)` → renders black
+- Set ALL drawables' screen color to `(0, 0, 0, 255)` → stays black
+- Set drawable `i`'s screen color to `(0, 255, 0, 255)` → renders solid green
+- Render neutral pose → only drawable `i` appears (green), background is black
+- Find green-pixel bounding box in rendered frame → screen-space extent
+- Save the isolated render frame for VLM input
+
+Also render the full model at neutral pose once (normal colours) for context.
+
+**Phase 3 — VLM labeling (Claude API)**
+Group drawables by spatial proximity of their UV bboxes — nearby drawables likely
+belong to the same semantic region (e.g., eye white + iris + pupil + lash = left_eye).
+For each group (typically 15-25 groups for a humanoid-anime rig):
+
+1. Compose a 3-panel image:
+   - Panel A: group's isolated renders composited (green on black)
+   - Panel B: group highlighted on the full normal render (yellow overlay)
+   - Panel C: texture atlas with UV bboxes outlined
+
+2. Call `claude-sonnet-4-6` with the 3-panel image and prompt:
+   ```
+   You are labeling texture regions of a Live2D anime character rig for automated
+   texture replacement. The panels show: (A) the isolated drawables in green,
+   (B) the same drawables highlighted on the full character render, (C) their
+   location in the texture atlas.
+
+   Choose the best canonical region name from this list:
+   face_skin, left_eye, right_eye, left_eyebrow, right_eyebrow, mouth,
+   left_cheek, right_cheek, hair_front, hair_back, hair_side_left,
+   hair_side_right, body, clothing, accessory, other
+
+   Respond with JSON: {"label": "<name>", "confidence": 0.0-1.0, "note": "<brief reason>"}
+   ```
+
+3. Groups with confidence < 0.7 are written as `label = "other"` in the TOML with a
+   comment showing the VLM's note — user can manually correct these only.
+
+**Output:** `manifests/<rig>_atlas.toml` with:
+- UV-exact pixel coordinates (from ctypes, not screen-space estimates)
+- Semantic region names (from VLM)
+- Draw order range per region (min/max draw_order of member drawables)
+- Any low-confidence entries flagged with `# REVIEW: <note>`
+
+**Efficiency:** ~133 renders (Hiyori) + ~20 VLM API calls ≈ 2-3 minutes total.
+Runs once per rig and the result is committed.
 
 CLI:
 ```
-uv run python -m pipeline.measure_regions --rig hiyori
+uv run python -m pipeline.measure_regions \
+    --model3 /path/to/hiyori.model3.json \
+    --rig hiyori \
+    --template humanoid-anime \
+    --out manifests/hiyori_atlas.toml
 ```
+
+**Dependency:** `anthropic` Python SDK. Add to project: `uv add anthropic`.
 
 ---
 
