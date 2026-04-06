@@ -9,7 +9,7 @@ from pathlib import Path
 import tomllib
 from PIL import Image
 
-from comfyui.client import ComfyUIClient
+from comfyui.client import ComfyUIClient, extract_output_filename
 
 _TEMPLATES_DIR = Path(__file__).parent.parent / "templates"
 _WORKFLOWS_DIR = Path(__file__).parent.parent / "comfyui" / "workflows"
@@ -53,7 +53,8 @@ async def stylize_portrait(
 
     workflow_text = (_WORKFLOWS_DIR / "style_transfer_anime.json").read_text()
 
-    tmp_path = Path(tempfile.mktemp(suffix=".png"))
+    with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as f:
+        tmp_path = Path(f.name)
     try:
         portrait.save(tmp_path, format="PNG")
         uploaded_name = await client.upload_image(tmp_path)
@@ -67,9 +68,10 @@ async def stylize_portrait(
 
     prompt_id = await client.submit(workflow)
     outputs = await client.wait(prompt_id)
-    out_filename = _extract_output_filename(outputs)
+    out_filename = extract_output_filename(outputs)
 
-    dest = Path(tempfile.mktemp(suffix=".png"))
+    with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as f:
+        dest = Path(f.name)
     try:
         await client.download(out_filename, dest)
         result = Image.open(dest).copy()
@@ -77,11 +79,3 @@ async def stylize_portrait(
         dest.unlink(missing_ok=True)
 
     return result
-
-
-def _extract_output_filename(outputs: dict) -> str:
-    for node_outputs in outputs.values():
-        images = node_outputs.get("images", [])
-        if images:
-            return images[0]["filename"]
-    raise ValueError(f"No images in ComfyUI outputs: {outputs}")

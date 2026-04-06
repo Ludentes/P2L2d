@@ -1,5 +1,10 @@
-# pipeline/hair_segment.py
-"""Hair segmentation — extract RGBA hair image via BiRefNet ComfyUI workflow."""
+"""Hair segmentation — extract RGBA hair image via BiRefNet ComfyUI workflow.
+
+NOTE (Phase 1 limitation): The BiRefNet "General" model segments the full
+foreground subject, not hair specifically.  Hair regions cropped from this
+mask will include face/body/clothing pixels.  A hair-specific model or
+post-processing step is needed for production quality.
+"""
 from __future__ import annotations
 
 import json
@@ -10,7 +15,7 @@ from pathlib import Path
 import numpy as np
 from PIL import Image
 
-from comfyui.client import ComfyUIClient
+from comfyui.client import ComfyUIClient, extract_output_filename
 from pipeline.atlas_config import AtlasConfig
 
 _WORKFLOWS_DIR = Path(__file__).parent.parent / "comfyui" / "workflows"
@@ -27,7 +32,8 @@ async def segment_hair(
     """
     workflow_text = (_WORKFLOWS_DIR / "hair_segment.json").read_text()
 
-    portrait_path = Path(tempfile.mktemp(suffix=".png"))
+    with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as f:
+        portrait_path = Path(f.name)
     try:
         portrait.convert("RGB").save(portrait_path, format="PNG")
         uploaded_name = await client.upload_image(portrait_path)
@@ -39,9 +45,10 @@ async def segment_hair(
 
     prompt_id = await client.submit(workflow)
     outputs = await client.wait(prompt_id)
-    out_filename = _extract_output_filename(outputs)
+    out_filename = extract_output_filename(outputs)
 
-    dest = Path(tempfile.mktemp(suffix=".png"))
+    with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as f:
+        dest = Path(f.name)
     try:
         await client.download(out_filename, dest)
         result = Image.open(dest).convert("RGBA").copy()
@@ -85,11 +92,3 @@ def extract_hair_regions(
         result[name] = hair_rgba.crop((x, y, x + w, y + h))
 
     return result
-
-
-def _extract_output_filename(outputs: dict) -> str:
-    for node_outputs in outputs.values():
-        images = node_outputs.get("images", [])
-        if images:
-            return images[0]["filename"]
-    raise ValueError(f"No images in ComfyUI outputs: {outputs}")

@@ -9,6 +9,25 @@ import httpx
 from comfyui.exceptions import ComfyUIConnectionError, ComfyUIJobError, ComfyUITimeoutError
 
 
+def extract_output_filename(outputs: dict) -> str:
+    """Extract the first output image filename from ComfyUI job outputs.
+
+    Args:
+        outputs: The dict returned by ``ComfyUIClient.wait()``.
+
+    Returns:
+        Filename string for use with ``ComfyUIClient.download()``.
+
+    Raises:
+        ValueError: If no images found in the outputs.
+    """
+    for node_outputs in outputs.values():
+        images = node_outputs.get("images", [])
+        if images:
+            return images[0]["filename"]
+    raise ValueError(f"No images in ComfyUI outputs: {outputs}")
+
+
 class ComfyUIClient:
     def __init__(self, base_url: str = "http://127.0.0.1:8188") -> None:
         self._base_url = base_url.rstrip("/")
