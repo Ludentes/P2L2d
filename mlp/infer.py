@@ -1,6 +1,8 @@
-"""Runtime inference — landmarks → Live2D parameter values.
+"""Runtime inference — landmarks/features → Live2D parameter values.
 
-Loads the checkpoint once at startup; predict() runs in <16ms on CPU.
+Two predictor classes:
+  - Predictor: legacy, hardcoded to RigConfig + 956-d landmarks
+  - TemplatePredictor: template-aware, loads from Template, any input_dim
 """
 from __future__ import annotations
 
@@ -12,6 +14,7 @@ import torch
 
 from mlp.model import CartoonAliveMLP
 from rig.config import RigConfig
+from templates.loader import Template
 
 _DEFAULT_CHECKPOINT = Path(__file__).parent / "checkpoints" / "hiyori_v2" / "model.pt"
 
@@ -56,3 +59,46 @@ class Predictor:
 def load_predictor(rig: RigConfig, checkpoint: Path = _DEFAULT_CHECKPOINT) -> Predictor:
     """Convenience constructor — returns a ready Predictor."""
     return Predictor(rig, checkpoint)
+
+
+class TemplatePredictor:
+    """Template-aware inference: loads model from template, returns template param names."""
+
+    def __init__(self, template: Template, device: str = "cpu") -> None:
+        self._template = template
+        self._device = device
+        ckpt = torch.load(template.model_path, weights_only=False, map_location=device)
+        self._model = CartoonAliveMLP(
+            n_params=ckpt["n_params"],
+            input_dim=ckpt["input_dim"],
+        )
+        self._model.load_state_dict(ckpt["state_dict"])
+        self._model.eval()
+        self._model.to(device)
+        self._param_names: list[str] = ckpt["param_names"]
+
+    def predict(self, features: np.ndarray) -> dict[str, float]:
+        """Map feature vector -> dict of {template_param_name: value}.
+
+        Args:
+            features: float32 array of shape (input_dim,).
+        """
+        x = torch.from_numpy(features.reshape(1, -1).astype(np.float32)).to(self._device)
+        with torch.no_grad():
+            y = self._model(x)
+        values = y.squeeze(0).cpu().numpy()
+        return dict(zip(self._param_names, values.tolist()))
+
+    def predict_with_curves(self, features: np.ndarray) -> dict[str, float]:
+        """predict() + apply template response curves."""
+        raw = self.predict(features)
+        raw_arr = np.array([raw[n] for n in self._param_names], dtype=np.float32)
+        curved_arr = self._template.curves.apply(raw_arr, self._param_names)
+        return dict(zip(self._param_names, curved_arr.tolist()))
+
+    def predict_batch(self, features: np.ndarray) -> np.ndarray:
+        """Batch inference. Returns (B, n_params) float32 array."""
+        x = torch.from_numpy(features.astype(np.float32)).to(self._device)
+        with torch.no_grad():
+            y = self._model(x)
+        return y.cpu().numpy()

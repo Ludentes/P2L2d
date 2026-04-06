@@ -40,3 +40,56 @@ def test_predictor_benchmark_reasonable():
     p = Predictor(RIG_HIYORI, ckpt)
     ms = p.benchmark(n=50)
     assert ms < 100.0, f"Inference too slow: {ms:.1f}ms"
+
+
+# ── TemplatePredictor ────────────────────────────────────────────────────────
+
+
+def test_template_predictor_output_keys():
+    pytest.importorskip("torch")
+    from templates.loader import load_template
+
+    t = load_template("humanoid-anime")
+    if not t.model_path.exists():
+        pytest.skip("template model.pt not present")
+
+    from mlp.infer import TemplatePredictor
+
+    p = TemplatePredictor(t)
+    features = np.zeros(58, dtype=np.float32)
+    result = p.predict(features)
+    assert set(result.keys()) == set(t.schema.names)
+    assert "AngleX" in result
+
+
+def test_template_predictor_with_curves():
+    pytest.importorskip("torch")
+    from templates.loader import load_template
+
+    t = load_template("humanoid-anime")
+    if not t.model_path.exists():
+        pytest.skip("template model.pt not present")
+
+    from mlp.infer import TemplatePredictor
+
+    p = TemplatePredictor(t)
+    features = np.zeros(58, dtype=np.float32)
+    raw = p.predict(features)
+    curved = p.predict_with_curves(features)
+    assert set(curved.keys()) == set(raw.keys())
+
+
+def test_template_predictor_accepts_batch():
+    pytest.importorskip("torch")
+    from templates.loader import load_template
+
+    t = load_template("humanoid-anime")
+    if not t.model_path.exists():
+        pytest.skip("template model.pt not present")
+
+    from mlp.infer import TemplatePredictor
+
+    p = TemplatePredictor(t)
+    features = np.zeros((4, 58), dtype=np.float32)
+    result = p.predict_batch(features)
+    assert result.shape == (4, 13)
