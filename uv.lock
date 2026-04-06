@@ -700,6 +700,25 @@ wheels = [
 ]
 
 [[package]]
+name = "live2d-py"
+version = "0.6.1.1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "numpy" },
+    { name = "pillow" },
+    { name = "pyopengl" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/57/7b/c7e3c8fb085b5ab629789a2ad653b5931c28c8d5f0223e7aa5b2502047f1/live2d_py-0.6.1.1.tar.gz", hash = "sha256:3f1935fbff1c8786cdafaa812b48662cd1edacd50d7ec67c7b7af474863f1e1b", size = 456753 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/49/ea/2196136b537904e572b1804d3922ff1b168d6e2a853628aca20b73c7e1b7/live2d_py-0.6.1.1-cp312-cp312-macosx_15_0_universal2.whl", hash = "sha256:381b7aecf94a39a171addd9a298e52726900f8e1541b0efa2941f2380bee606f", size = 352427 },
+    { url = "https://files.pythonhosted.org/packages/fe/c8/d068f1f6cf5cccc11a0ec6e19bef566843f85ce2c621552390574bc97f86/live2d_py-0.6.1.1-cp312-cp312-win32.whl", hash = "sha256:06a662177b4526d5ecfec93e19d38a678b34fdeb5d31f2d513829ddbcea5617e", size = 268486 },
+    { url = "https://files.pythonhosted.org/packages/ee/b4/bd0fc4960f5ecf1766791fc0dc268d3921513283ace00c9c04894165bd5b/live2d_py-0.6.1.1-cp312-cp312-win_amd64.whl", hash = "sha256:3725794c9900a5660d7402366c1674390b872472bb32d58deb0b08d23f2637a4", size = 295838 },
+    { url = "https://files.pythonhosted.org/packages/00/ad/fc0d6c6c48485dbef781bed7f686667302812e86c1beb8f2001c1b46ffc1/live2d_py-0.6.1.1-cp313-cp313-macosx_15_0_universal2.whl", hash = "sha256:5ec5d0a21a79da17f04b6800ecf26646d4a32323aaed282260907839c87ee41f", size = 352702 },
+    { url = "https://files.pythonhosted.org/packages/4f/7a/8d314aa659a32b12dc475f6f0074139e854ae1a10cefa7f39de2f25c66c1/live2d_py-0.6.1.1-cp313-cp313-win32.whl", hash = "sha256:85c0f9590deb03a7dcdecac531c75ad2209e98ca5a439e86c397f8f704848a09", size = 268732 },
+    { url = "https://files.pythonhosted.org/packages/73/61/c37fd6afa2bad68127758f0016746d940dc07a7f82d0b425b559e6982dba/live2d_py-0.6.1.1-cp313-cp313-win_amd64.whl", hash = "sha256:ff56decc63d6075388f4077b4152605689d564fc49ca25c705cf16b29f8f6cad", size = 295951 },
+]
+
+[[package]]
 name = "markdown-it-py"
 version = "4.0.0"
 source = { registry = "https://pypi.org/simple" }
@@ -1333,6 +1352,7 @@ dependencies = [
     { name = "httpx" },
     { name = "imageio" },
     { name = "imageio-ffmpeg" },
+    { name = "live2d-py" },
     { name = "mediapipe" },
     { name = "numpy" },
     { name = "obsws-python" },
@@ -1366,6 +1386,7 @@ requires-dist = [
     { name = "httpx", specifier = ">=0.28.1" },
     { name = "imageio", specifier = ">=2.34" },
     { name = "imageio-ffmpeg", specifier = ">=0.5" },
+    { name = "live2d-py", specifier = ">=0.6.1.1" },
     { name = "mediapipe", specifier = ">=0.10" },
     { name = "numpy", specifier = ">=1.26" },
     { name = "obsws-python", specifier = ">=1.7" },
@@ -1521,6 +1542,15 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/ae/5e/2c4a3dc86f5d9bc80ef48a79197b57c6b03aefa021aa685da1a8b1478492/pykalman-0.11.2.tar.gz", hash = "sha256:70c22bb074376f7aa1304c4c2f4c61feb22bafd4ab992d340da9340b5a028674", size = 244565 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/6e/4d/bd6608cb7b1d2832e4270bb36c7394efa6ea1c8243a3b9ee53726a6cffe0/pykalman-0.11.2-py2.py3-none-any.whl", hash = "sha256:00dcc0c88b93a8ab6100295501e7f440350b872d558b41d0deff2fcaf827a553", size = 252132 },
+]
+
+[[package]]
+name = "pyopengl"
+version = "3.1.10"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/6f/16/912b7225d56284859cd9a672827f18be43f8012f8b7b932bc4bd959a298e/pyopengl-3.1.10.tar.gz", hash = "sha256:c4a02d6866b54eb119c8e9b3fb04fa835a95ab802dd96607ab4cdb0012df8335", size = 1915580 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/de/e4/1ba6f44e491c4eece978685230dde56b14d51a0365bc1b774ddaa94d14cd/pyopengl-3.1.10-py3-none-any.whl", hash = "sha256:794a943daced39300879e4e47bd94525280685f42dbb5a998d336cfff151d74f", size = 3194996 },
 ]
 
 [[package]]

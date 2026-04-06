@@ -27,6 +27,7 @@ dependencies = [
     "tqdm>=4.66",
     "pillow>=10.2",
     "requests>=2.31",
+    "live2d-py>=0.6.1.1",
 ]
 
 [tool.pytest.ini_options]
