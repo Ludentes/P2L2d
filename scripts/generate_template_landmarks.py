@@ -92,7 +92,6 @@ def _crop_face_region(frame_rgba: np.ndarray) -> tuple[np.ndarray, tuple[int, in
 def _run_mediapipe(
     face_rgb_512: np.ndarray,
     crop_box: tuple[int, int, int, int],
-    orig_size: tuple[int, int],
     model_path: Path,
     min_detection_confidence: float = 0.1,
 ) -> np.ndarray:
@@ -155,7 +154,7 @@ def generate(
     for confidence in (0.5, 0.3, 0.1):
         try:
             pts = _run_mediapipe(
-                face_rgb_512, crop_box, (size, size), model_path,
+                face_rgb_512, crop_box, model_path,
                 min_detection_confidence=confidence,
             )
             print(f"  Detected face at confidence={confidence}")
