@@ -27,7 +27,7 @@ def swap_region(
         New Image with replacement pasted. Input atlas is not modified.
     """
     out = atlas.copy()
-    src = replacement.resize((region.w, region.h), Image.LANCZOS)
+    src = replacement.resize((region.w, region.h), Image.Resampling.LANCZOS)
     if src.mode != "RGBA":
         src = src.convert("RGBA")
     out.paste(src, (region.x, region.y), src)

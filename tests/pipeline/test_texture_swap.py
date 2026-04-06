@@ -1,4 +1,3 @@
-import pytest
 from PIL import Image
 from pipeline.atlas_config import AtlasRegion, AtlasConfig
 from pipeline.texture_swap import swap_region, swap_regions
