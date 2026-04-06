@@ -1,0 +1,58 @@
+# Canonical texture region names for humanoid-anime rigs.
+# Each rig provides pixel coordinates for these in manifests/<rig>_atlas.toml.
+# Regions marked required = true must be present; others are optional.
+
+[[regions]]
+name        = "face_skin"
+description = "Face skin base (forehead, cheeks, chin)"
+required    = true
+
+[[regions]]
+name        = "left_eye"
+description = "Left eye (iris, pupil, white, lashes)"
+required    = true
+
+[[regions]]
+name        = "right_eye"
+description = "Right eye"
+required    = true
+
+[[regions]]
+name        = "left_eyebrow"
+required    = true
+
+[[regions]]
+name        = "right_eyebrow"
+required    = true
+
+[[regions]]
+name        = "mouth"
+description = "Mouth region (open/closed area)"
+required    = true
+
+[[regions]]
+name        = "left_cheek"
+description = "Cheek blush / highlight"
+required    = false
+
+[[regions]]
+name        = "right_cheek"
+required    = false
+
+[[regions]]
+name        = "hair_front"
+description = "Front hair layer (bangs, face frame)"
+required    = true
+
+[[regions]]
+name        = "hair_back"
+description = "Back hair layer"
+required    = false
+
+[[regions]]
+name        = "hair_side_left"
+required    = false
+
+[[regions]]
+name        = "hair_side_right"
+required    = false
