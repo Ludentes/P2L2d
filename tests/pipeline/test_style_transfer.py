@@ -1,4 +1,3 @@
-from pathlib import Path
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest
@@ -47,7 +46,7 @@ async def test_stylize_portrait_anime_calls_comfyui():
         "8": {"images": [{"filename": "p2l_style_00001.png", "subfolder": "", "type": "output"}]}
     }
 
-    async def fake_download(filename, dest, subfolder="", file_type="output"):
+    async def fake_download(_filename, dest, _subfolder="", _file_type="output"):
         fake_output.save(dest)
 
     client.download.side_effect = fake_download
