@@ -1,0 +1,56 @@
+{
+  "1": {
+    "class_type": "LoadImage",
+    "inputs": {"image": "__IMAGE__", "upload": "image"},
+    "_meta": {"title": "Load Portrait"}
+  },
+  "2": {
+    "class_type": "CheckpointLoaderSimple",
+    "inputs": {"ckpt_name": "__MODEL__"},
+    "_meta": {"title": "Load Anime Model"}
+  },
+  "3": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "text": "anime style illustration, flat cell shading, clean crisp lines, vibrant colors",
+      "clip": ["2", 1]
+    },
+    "_meta": {"title": "Positive Prompt"}
+  },
+  "4": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {"text": "photo, realistic, 3d render, blurry, noisy", "clip": ["2", 1]},
+    "_meta": {"title": "Negative Prompt"}
+  },
+  "5": {
+    "class_type": "VAEEncode",
+    "inputs": {"pixels": ["1", 0], "vae": ["2", 2]},
+    "_meta": {"title": "Encode Image"}
+  },
+  "6": {
+    "class_type": "KSampler",
+    "inputs": {
+      "model": ["2", 0],
+      "positive": ["3", 0],
+      "negative": ["4", 0],
+      "latent_image": ["5", 0],
+      "seed": 42,
+      "steps": 20,
+      "cfg": 7.0,
+      "sampler_name": "euler_ancestral",
+      "scheduler": "karras",
+      "denoise": "__STRENGTH__"
+    },
+    "_meta": {"title": "Sample"}
+  },
+  "7": {
+    "class_type": "VAEDecode",
+    "inputs": {"samples": ["6", 0], "vae": ["2", 2]},
+    "_meta": {"title": "Decode"}
+  },
+  "8": {
+    "class_type": "SaveImage",
+    "inputs": {"images": ["7", 0], "filename_prefix": "p2l_style"},
+    "_meta": {"title": "Save"}
+  }
+}
