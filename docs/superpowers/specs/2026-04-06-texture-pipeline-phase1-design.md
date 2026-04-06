@@ -220,10 +220,20 @@ def check_region_color(
 
 ### 6. `pipeline/measure_regions.py`
 
-One-time interactive tool. Opens `texture_00.png` and `texture_01.png` side by side
-(using matplotlib or PIL + tkinter), lets user draw bounding boxes, prints TOML entries
-to stdout. Not part of the production pipeline — run once per new existing rig, commit
-the output.
+One-time tool to produce `manifests/<rig>_atlas.toml` for existing rigs.
+
+**Method:** calls Cubism Core C functions directly via ctypes (they are exported symbols
+in `live2d.so`). No moc3 parser library needed. Workflow:
+1. Load moc3 → `csmReviveMocInPlace` + `csmInitializeModelInPlace`
+2. Call `csmGetDrawableIds`, `csmGetDrawableTextureIndices`, `csmGetDrawableVertexUvs`,
+   `csmGetDrawableVertexCounts` to get per-drawable UV bounding boxes in pixel coords
+3. Display texture atlas image with all drawable UV bboxes overlaid (matplotlib)
+4. User assigns canonical region names to drawable groups (e.g. ArtMesh12+ArtMesh13 → `face_skin`)
+5. Outputs `manifests/<rig>_atlas.toml`
+
+**Note:** Hiyori drawables are all named `ArtMesh0..133` (not semantic). User labels once,
+result is committed. For generated rigs with semantic drawable names, this step can be
+fully automated.
 
 CLI:
 ```
