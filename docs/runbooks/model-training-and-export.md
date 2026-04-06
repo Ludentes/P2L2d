@@ -8,16 +8,16 @@ The trained model checkpoint (`model.pt`) is gitignored. To regenerate from scra
 # 1. Generate 100 diverse face photos (requires ComfyUI running on :8188)
 uv run python -m mlp.data.live_portrait.generate_faces --n 100 --out assets/generated-faces
 
-# 2. Generate 10k training samples (blendshapes+pose, 58-d features, ~7 min on RTX 5090)
+# 2. Generate 20k training samples (blendshapes+pose, 58-d features, ~14 min on RTX 5090)
 uv run python -m mlp.data.live_portrait.generate_verb_samples \
     --reference assets/generated-faces \
-    --n 10000 \
-    --out mlp/data/live_portrait/datasets/train_10k_bs58.npz \
+    --n 20000 \
+    --out mlp/data/live_portrait/datasets/train_20k_bs58.npz \
     --bs-only
 
 # 3. Train MLP (~2 min on GPU)
 uv run python -m mlp.train_verb_mlp \
-    --data mlp/data/live_portrait/datasets/train_10k_bs58.npz \
+    --data mlp/data/live_portrait/datasets/train_20k_bs58.npz \
     --out mlp/checkpoints/humanoid-anime-bs58 \
     --epochs 200
 ```
