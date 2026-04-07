@@ -28,7 +28,12 @@ dependencies = [
     "pillow>=10.2",
     "requests>=2.31",
     "live2d-py>=0.6.1.1",
+    "anthropic",
+    "scikit-learn>=1.4",
 ]
+
+[project.optional-dependencies]
+face-parsing = ["facer>=0.0.14"]
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
