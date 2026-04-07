@@ -31,9 +31,9 @@ dependencies = [
     "anthropic",
     "scikit-learn>=1.4",
 ]
-
-[project.optional-dependencies]
-face-parsing = ["facer>=0.0.14"]
+# Optional: BiSeNet face parsing for better hair/clothing detection.
+# Install manually: pip install git+https://github.com/FacePerceiver/facer.git
+# Falls back to bbox-based sampling if unavailable.
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
