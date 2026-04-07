@@ -1,12 +1,18 @@
 """Top-level orchestrator and CLI for texture generation pipeline.
 
 Usage:
-    python -m pipeline.run portrait.jpg \\
+    # Color recoloring mode (deterministic, no GPU required):
+    python -m pipeline.run portrait.jpg --mode color --out ./output/
+
+    # ComfyUI texture generation mode (requires running ComfyUI):
+    python -m pipeline.run portrait.jpg --mode comfyui --out ./output/ \\
+        [--comfyui http://127.0.0.1:8188]
+
+    # Common options:
+    python -m pipeline.run portrait.jpg --mode color \\
         --rig hiyori \\
         --atlas manifests/hiyori_atlas.toml \\
-        --out ./output/hiyori_portrait/ \\
-        [--template humanoid-anime] \\
-        [--comfyui http://127.0.0.1:8188]
+        --out ./output/hiyori_portrait/
 """
 from __future__ import annotations
 
@@ -16,11 +22,8 @@ from pathlib import Path
 
 from PIL import Image
 
-from comfyui.client import ComfyUIClient
 from pipeline.atlas_config import AtlasConfig, load_atlas_config
 from pipeline.package import package_output
-from pipeline.texture_gen import generate_textures
-from pipeline.texture_swap import swap_regions
 from rig.config import RIG_HIYORI, RigConfig
 
 
@@ -32,15 +35,51 @@ def load_atlases(rig_config: RigConfig) -> dict[int, Image.Image]:
     }
 
 
+def run_color_recolor(
+    portrait_path: Path,
+    rig_config: RigConfig,
+    atlas_cfg: AtlasConfig,
+    output_dir: Path,
+) -> Path:
+    """Color extraction + deterministic recoloring pipeline.
+
+    Extracts colors from portrait, applies to atlas via LAB/HSV transforms.
+    No GPU or external services required.
+    """
+    from pipeline.color_apply import recolor_atlas
+    from pipeline.color_extract import extract_palette
+    from pipeline.template_palette import extract_template_palette
+
+    portrait = Image.open(portrait_path).convert("RGB")
+    print(f"Portrait: {portrait.size}")
+
+    print("Extracting color palette...")
+    palette = extract_palette(portrait)
+
+    atlases = load_atlases(rig_config)
+    template_palette = extract_template_palette(atlases, atlas_cfg)
+
+    print("Recoloring atlas...")
+    recolored = recolor_atlas(atlases, palette, atlas_cfg, template_palette)
+
+    package_output(rig_config, recolored, output_dir)
+    print(f"Output: {output_dir}")
+    return output_dir
+
+
 async def run_portrait_to_rig(
     portrait_path: Path,
     rig_config: RigConfig,
     atlas_cfg: AtlasConfig,
     output_dir: Path,
     template_name: str = "humanoid-anime",
-    client: ComfyUIClient | None = None,
+    client: "ComfyUIClient | None" = None,
 ) -> Path:
-    """Full texture pipeline: portrait -> deliverable Live2D model directory."""
+    """Full texture pipeline via ComfyUI: portrait -> deliverable Live2D model directory."""
+    from comfyui.client import ComfyUIClient
+    from pipeline.texture_gen import generate_textures
+    from pipeline.texture_swap import swap_regions
+
     portrait = Image.open(portrait_path).convert("RGB")
 
     own_client = client is None
@@ -68,6 +107,8 @@ async def run_portrait_to_rig(
 def _parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Generate portrait-styled Live2D model")
     parser.add_argument("portrait", type=Path)
+    parser.add_argument("--mode", default="color", choices=["color", "comfyui"],
+                        help="Recoloring mode: 'color' (deterministic) or 'comfyui' (AI generation)")
     parser.add_argument("--rig", default="hiyori", choices=["hiyori"])
     parser.add_argument("--atlas", type=Path, default=Path("manifests/hiyori_atlas.toml"))
     parser.add_argument("--out", type=Path, required=True)
@@ -82,16 +123,25 @@ async def _main() -> None:
     rig_config = rig_map[args.rig]
     atlas_cfg = load_atlas_config(args.atlas)
 
-    async with ComfyUIClient(base_url=args.comfyui) as client:
-        out = await run_portrait_to_rig(
+    if args.mode == "color":
+        run_color_recolor(
             portrait_path=args.portrait,
             rig_config=rig_config,
             atlas_cfg=atlas_cfg,
             output_dir=args.out,
-            template_name=args.template,
-            client=client,
         )
-    print(f"Done. Output: {out}")
+    else:
+        from comfyui.client import ComfyUIClient
+        async with ComfyUIClient(base_url=args.comfyui) as client:
+            await run_portrait_to_rig(
+                portrait_path=args.portrait,
+                rig_config=rig_config,
+                atlas_cfg=atlas_cfg,
+                output_dir=args.out,
+                template_name=args.template,
+                client=client,
+            )
+    print("Done.")
 
 
 if __name__ == "__main__":
