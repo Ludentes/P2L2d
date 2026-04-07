@@ -16,7 +16,7 @@ async def test_inpaint_face_skin_uploads_two_images():
     client.upload_image.return_value = "img.png"
     client.submit.return_value = "pid"
     client.wait.return_value = {
-        "10": {"images": [{"filename": "p2l_inpaint_00001.png", "subfolder": "", "type": "output"}]}
+        "13": {"images": [{"filename": "p2l_inpaint_00001.png", "subfolder": "", "type": "output"}]}
     }
 
     async def fake_download(_filename, dest, _subfolder="", _file_type="output"):
@@ -42,7 +42,7 @@ async def test_inpaint_face_skin_injects_prompt():
     client = AsyncMock()
     client.upload_image.return_value = "img.png"
     client.wait.return_value = {
-        "10": {"images": [{"filename": "out.png", "subfolder": "", "type": "output"}]}
+        "13": {"images": [{"filename": "out.png", "subfolder": "", "type": "output"}]}
     }
 
     async def capture_submit(workflow):

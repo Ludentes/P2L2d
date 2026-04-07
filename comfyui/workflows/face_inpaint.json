@@ -1,63 +1,92 @@
 {
   "1": {
+    "class_type": "UNETLoader",
+    "inputs": {
+      "unet_name": "fluxFillFP8_v10.safetensors",
+      "weight_dtype": "default"
+    },
+    "_meta": {"title": "Load FLUX Fill Model"}
+  },
+  "2": {
+    "class_type": "DualCLIPLoader",
+    "inputs": {
+      "clip_name1": "clip_l.safetensors",
+      "clip_name2": "t5/t5xxl_fp8_e4m3fn.safetensors",
+      "type": "flux"
+    },
+    "_meta": {"title": "Load CLIP-L + T5-XXL"}
+  },
+  "3": {
+    "class_type": "VAELoader",
+    "inputs": {"vae_name": "FLUX1/ae.safetensors"},
+    "_meta": {"title": "Load FLUX VAE"}
+  },
+  "4": {
     "class_type": "LoadImage",
     "inputs": {"image": "__IMAGE__", "upload": "image"},
     "_meta": {"title": "Load Face Crop"}
   },
-  "2": {
+  "5": {
     "class_type": "LoadImage",
     "inputs": {"image": "__MASK__", "upload": "image"},
     "_meta": {"title": "Load Mask"}
   },
-  "3": {
+  "6": {
     "class_type": "ImageToMask",
-    "inputs": {"image": ["2", 0], "channel": "red"},
+    "inputs": {"image": ["5", 0], "channel": "red"},
     "_meta": {"title": "Convert to Mask"}
   },
-  "4": {
-    "class_type": "CheckpointLoaderSimple",
-    "inputs": {"ckpt_name": "flux1-fill-dev.safetensors"},
-    "_meta": {"title": "Load FLUX Fill"}
-  },
-  "5": {
-    "class_type": "CLIPTextEncode",
-    "inputs": {"text": "__PROMPT__", "clip": ["4", 1]},
-    "_meta": {"title": "Prompt"}
-  },
-  "6": {
-    "class_type": "CLIPTextEncode",
-    "inputs": {"text": "", "clip": ["4", 1]},
-    "_meta": {"title": "Negative"}
-  },
   "7": {
-    "class_type": "VAEEncodeForInpaint",
-    "inputs": {"pixels": ["1", 0], "vae": ["4", 2], "mask": ["3", 0], "grow_mask_by": 8},
-    "_meta": {"title": "Encode for Inpaint"}
+    "class_type": "CLIPTextEncode",
+    "inputs": {"text": "__PROMPT__", "clip": ["2", 0]},
+    "_meta": {"title": "Positive Prompt"}
   },
   "8": {
+    "class_type": "FluxGuidance",
+    "inputs": {"conditioning": ["7", 0], "guidance": 30.0},
+    "_meta": {"title": "FLUX Guidance"}
+  },
+  "9": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {"text": "", "clip": ["2", 0]},
+    "_meta": {"title": "Negative (empty)"}
+  },
+  "10": {
+    "class_type": "InpaintModelConditioning",
+    "inputs": {
+      "positive": ["8", 0],
+      "negative": ["9", 0],
+      "vae": ["3", 0],
+      "pixels": ["4", 0],
+      "mask": ["6", 0],
+      "noise_mask": true
+    },
+    "_meta": {"title": "Inpaint Conditioning"}
+  },
+  "11": {
     "class_type": "KSampler",
     "inputs": {
-      "model": ["4", 0],
-      "positive": ["5", 0],
-      "negative": ["6", 0],
-      "latent_image": ["7", 0],
+      "model": ["1", 0],
+      "positive": ["10", 0],
+      "negative": ["10", 1],
+      "latent_image": ["10", 2],
       "seed": 42,
       "steps": 20,
       "cfg": 1.0,
       "sampler_name": "euler",
       "scheduler": "simple",
-      "denoise": 0.85
+      "denoise": 1.0
     },
     "_meta": {"title": "Sample"}
   },
-  "9": {
+  "12": {
     "class_type": "VAEDecode",
-    "inputs": {"samples": ["8", 0], "vae": ["4", 2]},
+    "inputs": {"samples": ["11", 0], "vae": ["3", 0]},
     "_meta": {"title": "Decode"}
   },
-  "10": {
+  "13": {
     "class_type": "SaveImage",
-    "inputs": {"images": ["9", 0], "filename_prefix": "p2l_inpaint"},
+    "inputs": {"images": ["12", 0], "filename_prefix": "p2l_inpaint"},
     "_meta": {"title": "Save"}
   }
 }
