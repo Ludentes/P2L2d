@@ -1,14 +1,18 @@
 """Tests for pipeline.color_extract — ColorPalette + sampling helpers."""
 from __future__ import annotations
 
+from pathlib import Path
+
 import numpy as np
 import pytest
+from PIL import Image
 
 from pipeline.color_extract import (
     ColorPalette,
     _sample_iris_hsv,
     _sample_lip_lab,
     _sample_patch_lab,
+    extract_palette,
 )
 
 
@@ -139,3 +143,33 @@ class TestSampleLipLab:
         lab = _sample_lip_lab(img, lip_lm)
         assert lab.shape == (3,)
         assert lab[1] > 128, f"a* should be > 128 for red lips, got {lab[1]}"
+
+
+# ---------------------------------------------------------------------------
+# extract_palette — integration tests on real portrait
+# ---------------------------------------------------------------------------
+
+class TestExtractPalette:
+    def test_returns_valid_palette(self):
+        """extract_palette on test portrait should return valid ColorPalette."""
+        portrait_path = Path("assets/data/image1.png")
+        if not portrait_path.exists():
+            pytest.skip("Test portrait not available")
+        portrait = Image.open(portrait_path).convert("RGB")
+        palette = extract_palette(portrait)
+        assert isinstance(palette, ColorPalette)
+        assert palette.hair.shape == (3,)
+        assert palette.skin.shape == (3,)
+        assert 0 <= palette.eye_color <= 180
+        assert 0 <= palette.eye_saturation <= 255
+        assert palette.lip_color.shape == (3,)
+        assert palette.clothing.shape == (3,)
+
+    def test_skin_is_warm(self):
+        """Human skin should have a* > 125 (warm/reddish in OpenCV LAB)."""
+        portrait_path = Path("assets/data/image1.png")
+        if not portrait_path.exists():
+            pytest.skip("Test portrait not available")
+        portrait = Image.open(portrait_path).convert("RGB")
+        palette = extract_palette(portrait)
+        assert palette.skin[1] > 125  # a* above neutral = warm
