@@ -10,6 +10,7 @@ from typing import Any
 
 import cv2
 import numpy as np
+from PIL import Image
 
 # ---------------------------------------------------------------------------
 # Landmark index groups (MediaPipe FaceMesh 478-point topology)
@@ -318,8 +319,6 @@ def extract_palette(portrait: "Image.Image") -> ColorPalette:
     6. Lips: _sample_lip_lab on inner lip polygon
     7. Clothing: _sample_clothing_lab with parsing mask or bbox fallback
     """
-    from PIL import Image
-
     from pipeline.face_align import detect_landmarks
 
     # 1. Convert to BGR numpy, detect landmarks
