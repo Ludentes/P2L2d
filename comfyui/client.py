@@ -76,6 +76,10 @@ class ComfyUIClient:
         body = {"prompt": workflow, "client_id": str(uuid.uuid4())}
         try:
             response = await self._http.post("/prompt", json=body)
+            if response.status_code == 400:
+                raise ComfyUIJobError(
+                    f"Workflow rejected (400): {response.text}"
+                )
             response.raise_for_status()
         except httpx.ConnectError as exc:
             raise ComfyUIConnectionError(str(exc)) from exc
@@ -90,7 +94,7 @@ class ComfyUIClient:
     async def wait(
         self,
         prompt_id: str,
-        timeout: float = 120.0,
+        timeout: float = 300.0,
         poll_interval: float = 0.5,
     ) -> dict:
         deadline = time.monotonic() + timeout

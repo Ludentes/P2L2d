@@ -31,7 +31,7 @@ async def _comfyui_running() -> bool:
 
 
 @skip_no_model
-async def test_full_pipeline_hiyori(tmp_path):
+async def test_full_pipeline_hiyori():
     """End-to-end: synthetic portrait -> output dir with modified atlases."""
     if not await _comfyui_running():
         pytest.skip("ComfyUI not running at http://127.0.0.1:8188")
@@ -40,11 +40,19 @@ async def test_full_pipeline_hiyori(tmp_path):
     from pipeline.run import run_portrait_to_rig
     from rig.config import RIG_HIYORI
 
-    portrait_path = tmp_path / "portrait.jpg"
-    Image.new("RGB", (512, 512), color=(220, 170, 140)).save(portrait_path)
+    run_dir = Path("test_output/integration_run")
+    run_dir.mkdir(parents=True, exist_ok=True)
+
+    # Need a real face for MediaPipe landmark detection — upscale the small Tom Hanks portrait
+    source_portrait = Path(
+        "third_party/LivePortrait/src/utils/dependencies/"
+        "insightface/data/images/Tom_Hanks_54745.png"
+    )
+    portrait_path = run_dir / "portrait.png"
+    Image.open(source_portrait).resize((512, 512), Image.Resampling.LANCZOS).save(portrait_path)
 
     atlas_cfg = load_atlas_config(Path("manifests/hiyori_atlas.toml"))
-    out_dir = tmp_path / "output"
+    out_dir = run_dir / "output"
 
     result = await run_portrait_to_rig(
         portrait_path=portrait_path,

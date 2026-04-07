@@ -16,3 +16,4 @@ mlp/data/face_landmarker_v2_with_blendshapes.task
 
 # Template model binaries (generated, not checked in)
 templates/*/model.pt
+test_output/

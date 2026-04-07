@@ -26,7 +26,7 @@ async def test_segment_hair_returns_rgba():
     client.upload_image.return_value = "portrait.png"
     client.submit.return_value = "pid"
     client.wait.return_value = {
-        "6": {"images": [{"filename": "hair_seg.png", "subfolder": "", "type": "output"}]}
+        "4": {"images": [{"filename": "hair_seg.png", "subfolder": "", "type": "output"}]}
     }
 
     async def fake_download(_filename, dest, _subfolder="", _file_type="output"):

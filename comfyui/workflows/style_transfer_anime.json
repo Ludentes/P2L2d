@@ -1,56 +1,75 @@
 {
   "1": {
+    "class_type": "UNETLoader",
+    "inputs": {"unet_name": "__MODEL__", "weight_dtype": "default"},
+    "_meta": {"title": "Load FLUX Model"}
+  },
+  "2": {
+    "class_type": "DualCLIPLoader",
+    "inputs": {
+      "clip_name1": "clip_l.safetensors",
+      "clip_name2": "t5/t5xxl_fp8_e4m3fn.safetensors",
+      "type": "flux"
+    },
+    "_meta": {"title": "Load CLIP-L + T5-XXL"}
+  },
+  "3": {
+    "class_type": "VAELoader",
+    "inputs": {"vae_name": "FLUX1/ae.safetensors"},
+    "_meta": {"title": "Load FLUX VAE"}
+  },
+  "4": {
     "class_type": "LoadImage",
     "inputs": {"image": "__IMAGE__", "upload": "image"},
     "_meta": {"title": "Load Portrait"}
   },
-  "2": {
-    "class_type": "CheckpointLoaderSimple",
-    "inputs": {"ckpt_name": "__MODEL__"},
-    "_meta": {"title": "Load Anime Model"}
-  },
-  "3": {
+  "5": {
     "class_type": "CLIPTextEncode",
     "inputs": {
       "text": "anime style illustration, flat cell shading, clean crisp lines, vibrant colors",
-      "clip": ["2", 1]
+      "clip": ["2", 0]
     },
     "_meta": {"title": "Positive Prompt"}
   },
-  "4": {
-    "class_type": "CLIPTextEncode",
-    "inputs": {"text": "photo, realistic, 3d render, blurry, noisy", "clip": ["2", 1]},
-    "_meta": {"title": "Negative Prompt"}
+  "6": {
+    "class_type": "FluxGuidance",
+    "inputs": {"conditioning": ["5", 0], "guidance": 3.5},
+    "_meta": {"title": "FLUX Guidance"}
   },
-  "5": {
+  "7": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {"text": "", "clip": ["2", 0]},
+    "_meta": {"title": "Negative (empty)"}
+  },
+  "8": {
     "class_type": "VAEEncode",
-    "inputs": {"pixels": ["1", 0], "vae": ["2", 2]},
+    "inputs": {"pixels": ["4", 0], "vae": ["3", 0]},
     "_meta": {"title": "Encode Image"}
   },
-  "6": {
+  "9": {
     "class_type": "KSampler",
     "inputs": {
-      "model": ["2", 0],
-      "positive": ["3", 0],
-      "negative": ["4", 0],
-      "latent_image": ["5", 0],
+      "model": ["1", 0],
+      "positive": ["6", 0],
+      "negative": ["7", 0],
+      "latent_image": ["8", 0],
       "seed": 42,
       "steps": 20,
-      "cfg": 7.0,
-      "sampler_name": "euler_ancestral",
-      "scheduler": "karras",
+      "cfg": 1.0,
+      "sampler_name": "euler",
+      "scheduler": "simple",
       "denoise": "__STRENGTH__"
     },
     "_meta": {"title": "Sample"}
   },
-  "7": {
+  "10": {
     "class_type": "VAEDecode",
-    "inputs": {"samples": ["6", 0], "vae": ["2", 2]},
+    "inputs": {"samples": ["9", 0], "vae": ["3", 0]},
     "_meta": {"title": "Decode"}
   },
-  "8": {
+  "11": {
     "class_type": "SaveImage",
-    "inputs": {"images": ["7", 0], "filename_prefix": "p2l_style"},
+    "inputs": {"images": ["10", 0], "filename_prefix": "p2l_style"},
     "_meta": {"title": "Save"}
   }
 }
