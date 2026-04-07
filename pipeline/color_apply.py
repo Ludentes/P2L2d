@@ -54,11 +54,13 @@ def _lab_shift(
     source_lab: np.ndarray,
     target_lab: np.ndarray,
     sat_threshold: int = 15,
+    shift_lightness: bool = False,
 ) -> Image.Image:
-    """Shift a* and b* channels by the delta between *source_lab* and *target_lab*.
+    """Shift LAB channels by the delta between *source_lab* and *target_lab*.
 
-    L* is unchanged (preserves shading).  Desaturated pixels (HSV
-    saturation <= *sat_threshold*) and alpha are preserved.
+    By default only a* and b* are shifted (preserves L* shading).
+    Set *shift_lightness* to also shift L* (for hair/clothing where lightness matters).
+    Desaturated pixels (HSV saturation <= *sat_threshold*) and alpha are preserved.
     """
     arr = np.array(crop)  # RGBA uint8
     alpha = arr[:, :, 3].copy()
@@ -71,6 +73,10 @@ def _lab_shift(
     mask = hsv[:, :, 1] > sat_threshold
 
     lab = cv2.cvtColor(bgr, cv2.COLOR_BGR2LAB).astype(np.float32)
+
+    if shift_lightness:
+        delta_l = float(target_lab[0] - source_lab[0])
+        lab[:, :, 0][mask] = np.clip(lab[:, :, 0][mask] + delta_l, 0, 255)
 
     delta_a = float(target_lab[1] - source_lab[1])
     delta_b = float(target_lab[2] - source_lab[2])
@@ -153,6 +159,25 @@ def _lab_hue_of(lab: np.ndarray) -> float:
     return float(hsv[0, 0, 0])
 
 
+def _crop_dominant_hue(crop: Image.Image, sat_threshold: int = 15) -> float:
+    """Measure the dominant HSV hue of saturated pixels in a crop.
+
+    Returns median hue (0-180) of pixels with saturation > sat_threshold and alpha > 10.
+    Falls back to 0.0 if no qualifying pixels.
+    """
+    arr = np.array(crop)  # RGBA
+    alpha = arr[:, :, 3]
+    rgb = arr[:, :, :3]
+
+    bgr = cv2.cvtColor(rgb, cv2.COLOR_RGB2BGR)
+    hsv = cv2.cvtColor(bgr, cv2.COLOR_BGR2HSV)
+
+    mask = (hsv[:, :, 1] > sat_threshold) & (alpha > 10)
+    if not np.any(mask):
+        return 0.0
+    return float(np.median(hsv[:, :, 0][mask]))
+
+
 # ---------------------------------------------------------------------------
 # Main recoloring entry point
 # ---------------------------------------------------------------------------
@@ -174,12 +199,6 @@ def recolor_atlas(
 
     result = {idx: atlas.copy() for idx, atlas in atlases.items()}
 
-    # Pre-compute hues from LAB palettes
-    src_hair_hue = _lab_hue_of(template_palette.hair)
-    tgt_hair_hue = _lab_hue_of(palette.hair)
-    src_clothing_hue = _lab_hue_of(template_palette.clothing)
-    tgt_clothing_hue = _lab_hue_of(palette.clothing)
-
     def _apply(region_names: list[str], fn):
         """Apply *fn* to each region that exists in atlas_config."""
         nonlocal result
@@ -193,17 +212,28 @@ def recolor_atlas(
                 result[region.texture_index], transformed, region,
             )
 
-    # Hair + Eyebrows: hue rotation
+    def _apply_hue_rotate(region_names: list[str], target_hue: float):
+        """Hue-rotate each region from its own dominant hue to the target."""
+        nonlocal result
+        for name in region_names:
+            if not atlas_config.has(name):
+                continue
+            region = atlas_config.get(name)
+            crop = _crop_region(result[region.texture_index], region)
+            src_hue = _crop_dominant_hue(crop)
+            transformed = _hue_rotate(crop, src_hue, target_hue)
+            result[region.texture_index] = _paste_region(
+                result[region.texture_index], transformed, region,
+            )
+
+    # Hair + Eyebrows: LAB shift with lightness (handles dark/neutral hair correctly)
     _apply(
         _HAIR_REGIONS + _EYEBROW_REGIONS,
-        lambda crop: _hue_rotate(crop, src_hair_hue, tgt_hair_hue),
+        lambda crop: _lab_shift(crop, template_palette.hair, palette.hair, shift_lightness=True),
     )
 
-    # Eyes: hue rotation
-    _apply(
-        _EYE_REGIONS,
-        lambda crop: _hue_rotate(crop, template_palette.eye_color, palette.eye_color),
-    )
+    # Eyes: per-region hue rotation toward portrait eye color
+    _apply_hue_rotate(_EYE_REGIONS, palette.eye_color)
 
     # Skin: LAB shift
     _apply(
@@ -224,16 +254,10 @@ def recolor_atlas(
         lambda crop: _lab_shift(crop, template_palette.lip_color, palette.lip_color),
     )
 
-    # Clothing: hue rotation
+    # Clothing + mixed: LAB shift with lightness
     _apply(
-        _CLOTHING_REGIONS,
-        lambda crop: _hue_rotate(crop, src_clothing_hue, tgt_clothing_hue),
-    )
-
-    # Mixed cloth_and_body: hue rotation with clothing hues
-    _apply(
-        _MIXED_REGIONS,
-        lambda crop: _hue_rotate(crop, src_clothing_hue, tgt_clothing_hue),
+        _CLOTHING_REGIONS + _MIXED_REGIONS,
+        lambda crop: _lab_shift(crop, template_palette.clothing, palette.clothing, shift_lightness=True),
     )
 
     return result
